@@ -58,6 +58,21 @@ source /usr/share/doc/fzf/examples/key-bindings.zsh
 source /usr/share/doc/fzf/examples/completion.zsh
 fi
 
+# Safer shell behavior
+setopt AUTO_CD           # cd without typing cd
+setopt INTERACTIVE_COMMENTS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt SHARE_HISTORY
+setopt INC_APPEND_HISTORY
+
+# improve crtl+R behavior
+export FZF_CTRL_R_OPTS="
+  --preview 'echo {}'
+  --preview-window down:3:hidden
+  --bind '?:toggle-preview'
+"
+
 
 # 7) Modern CLI replacements
 # bat (better cat) — Ubuntu binary is batcat
@@ -68,6 +83,7 @@ command -v eza >/dev/null && {
 alias ls="eza --icons --group-directories-first"
 alias ll="eza -lh --git"
 }
+
 
 show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head -200; else batcat -n --color=always --line-range :500 {}; fi"
 
@@ -103,6 +119,7 @@ alias gl="git log --oneline --graph --decorate"
 # 9) Language/tooling defaults
 
 alias python="python3"
+
 
 # Node / NVM
 

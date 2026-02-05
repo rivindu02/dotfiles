@@ -1,0 +1,201 @@
+" ===========================================================
+" NEOVIM CONFIG — VS CODE–LIKE, CLEAN, MODERN
+" Uses vim-plug + Lua blocks
+" ===========================================================
+
+" -----------------------------------------------------------
+" 1. PLUGIN MANAGER
+" -----------------------------------------------------------
+
+call plug#begin('~/.local/share/nvim/plugged')
+
+" Core editing helpers
+Plug 'tpope/vim-surround'        " ysw)
+Plug 'tpope/vim-commentary'      " gcc, gc
+Plug 'tpope/vim-fugitive'        " Git integration
+Plug 'matze/vim-move'            " Move lines/blocks
+Plug 'mbbill/undotree'           " Undo history visualizer
+
+" UI / Appearance
+Plug 'nvim-tree/nvim-tree.lua'   " File explorer (VS Code–like)
+Plug 'nvim-tree/nvim-web-devicons' " Icons
+Plug 'nvim-lualine/lualine.nvim' " Status line (replaces airline)
+Plug 'akinsho/bufferline.nvim', { 'tag': 'v4.*' } " Tabs
+Plug 'goolord/alpha-nvim'        " Startup dashboard
+Plug 'folke/which-key.nvim'      " Keybinding hints
+
+" Search
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+
+" LSP / Autocomplete (VS Code engine)
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" Syntax / Language helpers
+Plug 'vim-python/python-syntax'
+Plug 'alvan/vim-closetag'
+Plug 'lepture/vim-jinja'
+
+" Colorschemes
+Plug 'navarasu/onedark.nvim'
+Plug 'morhetz/gruvbox'
+
+" Terminal
+Plug 'voldikss/vim-floaterm'
+
+" Code navigation
+Plug 'preservim/tagbar', {'on': 'TagbarToggle'}
+
+call plug#end()
+
+" -----------------------------------------------------------
+" 2. GENERAL EDITOR SETTINGS
+" -----------------------------------------------------------
+
+set number                  " Line numbers
+set relativenumber          " Relative numbers
+set mouse=a                 " Enable mouse
+set autoindent
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set smarttab
+set encoding=UTF-8
+set visualbell
+set scrolloff=5
+set cursorline              " Highlight current line
+set signcolumn=yes          " Always show sign column (LSP)
+set termguicolors           " True color support
+
+colorscheme onedark
+
+" -----------------------------------------------------------
+" 3. KEY MAPPINGS
+" -----------------------------------------------------------
+
+" File tree (VS Code explorer)
+nnoremap <C-n> :NvimTreeToggle<CR>
+
+" Clear search highlight
+nnoremap <F3> :noh<CR>
+
+" Tagbar (outline)
+nmap <F6> :TagbarToggle<CR>
+
+" Save & run Python in floating terminal
+nnoremap <F5> :w<CR>:FloatermNew --autoclose=0 python3 %<CR>
+
+" Buffer navigation (VS Code–like tabs)
+nnoremap <S-l> :BufferLineCycleNext<CR>
+nnoremap <S-h> :BufferLineCyclePrev<CR>
+
+" -----------------------------------------------------------
+" 4. COC (VS CODE–LIKE INTELLISENSE)
+" -----------------------------------------------------------
+
+let g:coc_disable_startup_warning = 1
+let g:coc_diagnostic_virtual_text = 1
+let g:coc_diagnostic_virtual_text_prefix = "● "
+
+" Diagnostics navigation
+nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
+nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" Go to definition / references
+nmap gd <Plug>(coc-definition)
+nmap gr <Plug>(coc-references)
+nmap gi <Plug>(coc-implementation)
+nmap K  :call CocActionAsync('doHover')<CR>
+
+" Autocomplete enter behavior
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+
+" Tab navigation in completion menu
+inoremap <expr> <Tab> pumvisible() ? "\<C-N>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-P>" : "\<C-H>"
+
+" -----------------------------------------------------------
+" 5. LUA CONFIGURATION (MODERN UI)
+" -----------------------------------------------------------
+
+lua << EOF
+
+-- =======================
+-- NVIM-TREE (File Explorer)
+-- =======================
+require("nvim-tree").setup({
+  view = { width = 30 },
+  renderer = {
+    icons = { show = { git = true, folder = true, file = true } },
+  },
+})
+
+-- =======================
+-- BUFFERLINE (Tabs)
+-- =======================
+require("bufferline").setup({
+  options = {
+    diagnostics = "coc",
+    show_buffer_close_icons = false,
+    separator_style = "slant",
+  }
+})
+
+-- =======================
+-- LUALINE (Status Line)
+-- =======================
+require("lualine").setup({
+  options = {
+    theme = "onedark",
+    globalstatus = true, -- Single bar like VS Code
+    section_separators = { left = "", right = "" },
+    component_separators = { left = "", right = "" },
+  },
+  sections = {
+    lualine_a = { "mode" },
+    lualine_b = { "branch", "diff" },
+    lualine_c = { { "filename", path = 1 } },
+    lualine_x = {
+      { "diagnostics", sources = { "coc" } },
+      "encoding",
+      "filetype",
+    },
+    lualine_y = { "progress" },
+    lualine_z = { "location" },
+  },
+})
+
+-- =======================
+-- WHICH-KEY (Key Help)
+-- =======================
+require("which-key").setup({})
+
+-- =======================
+-- ALPHA DASHBOARD
+-- =======================
+local alpha = require("alpha")
+local dashboard = require("alpha.themes.dashboard")
+
+dashboard.section.header.val = {
+  "███╗   ██╗██╗   ██╗██╗███╗   ███╗",
+  "████╗  ██║██║   ██║██║████╗ ████║",
+  "██╔██╗ ██║██║   ██║██║██╔████╔██║",
+  "██║╚██╗██║╚██╗ ██╔╝██║██║╚██╔╝██║",
+  "██║ ╚████║ ╚████╔╝ ██║██║ ╚═╝ ██║",
+  "╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝",
+}
+
+dashboard.section.buttons.val = {
+  dashboard.button("f", "󰈞  Find file", ":Files<CR>"),
+  dashboard.button("n", "  New file", ":ene <BAR> startinsert <CR>"),
+  dashboard.button("r", "  Recent files", ":History<CR>"),
+  dashboard.button("t", "󰙅  File tree", ":NvimTreeToggle<CR>"),
+  dashboard.button("q", "  Quit", ":qa<CR>"),
+}
+
+dashboard.section.footer.val = "Neovim ready."
+
+alpha.setup(dashboard.opts)
+
+EOF
+
