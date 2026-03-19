@@ -44,6 +44,10 @@ Plug 'preservim/tagbar'
 " Colors
 Plug 'navarasu/onedark.nvim'
 Plug 'morhetz/gruvbox'
+" for Md files
+Plug 'MeanderingProgrammer/render-markdown.nvim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'MeanderingProgrammer/render-markdown.nvim'
 
 call plug#end()
 
@@ -67,7 +71,7 @@ set signcolumn=yes
 set termguicolors
 set hidden
 
-colorscheme onedark
+" colorscheme onedark
 
 " Use man pages when LSP has no hover
 set keywordprg=:Man
@@ -155,6 +159,16 @@ require("nvim-tree").setup({
 })
 
 -- -----------------------
+-- ONEDARK TRANSPARENCY
+-- -----------------------
+require('onedark').setup {
+  style = 'dark',
+  transparent = true,
+}
+
+require('onedark').load()
+
+-- -----------------------
 -- BUFFERLINE
 -- -----------------------
 require("bufferline").setup({
@@ -188,6 +202,26 @@ require("lualine").setup({
     lualine_z = { "location" },
   },
 })
+require('render-markdown').setup({
+  heading = {
+    sign = false,
+    icons = { '󰲡 ', '󰲣 ', '󰲥 ', '󰲧 ', '󰲩 ', '󰲫 ' },
+    backgrounds = {
+      'RenderMarkdownH1Bg',
+      'RenderMarkdownH2Bg',
+      'RenderMarkdownH3Bg',
+    },
+  },
+  code = {
+    sign = false,
+    width = 'block',
+    border = 'thick',
+  },
+})
+vim.api.nvim_set_hl(0, 'RenderMarkdownH1', { fg = '#e06c75', bold = true })
+vim.api.nvim_set_hl(0, 'RenderMarkdownH2', { fg = '#e5c07b', bold = true })
+vim.api.nvim_set_hl(0, 'RenderMarkdownH3', { fg = '#98c379', bold = true })
+vim.api.nvim_set_hl(0, 'RenderMarkdownCode', { bg = '#2d3343' })
 
 -- -----------------------
 -- WHICH-KEY
