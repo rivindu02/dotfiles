@@ -1,0 +1,14 @@
+@import "~/.config/rofi/colors/catppuccin.rasi"
+
+
+/* ── Waybar/SwayNC match overrides ── */
+* {
+    background-colour:    rgba(30, 30, 46, 0.85);
+    alternate-background: rgba(49, 50, 68, 0.90);
+    selected:             #cba6f7;
+    active:               #1E1E2E;
+    urgent:               #f38ba8;
+    foreground-colour:    #cdd6f4;
+    border-colour:        rgba(203, 166, 247, 0.40);
+    handle-colour:        rgba(203, 166, 247, 0.50);
+}

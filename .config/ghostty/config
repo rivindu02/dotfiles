@@ -48,8 +48,9 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
-theme =  "Rose Pine"
-font-family = "CaskaydiaCove Nerd Font"
+#theme =  "Rose Pine"
+#theme = gruvbox material dark
+font-family = "Caskaydia Mono Nerd Font"
 #font-family = "JetBrainsMono NFM Regular"
 font-size = 12
 
@@ -61,5 +62,6 @@ copy-on-select = clipboard
 
 keybind = ctrl+shift+D=new_split:down
 keybind = ctrl+shift+S=new_split:right
-keybind = ctrl+shift+]=goto_split:next
-keybind = ctrl+shift+[=goto_split:previous
+keybind = super+]=goto_split:next
+keybind = super+[=goto_split:previous
+confirm-close-surface = false

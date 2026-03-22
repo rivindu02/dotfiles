@@ -1,0 +1,115 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 34,
+  "spacing": 4,
+  "modules-left": [
+    "hyprland/workspaces",
+    "hyprland/window"
+  ],
+  "modules-center": [
+    "clock",
+    "custom/notification"
+  ],
+  "modules-right": [
+    "pulseaudio",
+	"backlight",
+    "memory",
+    "battery",
+	"network",	
+    "tray",
+	"custom/power"
+  ],
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "active": "●",
+      "default": "○"
+    },
+    "persistent-workspaces": {
+      "*": 5
+    }
+  },
+  "clock": {
+    "format": " {:%a %b %d  %I:%M %p}",
+	"tooltip": false,
+	"on-click": "brave --profile-directory=Default --app-id=kjbdgfilnfhdoflbpgamdcdgpehopbep"
+  },
+"memory": {
+    "format": "󰍛 {}%",
+    "on-click": "ghostty --class=btop -e btop"
+},
+"battery": {
+    "states": {
+        "warning": 30,
+        "critical": 15
+    },
+    "format": "{icon} {capacity}%",
+    "format-icons": ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󰁹"],
+	"on-click": "~/.config/scripts/power-toggle.sh",
+    "on-click-right":"Profile: $(powerprofilesctl get)\n{timeTo}"
+	},
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 Muted",
+    "format-icons": {
+      "default": [
+        "󰕿",
+        "󰖀",
+        "󰕾"
+      ]
+    },
+    "on-click": "pavucontrol"
+  },
+  "tray": {
+    "spacing": 8
+  },
+  "custom/notification": {
+    "tooltip": false,
+    "format": "<span size='16pt'>{icon}</span>",
+    "format-icons": {
+      "notification": "󱅫",
+      "none": "󰂜",
+      "dnd-notification": "󰂠",
+      "dnd-none": "󰪓",
+      "inhibited-notification": "󰂛",
+      "inhibited-none": "󰪑",
+      "dnd-inhibited-notification": "󰂛",
+      "dnd-inhibited-none": "󰪑"
+	  },
+	 "return-type": "json",
+	 "exec-if": "which swaync-client",
+	 "exec": "swaync-client -swb",
+	 "on-click": "swaync-client -t -sw",
+	 "on-click-right": "swaync-client -d -sw",
+	 "escape": true
+	},
+	"network": {
+		"interval": 2,
+		"format-wifi": "󰇚{bandwidthDownBytes}",
+		"format-ethernet": "󰇚{bandwidthDownBytes}",
+		"format-disconnected": "󰤭",
+		"tooltip-format-wifi": "{essid} {signalStrength}%",
+		"tooltip-format-ethernet": "{ifname}",
+		"tooltip-format-disconnected": "Disconnected",
+		"on-click": "nm-connection-editor"
+	},
+  "custom/power": {
+    "format": "⏻",
+    "tooltip": false,
+    "on-click": "~/.config/rofi/powermenu/type-1/powermenu.sh" 
+	},
+  "backlight": {
+    "format": "{icon} {percent}%",
+    "format-icons": ["󰃞","󰃟","󰃠"],
+    "on-scroll-up": "brightnessctl set 5%+",
+    "on-scroll-down": "brightnessctl set 5%-",
+    "tooltip": false
+	},
+
+}

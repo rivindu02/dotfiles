@@ -1,15 +1,13 @@
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 # ===========================================================
-
-
-# 1) Powerlevel10k instant prompt
-
-# MUST be at the very top (after comments)
+# 1) Powerlevel10k instant prompt (must stay at top)
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 
+# ===========================================================
 # 2) Environment & PATH
 
 export ZSH="$HOME/.oh-my-zsh"
@@ -17,56 +15,83 @@ export PATH="$HOME/.local/bin:$PATH"
 export LANG=en_US.UTF-8
 
 
+# ===========================================================
 # 3) Oh My Zsh configuration
 
-ZSH_THEME=""  # Using Powerlevel10k directly
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 plugins=(
-git
-zsh-autosuggestions
-zsh-syntax-highlighting
+  git
+  zsh-autosuggestions
+  zsh-syntax-highlighting
 )
 
-# Load Oh My Zsh ONCE
-source "$ZSH/oh-my-zsh.sh"
+# Load Oh My Zsh only if installed
+if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
+  source "$ZSH/oh-my-zsh.sh"
+fi
 
 
-# 4) Powerlevel10k theme
+# ===========================================================
+# 4) Powerlevel10k config (do NOT manually source theme)
 
-source "$HOME/powerlevel10k/powerlevel10k.zsh-theme"
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
 
-# 5) tmux auto-start (after prompt init)
+# ===========================================================
+# 5) tmux auto-start (terminal aware)
+# # || "$TERM_PROGRAM" == "ghostty" 
+export TERMINAL=ghostty   
 
-# tmux auto-start ONLY in Alacritty
-if [[ -z "$TMUX" && -n "$ALACRITTY_WINDOW_ID" ]]; then
-  tmux new-session -A -s default
+if [[ -z "$TMUX" ]]; then
+  if [[ -n "$ALACRITTY_WINDOW_ID" ]]; then
+    command -v tmux >/dev/null && tmux new-session -A -s default
+  fi
 fi
 
+# ===========================================================
+# 6) Navigation & history
 
-# 6) Navigation & history (HIGH VALUE)
+# zoxide (if installed)
+command -v zoxide >/dev/null && {
+  eval "$(zoxide init zsh)"
+  alias cd="z"
+}
 
-# zoxide — smarter cd
-eval "$(zoxide init zsh)"
-alias cd="z"
+# fzf (cross-distro path handling)
+if command -v fzf >/dev/null; then
+  # Arch path
+  [[ -f /usr/share/fzf/key-bindings.zsh ]] && source /usr/share/fzf/key-bindings.zsh
+  [[ -f /usr/share/fzf/completion.zsh ]] && source /usr/share/fzf/completion.zsh
 
-# fzf — fuzzy finder (history, files, git)
-
-if [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
-source /usr/share/doc/fzf/examples/key-bindings.zsh
-source /usr/share/doc/fzf/examples/completion.zsh
+  # Ubuntu path
+  [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]] && \
+    source /usr/share/doc/fzf/examples/key-bindings.zsh
+  [[ -f /usr/share/doc/fzf/examples/completion.zsh ]] && \
+    source /usr/share/doc/fzf/examples/completion.zsh
 fi
+
+# Navigation using yazi
+function y() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
 
 # Safer shell behavior
-setopt AUTO_CD           # cd without typing cd
+setopt AUTO_CD
 setopt INTERACTIVE_COMMENTS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_SAVE_NO_DUPS
 setopt SHARE_HISTORY
 setopt INC_APPEND_HISTORY
 
-# improve crtl+R behavior
+
+# Improve Ctrl+R
 export FZF_CTRL_R_OPTS="
   --preview 'echo {}'
   --preview-window down:3:hidden
@@ -74,39 +99,43 @@ export FZF_CTRL_R_OPTS="
 "
 
 
-# 7) Modern CLI replacements
-# bat (better cat) — Ubuntu binary is batcat
-command -v batcat >/dev/null && alias cat="batcat"
+# ===========================================================
+# 7) Modern CLI replacements (cross-distro safe)
 
-# eza (better ls)
-command -v eza >/dev/null && {
-alias ls="eza --icons --group-directories-first"
-alias ll="eza -lh --git"
-}
+# bat (Ubuntu uses batcat)
+if command -v bat >/dev/null; then
+  alias cat="bat"
+elif command -v batcat >/dev/null; then
+  alias cat="batcat"
+fi
+
+# eza
+if command -v eza >/dev/null; then
+  alias ls="eza --icons --group-directories-first"
+  alias ll="eza -lh --git"
+fi
 
 
-show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head -200; else batcat -n --color=always --line-range :500 {}; fi"
+show_file_or_dir_preview='
+if [ -d {} ]; then
+  command -v eza >/dev/null && eza --tree --color=always {} | head -200 || ls -R {} | head -200
+else
+  if command -v bat >/dev/null; then
+    bat -n --color=always --line-range :500 {}
+  elif command -v batcat >/dev/null; then
+    batcat -n --color=always --line-range :500 {}
+  else
+    head -500 {}
+  fi
+fi
+'
 
-export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
+export FZF_CTRL_T_OPTS="--preview \"$show_file_or_dir_preview\""
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
-# Advanced customization of fzf options via _fzf_comprun function
-# - The first argument to the function is the name of the command.
-# - You should make sure to pass the rest of the arguments to fzf.
-_fzf_comprun() {
-  local command=$1
-  shift
 
-  case "$command" in
-    cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
-    export|unset) fzf --preview "eval 'echo \${}'"         "$@" ;;
-    ssh)          fzf --preview 'dig {}'                   "$@" ;;
-    *)            fzf --preview "$show_file_or_dir_preview" "$@" ;;
-  esac
-}
-
-
-# 8) Git productivity aliases
+# ===========================================================
+# 8) Git productivity
 
 alias g="git"
 alias gs="git status"
@@ -116,24 +145,47 @@ alias gco="git checkout"
 alias gl="git log --oneline --graph --decorate"
 
 
+# ===========================================================
 # 9) Language/tooling defaults
 
 alias python="python3"
 
-
-# Node / NVM
-
+# NVM
 export NVM_DIR="$HOME/.nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
 [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
+alias nv="nvim"
+
 
 export TERMINAL=ghostty
 export TERM_PROGRAM=ghostty
+export TERM=xterm-256color
+export EDITOR=nvim
+export VISUAL=nvim
 
-# 10) Local overrides (IMPORTANT)
 
-# Put experimental or machine‑specific config here
-#[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+# ===========================================================
+# 10) Local overrides
+# [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+# ===========================================================
+#
+#
+# ===========================================================
+# 11) source ros2
+#
+[ -f /opt/ros/humble/setup.zsh ] && source /opt/ros/humble/setup.zsh
+alias cubeide="ghostty -e zsh -c \"distrobox enter devbox -- /opt/st/stm32cubeide_2.1.0/stm32cubeide\""
+export PATH=~/.npm-global/bin:$PATH
+alias aider="~/.venvs/aider/bin/aider"
+export GROQ_API_KEY="$(cat ~/.secrets/groq 2>/dev/null)"
+alias ai-main="gemini"
+alias ai-groq="aider --model groq/llama-3.3-70b-versatile"
+alias ai-kimi="aider -c ~/.config/aider/aider.kimi.yml"
+# OFFLINE MODELS
+OLLAMA_BASE="http://100.70.177.46:11434"
+alias ai-7b="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/qwen2.5-coder:7b"
+alias ai-3b="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/qwen2.5-coder:3b"
+alias ai-deepseek-op="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/qwen2.5-coder:7b"
+alias ai-deepseek="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/deepseek-coder:6.7b-instruct-q4_K_M"
 
-#=========================================================
 

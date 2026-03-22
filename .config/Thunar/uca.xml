@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+	<icon></icon>
+	<name>Ghostty</name>
+	<submenu></submenu>
+	<unique-id>1773302613037612-1</unique-id>
+	<command>ghostty --working-directory=%f</command>
+	<description></description>
+	<range>*</range>
+	<patterns>*</patterns>
+</action>
+</actions>

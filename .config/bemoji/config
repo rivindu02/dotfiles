@@ -1,0 +1,4 @@
+BEMOJI_PICKER_CMD="rofi -dmenu -p '󰞅 Emoji' -theme ~/.config/rofi/launchers/type-2/style-7.rasi" 
+BEMOJI_TYPE_CMD="wtype -"
+BEMOJI_CLIP_CMD="wl-copy"
+BEMOJI_DEFAULT_ACTION="type"

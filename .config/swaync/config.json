@@ -1,0 +1,47 @@
+{
+  "$schema": "/etc/xdg/swaync/configSchema.json",
+  "notification-inline-replies": true,
+  "notification-2fa-action": true,
+  "hide-on-clear": false,
+  "hide-on-action": true,
+  "keyboard-shortcuts": true,
+  "timeout": 5,
+  "timeout-low": 2,
+  "timeout-critical": 0,
+  "widgets": [
+    "title",
+    "dnd",
+    "label#gcal-header",
+    "label#gcal-events",
+    "mpris",
+    "notifications"
+  ],
+  "widget-config": {
+    "title": {
+      "text": "Notifications",
+      "clear-all-button": true,
+      "button-text": "Clear All"
+    },
+    "dnd": {
+      "text": "Do Not Disturb"
+    },
+    "label#gcal-header": {
+      "text": "󰃭  Upcoming Events",
+      "markup": false
+    },
+    "label#gcal-events": {
+      "text": "Tomorrow 09:30  •  P8 Proudct Standup\nTomorrow 10:00  •  AI Code Analysis\nTue Mar 24 09:30  •  P8 Proudct Standup\nTue Mar 24 10:00  •  AI Code Analysis",
+      "markup": false
+    },
+    "mpris": {
+      "show-album-art": "when-available",
+      "autohide": true
+    }
+  },
+  "notification-visibility": {
+    "media-player": {
+      "state": "ignored",
+      "app-name": ".*player.*|.*mpris.*|.*spotify.*|.*firefox.*|.*brave.*|.*chromium.*"
+    }
+  }
+}

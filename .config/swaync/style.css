@@ -1,0 +1,287 @@
+/* ═══════════════════════════════════════════════════════════════
+   SwayNC — Catppuccin Mocha · matched to waybar style
+   GTK theme : catppuccin-mocha-sky-standard+default
+   Accent     : mauve (#cba6f7) / sky (#89dceb)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Catppuccin Mocha palette ───────────────────────────────── */
+* {
+  font-family: "Caskaydia Mono Nerd Font Propo";
+  font-size: 13px;
+  color: #cdd6f4;           /* text */
+  -gtk-icon-style: symbolic;
+}
+
+/* ── Control-center shell ───────────────────────────────────── */
+.control-center {
+  background: rgba(30, 30, 46, 0.85);   /* same as waybar */
+  border: 1px solid rgba(203, 166, 247, 0.4); /* mauve border – mirrors waybar border-bottom */
+  border-radius: 12px;
+  padding: 8px;
+}
+
+/* ── Notification cards ─────────────────────────────────────── */
+.notification-row {
+  margin: 4px 0;
+}
+
+.notification {
+  background: rgba(30, 30, 46, 0.90);  /* opaque by default */
+  border: 1px solid rgba(203, 166, 247, 0.20);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 3px 0;
+  color: #cdd6f4;
+  transition: all 0.2s ease;
+  opacity: 0.75;                        /* dim by default */
+}
+
+.notification:hover {
+  background: rgba(30, 30, 46, 0.90);  /* same solid bg */
+  border-color: rgba(203, 166, 247, 0.45);
+  opacity: 1;                           /* full focus on hover */
+}
+
+/* ── Notification urgency tints ─────────────────────────────── */
+.notification.low {
+  border-left: 3px solid #89b4fa;     /* blue  – low priority */
+}
+.notification.normal {
+  border-left: 3px solid #cba6f7;     /* mauve – normal */
+}
+.notification.critical {
+  border-left: 3px solid #f38ba8;     /* red   – critical */
+  background: rgba(243, 139, 168, 0.08);
+}
+
+/* ── Notification summary / body ────────────────────────────── */
+.notification-default-action {
+  border-radius: 10px;
+  background: transparent;
+  padding: 0;
+}
+
+.notification-default-action:hover {
+  background: transparent;
+}
+
+.summary {
+  font-size: 13px;
+  font-weight: bold;
+  color: #cdd6f4;
+}
+
+.time {
+  font-size: 11px;
+  color: #6c7086;           /* subtext0 */
+}
+
+.body {
+  font-size: 12px;
+  color: #bac2de;           /* subtext1 */
+  opacity: 0.85;
+}
+
+/* ── App name / icon row ─────────────────────────────────────── */
+.app-name {
+  font-size: 11px;
+  color: #89dceb;           /* sky – matches #network in waybar */
+  opacity: 0.80;
+}
+
+/* ── Action buttons inside notifications ─────────────────────── */
+.notification-action {
+  background: rgba(203, 166, 247, 0.12);
+  border: 1px solid rgba(203, 166, 247, 0.25);
+  border-radius: 6px;
+  color: #cba6f7;
+  font-size: 12px;
+  padding: 4px 10px;
+  margin: 2px;
+  transition: all 0.2s;
+}
+
+.notification-action:hover {
+  background: rgba(203, 166, 247, 0.25);
+  color: #ffffff;
+}
+
+/* ── Close button ───────────────────────────────────────────── */
+.close-button {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #6c7086;
+  font-size: 13px;
+  padding: 2px 6px;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: rgba(243, 139, 168, 0.20);
+  color: #f38ba8;           /* red – mirrors #custom-power:hover */
+}
+
+/* ── Widget title (section headers) ─────────────────────────── */
+.widget-title {
+  background: rgba(30, 30, 46, 0.90);
+  border-radius: 8px;
+  color: #cba6f7;           /* mauve */
+  font-size: 13px;
+  font-weight: bold;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+}
+
+.widget-title > button {
+  background: transparent;
+  border: 1px solid rgba(203, 166, 247, 0.30);
+  border-radius: 6px;
+  color: #cba6f7;
+  padding: 3px 10px;
+  transition: all 0.2s;
+}
+
+.widget-title > button:hover {
+  background: rgba(203, 166, 247, 0.15);
+  color: #ffffff;
+}
+
+/* ── DND toggle ─────────────────────────────────────────────── */
+.widget-dnd {
+  background: rgba(30, 30, 46, 0.90);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin: 4px 0;
+}
+
+.widget-dnd > switch {
+  border-radius: 20px;
+  background: rgba(108, 112, 134, 0.40);  /* overlay0 off-state */
+  border: 1px solid rgba(108, 112, 134, 0.50);
+}
+
+.widget-dnd > switch:checked {
+  background: rgba(203, 166, 247, 0.60);  /* mauve on-state */
+  border-color: #cba6f7;
+}
+
+.widget-dnd > switch slider {
+  background: #cdd6f4;
+  border-radius: 50%;
+  min-width: 18px;
+  min-height: 18px;
+}
+
+/* ── Label widgets (Upcoming Events etc.) ────────────────────── */
+.widget-label > label {
+  color: #cdd6f4;
+}
+
+/* Header label */
+.widgets > .widget-label:nth-child(3) > label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #cba6f7;           /* mauve accent */
+  padding: 3px 1px 0 3px;
+  opacity: 0.85;
+  letter-spacing: 0.05em;
+}
+
+/* Content label */
+.widgets > .widget-label:nth-child(4) > label {
+  font-size: 0.95rem;
+  color: #bac2de;
+  padding: 4px 2px 5px 5px;
+  opacity: 0.85;
+}
+
+/* ── Menubar / buttons at bottom ─────────────────────────────── */
+.widget-menubar > box > box > button {
+  background: transparent;
+  border: 1px solid rgba(203, 166, 247, 0.25);
+  border-radius: 6px;
+  color: #cdd6f4;
+  padding: 4px 10px;
+  margin: 2px;
+  transition: all 0.2s;
+}
+
+.widget-menubar > box > box > button:hover {
+  background: rgba(203, 166, 247, 0.15);
+  color: #cba6f7;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+scrollbar {
+  background: transparent;
+}
+
+scrollbar slider {
+  background: rgba(203, 166, 247, 0.25);
+  border-radius: 4px;
+  min-width: 4px;
+  min-height: 4px;
+}
+
+scrollbar slider:hover {
+  background: rgba(203, 166, 247, 0.50);
+}
+
+/* ── Popup / floating notifications ─────────────────────────── */
+.floating-notifications {
+  background: transparent;
+}
+
+.floating-notifications .notification {
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* ── Notification grouping ───────────────────────────────────── */
+.notification-group {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-group-header {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0;        /* hides the group label text */
+}
+
+.notification-group-icon {
+  background: transparent;
+}
+
+.notification-group-buttons {
+  background: transparent;
+  border: none;
+}
+/* ── Kill GTK4 focus indicator ───────────────────────────────── */
+*:focus {
+  outline: none;
+  box-shadow: none;
+  -gtk-outline-radius: 0;
+}
+
+*:focus-visible {
+  outline: none;
+  box-shadow: none;
+  -gtk-outline-radius: 0;
+}
+
+.notification:focus,
+.notification:focus-visible,
+.notification-default-action:focus,
+.notification-default-action:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-color: rgba(203, 166, 247, 0.45);
+  -gtk-outline-radius: 0;
+}

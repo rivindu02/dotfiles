@@ -1,0 +1,52 @@
+* { font-family: "Caskaydia Mono Nerd Font Propo"; font-size: 16px; }
+
+window#waybar {
+  background: rgba(30, 30, 46, 0.85);
+  border-bottom: 2px solid rgba(203, 166, 247, 0.4);
+  color: #cdd6f4;
+}
+
+#workspaces button {
+  padding: 0 8px;
+  color: #6c7086;
+  background: transparent;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+}
+#workspaces button.active {
+  color: #cba6f7;
+  background: rgba(203,166,247,0.15);
+}
+#workspaces button:hover { color: #cdd6f4; background: rgba(255,255,255,0.08); }
+
+#clock { color: #89b4fa; font-weight: bold; padding: 0 12px; }
+#memory { color: #fab387; padding: 0 8px; }
+#battery { color: #a6e3a1; padding: 0 8px; }
+#battery.warning { color: #f9e2af; }
+#battery.critical { color: #f38ba8; }
+#network { color: #89dceb; padding: 0 8px; }
+#pulseaudio { color: #f5c2e7; padding: 0 8px; }
+#tray { padding: 0 8px; }
+#custom-notification { color: #f5c2e7; padding: 0 6px; }
+#custom-power {
+    color: #f38ba8;
+    padding: 0 10px;
+    font-size: 15px;
+    border-radius: 6px;
+    margin: 4px 2px;
+}
+#custom-power:hover {
+    color: #ffffff;
+    background: rgba(243, 139, 168, 0.2);
+    border-radius: 2px;
+}
+#network {
+    color: #89dceb;
+    padding: 0 8px;
+}
+#backlight {
+    color: #f9e2af;
+    padding: 0 8px;
+}
+

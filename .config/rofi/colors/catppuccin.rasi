@@ -1,0 +1,12 @@
+/**
+ * Catppuccin Mocha Sky
+ **/
+
+* {
+    background:     #1E1E2E;
+    background-alt: #181825;
+    foreground:     #CDD6F4;
+    selected:       #74C7EC;
+    active:         #A6E3A1;
+    urgent:         #F38BA8;
+}

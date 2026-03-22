@@ -1,0 +1,59 @@
+{
+  "displays": [
+    {
+      "name": "eDP-1",
+      "description": "LG Display 0x06CA",
+      "x": 0,
+      "y": 1080,
+      "physical_width": 1920,
+      "physical_height": 1080,
+      "transform": "normal",
+      "scale": 1.0,
+      "scale_filter": null,
+      "refresh": 60.02,
+      "dpms": true,
+      "adaptive_sync": false,
+      "custom_mode": false,
+      "mirror": "",
+      "ten_bit": false,
+      "active": true
+    },
+    {
+      "name": "HDMI-A-1",
+      "description": "ViewSonic Corporation VG2440V WAM214421194",
+      "x": 0,
+      "y": 0,
+      "physical_width": 1920,
+      "physical_height": 1080,
+      "transform": "normal",
+      "scale": 1.0,
+      "scale_filter": null,
+      "refresh": 60.0,
+      "dpms": true,
+      "adaptive_sync": false,
+      "custom_mode": false,
+      "mirror": "",
+      "ten_bit": false,
+      "active": true
+    }
+  ],
+  "config": {
+    "view-scale": 0.15,
+    "snap-threshold": 10,
+    "indicator-timeout": 500,
+    "custom-mode": [],
+    "use-desc": false,
+    "confirm-timeout": 10,
+    "profile-bound-wallpapers": true
+  },
+  "wallpapers": {
+    "eDP-1": {
+      "path": "/home/rivindu02/Pictures/Wallpapers/wallhaven-5yz8z8.jpg",
+      "mode": ""
+    },
+    "HDMI-A-1": {
+      "path": "/home/rivindu02/Pictures/Wallpapers/wallhaven-yqqwvd.jpg",
+      "mode": ""
+    }
+  }
+}

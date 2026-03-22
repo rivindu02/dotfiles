@@ -1,0 +1,4 @@
+[[manager.prepend_keymap]]
+on = ["R"]
+run = "rename --empty=all"
+desc = "Bulk rename"
