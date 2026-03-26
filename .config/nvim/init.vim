@@ -90,6 +90,9 @@ nnoremap <S-h> :BufferLineCyclePrev<CR>
 " Clear highlights
 nnoremap <F3> :noh<CR>
 
+" Format file
+nmap <C-i> :call CocAction('format')<CR>
+
 " Tagbar (outline view, NOT navigation)
 nnoremap <F6> :TagbarToggle<CR>
 

@@ -1,3 +1,11 @@
 {
-  "clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/21.1.8/clangd_21.1.8/bin/clangd"
+  "clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/21.1.8/clangd_21.1.8/bin/clangd",
+	"java.configuration.updateBuildConfiguration": "interactive",
+  "java.import.gradle.enabled": true,
+  "java.import.maven.enabled": true,
+  "java.autobuild.enabled": true,
+  "java.project.sourcePaths": [
+    "src/main/java",
+    "target/generated-sources/annotations"
+  ]
 }

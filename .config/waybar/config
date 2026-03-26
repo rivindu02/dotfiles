@@ -64,7 +64,9 @@
         "󰕾"
       ]
     },
-    "on-click": "pavucontrol"
+    "on-click": "pavucontrol",
+	"on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ -5%",
+	"on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ +5% && pactl set-sink-volume @DEFAULT_SINK@ 100%"
   },
   "tray": {
     "spacing": 8
@@ -91,8 +93,8 @@
 	},
 	"network": {
 		"interval": 2,
-		"format-wifi": "󰇚{bandwidthDownBytes}",
-		"format-ethernet": "󰇚{bandwidthDownBytes}",
+		"format-wifi": "󰇚 {bandwidthDownBytes}",
+		"format-ethernet": "󰇚 {bandwidthDownBytes}",
 		"format-disconnected": "󰤭",
 		"tooltip-format-wifi": "{essid} {signalStrength}%",
 		"tooltip-format-ethernet": "{ifname}",
@@ -107,8 +109,8 @@
   "backlight": {
     "format": "{icon} {percent}%",
     "format-icons": ["󰃞","󰃟","󰃠"],
-    "on-scroll-up": "brightnessctl set 5%+",
-    "on-scroll-down": "brightnessctl set 5%-",
+    "on-scroll-up": "brightnessctl set 5%-",
+    "on-scroll-down": "brightnessctl set 5%+",
     "tooltip": false
 	},
 

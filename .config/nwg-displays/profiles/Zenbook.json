@@ -5,12 +5,12 @@
       "description": "Samsung Display Corp. 0x416D",
       "x": 0,
       "y": 0,
-      "physical_width": 1920,
-      "physical_height": 1080,
+      "physical_width": 2880,
+      "physical_height": 1800,
       "transform": "normal",
-      "scale": 1.0,
+      "scale": 1.5,
       "scale_filter": null,
-      "refresh": 120.02000000000001,
+      "refresh": 120.0,
       "dpms": true,
       "adaptive_sync": false,
       "custom_mode": false,
@@ -27,5 +27,11 @@
     "use-desc": false,
     "confirm-timeout": 10,
     "profile-bound-wallpapers": true
+  },
+  "wallpapers": {
+    "eDP-1": {
+      "path": "/home/rivindu02/Pictures/Wallpapers/wallhaven-yqqwvd.jpg",
+      "mode": ""
+    }
   }
 }
