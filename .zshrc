@@ -11,8 +11,11 @@ fi
 # 2) Environment & PATH
 
 export ZSH="$HOME/.oh-my-zsh"
-export PATH="$HOME/.local/bin:$PATH"
+
 export LANG=en_US.UTF-8
+
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+export PATH="$JAVA_HOME/bin:$HOME/.local/bin:$PATH"
 
 
 # ===========================================================
