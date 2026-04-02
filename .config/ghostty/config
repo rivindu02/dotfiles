@@ -55,8 +55,8 @@ font-family = "Caskaydia Mono Nerd Font"
 font-size = 12
 
 # Subtle transparency and blur (Modern look)
-background-opacity = 0.9
-background-blur = false
+#background-opacity = 0.9
+#background-blur = false
 
 copy-on-select = clipboard
 
