@@ -1,11 +1,49 @@
 {
-  "clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/21.1.8/clangd_21.1.8/bin/clangd",
-	"java.configuration.updateBuildConfiguration": "interactive",
-  "java.import.gradle.enabled": true,
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "/usr/lib/jvm/java-17-openjdk",
+      "default": true
+    }
+  ],
+  "java.import.gradle.enabled": false,
   "java.import.maven.enabled": true,
-  "java.autobuild.enabled": true,
-  "java.project.sourcePaths": [
-    "src/main/java",
-    "target/generated-sources/annotations"
-  ]
+  "java.import.exclusions": [
+    "**/p8-corda/**",
+    "**/p8-cordagw/**",
+    "**/p8-da-cordapp/**",
+    "**/p8-im-cordapp/**",
+    "**/p8-corda-node-explorer/**",
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/target/**"
+  ],
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.saveActions.organizeImports": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "java.completion.importOrder": [
+    "java",
+    "javax",
+    "io.vertx",
+    "com.yaalalabs",
+    ""
+  ],
+  "java.completion.filteredTypes": [
+    "com.sun.*",
+    "sun.*",
+    "jdk.*"
+  ],
+  "diagnostic.virtualText": true,
+  "diagnostic.virtualTextCurrentLineOnly": false,
+  "suggest.noselect": true,
+  "suggest.completionItemKindLabels": {
+    "class": "\uf0e8",
+    "method": "\uf794",
+    "variable": "\uf71b",
+    "interface": "\uf417",
+    "enum": "\uf15d",
+    "keyword": "\uf1de"
+  }
 }
