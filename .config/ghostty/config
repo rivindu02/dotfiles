@@ -53,6 +53,33 @@
 font-family = "Caskaydia Mono Nerd Font"
 #font-family = "JetBrainsMono NFM Regular"
 font-size = 12
+# OneDark Warm
+background = #2d2d31
+foreground = #d4be98
+
+# Normal colors
+palette = 0=#3c3836
+palette = 1=#ea6962
+palette = 2=#a9b665
+palette = 3=#d8a657
+palette = 4=#7daea3
+palette = 5=#d3869b
+palette = 6=#89b482
+palette = 7=#d4be98
+
+# Bright colors
+palette = 8=#5a524c
+palette = 9=#ea6962
+palette = 10=#a9b665
+palette = 11=#d8a657
+palette = 12=#7daea3
+palette = 13=#d3869b
+palette = 14=#89b482
+palette = 15=#ddc7a1
+
+cursor-color = #d4be98
+selection-background = #4c4642
+selection-foreground = #d4be98
 
 # Subtle transparency and blur (Modern look)
 #background-opacity = 0.9
