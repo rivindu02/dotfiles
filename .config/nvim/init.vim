@@ -28,19 +28,33 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'folke/trouble.nvim'
 
 " Search
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
+"Plug 'junegunn/fzf'
+"Plug 'junegunn/fzf.vim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
 " LSP / Completion
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'L3MON4D3/LuaSnip'
+Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
 
 " Languages
-Plug 'vim-python/python-syntax'
-Plug 'alvan/vim-closetag'
+"Plug 'vim-python/python-syntax'
+"Plug 'alvan/vim-closetag'
+Plug 'windwp/nvim-ts-autotag'
 Plug 'lepture/vim-jinja'
+
+Plug 'folke/todo-comments.nvim'
+Plug 'norcalli/nvim-colorizer.lua'
 
 " Terminal (KEPT)
 Plug 'voldikss/vim-floaterm'
@@ -51,13 +65,18 @@ Plug 'preservim/tagbar'
 " Motion
 Plug 'folke/flash.nvim'
 
+Plug 'ahmedkhalf/project.nvim'
+
 " Colors
 Plug 'navarasu/onedark.nvim'
 Plug 'morhetz/gruvbox'
 
+" Tab manager
+Plug 'ThePrimeagen/harpoon', {'branch': 'harpoon2'}
+
 " Markdown
 Plug 'MeanderingProgrammer/render-markdown.nvim'
-Plug 'OXY2DEV/markview.nvim'
+"Plug 'OXY2DEV/markview.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 call plug#end()
@@ -110,13 +129,13 @@ nnoremap <leader>bd :bd<CR>
 nnoremap <F3> :noh<CR>
 
 " Format file
-nmap <C-i> :call CocAction('format')<CR>
+"nmap <C-i> :call CocAction('format')<CR>
 
 " Tagbar
 nnoremap <F6> :TagbarToggle<CR>
 
 " Undotree
-nnoremap <F4> :UndotreeToggle<CR>
+nnoremap <leader>u :UndotreeToggle<CR>
 
 " Fast escape
 inoremap jk <Esc>
@@ -151,10 +170,7 @@ nnoremap <leader>xw :TroubleToggle workspace_diagnostics<CR>
 nnoremap <leader>xd :TroubleToggle document_diagnostics<CR>
 
 " FZF
-nnoremap <leader>rg :Rg<CR>
-nnoremap <leader>bl :BLines<CR>
-nnoremap <leader>hi :History<CR>
-nnoremap <leader>gc :GFiles?<CR>
+"nnoremap <leader>hi :History<CR>
 
 " -----------------------------------------------------------
 " 4. FLOATERM
@@ -169,39 +185,58 @@ nnoremap <F5> :w<CR>:FloatermNew --autoclose=0 python3 %<CR>
 " -----------------------------------------------------------
 " 5. COC.NVIM
 " -----------------------------------------------------------
-let g:coc_disable_startup_warning = 1
-let g:coc_diagnostic_virtual_text = 1
-let g:coc_diagnostic_virtual_text_prefix = "● "
+"let g:coc_disable_startup_warning = 1
+"let g:coc_diagnostic_virtual_text = 1
+"let g:coc_diagnostic_virtual_text_prefix = "● "
 
 " Diagnostics navigation
-nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
-nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
+"nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
+"nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " LSP navigation
-nmap gd <Plug>(coc-definition)
-nmap gr <Plug>(coc-references)
-nmap gi <Plug>(coc-implementation)
-nmap gt <Plug>(coc-type-definition)
+"nmap gd <Plug>(coc-definition)
+"nmap gr <Plug>(coc-references)
+"nmap gi <Plug>(coc-implementation)
+"nmap gt <Plug>(coc-type-definition)
 
 " Refactoring
-nmap <leader>rn <Plug>(coc-rename)
-nmap <leader>ca <Plug>(coc-codeaction-cursor)
-nmap <leader>qf <Plug>(coc-fix-current)
+"nmap <leader>rn <Plug>(coc-rename)
+"nmap <leader>ca <Plug>(coc-codeaction-cursor)
+"nmap <leader>qf <Plug>(coc-fix-current)
 
 " Hover and signature
-nnoremap K :call CocActionAsync('doHover')<CR>
-nnoremap <leader>si :call CocActionAsync('showSignatureHelp')<CR>
+"nnoremap <silent> K :call CocAction('doHover')<CR>
+"nnoremap <leader>si :call CocActionAsync('showSignatureHelp')<CR>
 
 " Java specific
-nnoremap <leader>jm :CocCommand java.action.overrideMethodsPrompt<CR>
-nnoremap <leader>ji :CocCommand java.action.organizeImports<CR>
-nnoremap <leader>jt :CocCommand java.action.showTypeHierarchy<CR>
-nnoremap <leader>jr :CocCommand java.clean.workspace<CR>
+"nnoremap <leader>jm :CocCommand java.action.overrideMethodsPrompt<CR>
+"nnoremap <leader>ji :CocCommand java.action.organizeImports<CR>
+"nnoremap <leader>jt :CocCommand java.action.showTypeHierarchy<CR>
+"nnoremap <leader>jr :CocCommand java.clean.workspace<CR>
 
 " Completion
-inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
+"inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : \<CR>"
+"inoremap <expr> <Tab> pumvisible() ? \<"C-n>" : \<Tab>"
+"inoremap <expr> <S-Tab> pumvisible() ? \<C-p>" : \<C-h>"
+"
+" -----------------------------------------------------------
+" 5. LSP KEYMAPS (set in lua on_attach, listed here as reference)
+" -----------------------------------------------------------
+" gd        -> definition
+" gr        -> references
+" gi        -> implementation
+" gt        -> type definition
+" K         -> hover
+" <leader>rn -> rename
+" <leader>ca -> code action
+" <leader>qf -> quick fix
+" <leader>fm -> format
+" [g / ]g   -> prev/next diagnostic
+" <leader>si -> signature help
+" <leader>jm -> override methods (jdtls)
+" <leader>ji -> organize imports (jdtls)
+" <leader>jt -> type hierarchy (jdtls)
+" <leader>jr -> restart jdtls
 
 " -----------------------------------------------------------
 " 6. TAGBAR
@@ -224,6 +259,12 @@ lua << EOF
 -- NVIM-TREE
 -- -----------------------
 require("nvim-tree").setup({
+  sync_root_with_cwd = true,
+  respect_buf_cwd = true,
+  update_focused_file = {
+    enable = true,
+    update_root = true,
+  },
   view = { width = 30 },
   renderer = {
     icons = { show = { git = true, folder = true, file = true } },
@@ -235,10 +276,10 @@ require("nvim-tree").setup({
 })
 
 -- -----------------------
--- ONEDARK TRANSPARENCY
+-- ONEDARK
 -- -----------------------
 require('onedark').setup {
-  style = 'dark',
+  style = 'warm',
   --transparent = false
 }
 
@@ -253,6 +294,25 @@ require("bufferline").setup({
     show_buffer_close_icons = false,
     separator_style = "slant",
   }
+})
+
+
+
+-- -----------------------
+-- TS-AUTOTAG
+-- -----------------------
+require('nvim-ts-autotag').setup({})
+
+-- -----------------------
+-- TODO COMMENTS
+-- -----------------------
+require('todo-comments').setup({})
+
+-- -----------------------
+-- COLORIZER
+-- -----------------------
+require('colorizer').setup({
+  '*', -- all filetypes
 })
 
 -- -----------------------
@@ -270,7 +330,7 @@ require("lualine").setup({
     lualine_b = { "branch", "diff" },
     lualine_c = { { "filename", path = 1 } },
     lualine_x = {
-      { "diagnostics", sources = { "coc" } },
+      { "diagnostics", sources = { "nvim_lsp" } },
       "encoding",
       "filetype",
     },
@@ -302,6 +362,18 @@ vim.keymap.set('n', '<leader>fw', builtin.lsp_workspace_symbols)
 vim.keymap.set('n', '<leader>fd', builtin.diagnostics)
 vim.keymap.set('n', '<leader>fr', builtin.lsp_references)
 vim.keymap.set('n', '<leader>fi', builtin.lsp_implementations)
+vim.keymap.set('n', '<leader>fB', builtin.current_buffer_fuzzy_find)
+
+-- -----------------------
+-- PROJECT
+-- -----------------------
+require("project_nvim").setup({
+  detection_methods = { "pattern", "lsp" },
+  patterns = { ".git", "pom.xml", "build.gradle", "package.json" },
+})
+
+telescope.load_extension('projects')
+vim.keymap.set('n', '<leader>fp', ':Telescope projects<CR>')
 
 -- -----------------------
 -- AUTOPAIRS
@@ -363,7 +435,7 @@ if ok then
   treesitter.setup({
     ensure_installed = {
       "java", "python", "javascript", "typescript",
-      "json", "yaml", "xml", "lua", "bash", "markdown"
+      "json", "yaml", "xml", "lua", "bash", "markdown","c","cpp"
     },
     highlight = { enable = true },
     indent = { enable = true },
@@ -371,36 +443,170 @@ if ok then
 end
 
 -- -----------------------
+-- LSP-ZERO
+-- -----------------------
+local lsp_zero = require('lsp-zero')
+ 
+lsp_zero.on_attach(function(client, bufnr)
+  local opts = { buffer = bufnr }
+ 
+  -- Navigation
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+  vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, opts)
+ 
+  -- Hover / signature
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+  vim.keymap.set('n', '<leader>si', vim.lsp.buf.signature_help, opts)
+ 
+  -- Refactor
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+  vim.keymap.set('n', '<leader>qf', function()
+    vim.lsp.buf.code_action({ apply = true })
+  end, opts)
+ 
+  -- Format
+  vim.keymap.set('n', '<leader>fm', function()
+    vim.lsp.buf.format({ async = true })
+  end, opts)
+ 
+  -- Diagnostics
+  vim.keymap.set('n', '[g', vim.diagnostic.goto_prev, opts)
+  vim.keymap.set('n', ']g', vim.diagnostic.goto_next, opts)
+ 
+  -- Java (jdtls) specific — only attach when jdtls is the client
+  if client.name == 'jdtls' then
+    vim.keymap.set('n', '<leader>jm', function()
+      require('jdtls').organize_imports()
+    end, opts)
+    vim.keymap.set('n', '<leader>ji', function()
+      require('jdtls').organize_imports()
+    end, opts)
+    vim.keymap.set('n', '<leader>jt', function()
+      require('jdtls').type_hierarchy()
+    end, opts)
+    vim.keymap.set('n', '<leader>jr', function()
+      vim.lsp.stop_client(vim.lsp.get_active_clients())
+      vim.cmd('edit')
+    end, opts)
+  end
+end)
+ 
+-- Diagnostic display
+vim.diagnostic.config({
+  virtual_text = { prefix = '●' },
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+})
+ 
+-- Mason setup
+require('mason').setup({})
+require('mason-lspconfig').setup({
+  ensure_installed = {
+    'pyright',     -- Python
+    'clangd',      -- C / C++
+    'ts_ls',       -- TypeScript / JavaScript
+    'bashls',      -- Shell scripts
+    'lua_ls',      -- Lua (for editing this config)
+    'jdtls',       -- Java
+  },
+  handlers = {
+    lsp_zero.default_setup,
+    -- jdtls is handled separately below (needs special workspace config)
+    jdtls = lsp_zero.noop,
+  },
+})
+ 
+-- jdtls manual setup (workspace per project)
+local jdtls_ok, jdtls = pcall(require, 'jdtls')
+if not jdtls_ok then
+  -- jdtls not installed yet, skip silently
+else
+  local workspace = vim.fn.stdpath('data') .. '/jdtls-workspace/' ..
+    vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
+ 
+  jdtls.start_or_attach({
+    cmd = { 'jdtls', '--data', workspace },
+    root_dir = vim.fs.dirname(
+      vim.fs.find({ 'pom.xml', 'build.gradle', '.git' }, { upward = true })[1]
+    ),
+  })
+end
+ 
+-- -----------------------
+-- COMPLETION (nvim-cmp)
+-- -----------------------
+local cmp = require('cmp')
+local luasnip = require('luasnip')
+ 
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<CR>']    = cmp.mapping.confirm({ select = true }),
+    ['<Tab>']   = cmp.mapping.select_next_item(),
+    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>']   = cmp.mapping.abort(),
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' },
+    { name = 'buffer' },
+    { name = 'path' },
+  }),
+})
+
+-- -----------------------
+-- HARPOON2
+-- -----------------------
+local harpoon = require("harpoon")
+harpoon:setup()
+
+vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
+vim.keymap.set("n", "<C-e>", function()
+  local h = require("harpoon")
+  h.ui:toggle_quick_menu(h:list())
+end)
+vim.keymap.set("n", "<A-1>", function() harpoon:list():select(1) end)
+vim.keymap.set("n", "<A-2>", function() harpoon:list():select(2) end)
+vim.keymap.set("n", "<A-3>", function() harpoon:list():select(3) end)
+vim.keymap.set("n", "<A-4>", function() harpoon:list():select(4) end)
+
+vim.keymap.set("n", "<A-n>", function() harpoon:list():next() end)
+vim.keymap.set("n", "<A-p>", function() harpoon:list():prev() end)
+
+-- -----------------------
 -- RENDER MARKDOWN
 -- -----------------------
-require('markview').setup({})
---require('render-markdown').setup({
---  heading = {
---    sign = false,
---    icons = { '󰲡 ', '󰲣 ', '󰲥 ', '󰲧 ', '󰲩 ', '󰲫 ' },
---    backgrounds = {
---      'RenderMarkdownH1Bg',
---      'RenderMarkdownH2Bg',
---      'RenderMarkdownH3Bg',
---    },
---  },
---	inline_code = {
---		enabled = true,
---		highlight = 'RenderMarkdownCode',
---  },
---  code = {
---    sign = false,
---    width = 'block',
---    border = 'thick',
---    highlight = 'RenderMarkdownCode',
-    -- This can help with stray backtick artifacts:
---    disable_background = false,
---  },
---})
---vim.api.nvim_set_hl(0, 'RenderMarkdownH1', { fg = '#e06c75', bold = true })
---vim.api.nvim_set_hl(0, 'RenderMarkdownH2', { fg = '#e5c07b', bold = true })
---vim.api.nvim_set_hl(0, 'RenderMarkdownH3', { fg = '#98c379', bold = true })
---vim.api.nvim_set_hl(0, 'RenderMarkdownCode', { bg = '#2d3343' })
+require('render-markdown').setup({
+  preset = 'obsidian',
+  html = { enabled = false },
+  latex = { enabled = false },
+  heading = {
+    backgrounds = { '', '', '', '', '', '' },
+	icons = { '▌ ', '▌ ', '▌ ', '▌ ', '▌ ', '▌ ' },
+  },
+  code = {
+    width = 'block',
+    left_pad = 2,
+    right_pad = 2,
+  },
+})
+
+-- this is the critical fix
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.treesitter.start()
+  end,
+})
 
 -- -----------------------
 -- WHICH-KEY
@@ -427,6 +633,7 @@ dashboard.section.buttons.val = {
   dashboard.button("n", " New file",      ":ene <BAR> startinsert<CR>"),
   dashboard.button("r", " Recent files",  ":lua require('telescope.builtin').oldfiles()<CR>"),
   dashboard.button("t", "󰙅 File tree",    ":NvimTreeToggle<CR>"),
+  dashboard.button("m", "󱡀 Mason",       ":Mason<CR>"),
   dashboard.button("q",  " Quit",          ":qa<CR>"),
 }
 
