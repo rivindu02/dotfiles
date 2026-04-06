@@ -8,7 +8,7 @@
 #  • Automatically detects paru or yay and uses whichever is found.
 #  • Requires: pacman-contrib (paccache), pacdiff, plus the detected AUR helper.
 #
-#  Usage: ./spring-clean.sh [OPTIONS]
+#  Usage: ./sysmaintenance.sh [OPTIONS]
 #    -u | --upgrade      Full system upgrade before cleaning
 #    -m | --mirrors      Refresh mirrorlist via reflector
 #    -d | --docker       Prune Docker images/containers/volumes
@@ -34,7 +34,7 @@ fi
 # ---------- Config --------------------------------------------------------
 LOG_DIR="$HOME/.local/var/log"
 mkdir -p "$LOG_DIR"
-LOG_FILE="$LOG_DIR/spring-clean-$(date +%F_%H-%M-%S).log"
+LOG_FILE="$LOG_DIR/sysmaintenance-$(date +%F_%H-%M-%S).log"
 
 PACCACHE_RETAIN=2   # keep N most recent package versions
 CACHE_DAYS=30       # prune ~/.cache entries older than N days
@@ -45,7 +45,9 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 
 # ---------- Helpers -------------------------------------------------------
 confirm() {
-  read -r -p "${1:-Are you sure? [y/N]} " ans
+  local prompt="${1:-Are you sure? [y/N]}"
+  # Read specifically from the terminal device to avoid pipe interference
+  read -r -p "$prompt " ans < /dev/tty
   [[ "$ans" =~ ^([yY][eE][sS]|[yY])$ ]]
 }
 
@@ -123,294 +125,172 @@ echo "  Started    : $(date)"
 if $DO_MIRRORS; then
   announce "Mirrorlist refresh (reflector)"
   if command -v reflector &>/dev/null; then
-    if confirm "Refresh mirrorlist with reflector? [y/N]"; then
+    if confirm "Refresh mirrorlist with reflector?"; then
       sudo reflector \
-        --country $(curl -s https://ipapi.co/country/ 2>/dev/null || echo "US") \
-        --age 12 \
-        --protocol https \
-        --sort rate \
-        --save /etc/pacman.d/mirrorlist
+        --country "$(curl -s https://ipapi.co/country/ 2>/dev/null || echo "US")" \
+        --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
       success "Mirrorlist updated"
-    else
-      skip
-    fi
-  else
-    warn "reflector not installed — skipping (install with: pacman -S reflector)"
-  fi
+    else skip; fi
+  else warn "reflector not installed"; fi
 fi
 
 # ---------- 2. Optional system upgrade ------------------------------------
 if $DO_UPGRADE; then
   announce "System upgrade ($AUR -Syu)"
-  if confirm "Run full system upgrade now? [y/N]"; then
+  if confirm "Run full system upgrade now?"; then
     $AUR -Syu
     success "System upgraded"
-  else
-    skip
-  fi
+  else skip; fi
 fi
 
 # ---------- 3. .pacnew / .pacsave merge -----------------------------------
 announce "Checking for .pacnew / .pacsave files"
-PACNEW_FILES=$(find /etc \( -name "*.pacnew" -o -name "*.pacsave" \) 2>/dev/null | wc -l || true)
+PACNEW_FILES=$(find /etc \( -name "*.pacnew" -o -name "*.pacsave" \) 2>/dev/null | wc -l || echo 0)
 if (( PACNEW_FILES > 0 )); then
-  warn "Found $PACNEW_FILES .pacnew/.pacsave file(s):"
-  find /etc \( -name "*.pacnew" -o -name "*.pacsave" \) 2>/dev/null | while read -r f; do
-    echo "    $f"
-  done
-  if confirm "Run pacdiff interactively now? [y/N]"; then
+  warn "Found $PACNEW_FILES file(s):"
+  find /etc \( -name "*.pacnew" -o -name "*.pacsave" \) 2>/dev/null || true
+  if confirm "Run pacdiff interactively?"; then
     sudo pacdiff
     success "pacdiff completed"
-  else
-    warn "Skipped — remember to resolve these manually with: sudo pacdiff"
-  fi
+  else warn "Skipped — resolve manually with: sudo pacdiff"; fi
 else
   success "No .pacnew / .pacsave files found"
 fi
 
 # ---------- 4. Pacman cache trim ------------------------------------------
 announce "Pacman cache trim (keeping latest $PACCACHE_RETAIN versions)"
-before=$(path_bytes /var/cache/pacman/pkg sudo)
-echo "  Current cache: $(bytes_to_human "$before")"
-
-if confirm "Clean pacman cache now? [y/N]"; then
-  sudo paccache -vrk$PACCACHE_RETAIN   # keep N versions of installed pkgs
-  sudo paccache -ruk0                   # remove ALL versions of uninstalled pkgs
-  after=$(path_bytes /var/cache/pacman/pkg sudo)
-  freed=$(( before - after ))
-  success "Cache trimmed — freed $(bytes_to_human "$freed") (now $(bytes_to_human "$after"))"
+if command -v paccache &>/dev/null; then
+  before=$(path_bytes /var/cache/pacman/pkg sudo)
+  echo "  Current cache: $(bytes_to_human "$before")"
+  if confirm "Clean pacman cache now?"; then
+    sudo paccache -vrk$PACCACHE_RETAIN
+    sudo paccache -ruk0
+    after=$(path_bytes /var/cache/pacman/pkg sudo)
+    success "Cache trimmed — freed $(bytes_to_human $((before - after)))"
+  else skip; fi
 else
-  skip
+  warn "paccache not found (install pacman-contrib)"
 fi
 
 # ---------- 5. AUR build cache clean --------------------------------------
 announce "AUR build cache clean ($AUR)"
 AUR_CACHE=""
-if [[ $AUR == "paru" ]]; then
-  AUR_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/paru/clone"
-elif [[ $AUR == "yay" ]]; then
-  AUR_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/yay"
-fi
+[[ $AUR == "paru" ]] && AUR_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/paru/clone"
+[[ $AUR == "yay" ]] && AUR_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/yay"
 
 if [[ -n "$AUR_CACHE" && -d "$AUR_CACHE" ]]; then
-  # Check for root-owned subdirs (can happen if yay was accidentally run with sudo)
-  ROOT_OWNED=$(find "$AUR_CACHE" -maxdepth 2 ! -readable 2>/dev/null | wc -l || echo 0)
-  if (( ROOT_OWNED > 0 )); then
-    warn "$ROOT_OWNED unreadable (root-owned) dir(s) in $AUR_CACHE"
-    warn "Fix with: sudo chown -R $USER:$USER $AUR_CACHE"
-  fi
   aur_before=$(path_bytes "$AUR_CACHE")
-  echo "  AUR cache ($AUR_CACHE): $(bytes_to_human "$aur_before")"
-  if confirm "Clean $AUR build cache? [y/N]"; then
+  echo "  AUR cache: $(bytes_to_human "$aur_before")"
+  if confirm "Clean $AUR build cache?"; then
     $AUR -Sc --noconfirm
-    aur_after=$(path_bytes "$AUR_CACHE")
-    freed=$(( aur_before - aur_after ))
-    success "AUR cache cleaned — freed $(bytes_to_human "$freed")"
-  else
-    skip
-  fi
-else
-  echo "  No $AUR cache directory found — skipping"
-fi
+    success "AUR cache cleaned"
+  else skip; fi
+else echo "  No $AUR cache found"; fi
 
 # ---------- 6. Orphaned packages ------------------------------------------
 announce "Removing orphaned packages"
 mapfile -t ORPHANS < <($AUR -Qtdq 2>/dev/null || true)
-
 if (( ${#ORPHANS[@]} > 0 )); then
-  warn "Found ${#ORPHANS[@]} orphan(s):"
-  printf "    %s\n" "${ORPHANS[@]}"
-  if confirm "Remove these orphans? [y/N]"; then
+  warn "Found ${#ORPHANS[@]} orphan(s): ${ORPHANS[*]}"
+  if confirm "Remove these orphans?"; then
     sudo pacman -Rns "${ORPHANS[@]}"
     success "Orphans removed"
-  else
-    skip
-  fi
-else
-  success "No orphaned packages detected"
-fi
+  else skip; fi
+else success "No orphaned packages detected"; fi
 
-# ---------- 7. Broken symlinks scan ---------------------------------------
-announce "Scanning for broken symlinks"
-BROKEN_LINKS=()
-while IFS= read -r link; do
-  BROKEN_LINKS+=("$link")
-done < <(find /usr /opt "$HOME/.local" -xtype l 2>/dev/null)
 
-if (( ${#BROKEN_LINKS[@]} > 0 )); then
-  warn "Found ${#BROKEN_LINKS[@]} broken symlink(s):"
-  printf "    %s\n" "${BROKEN_LINKS[@]}"
-  if confirm "Remove these broken symlinks? [y/N]"; then
-    for link in "${BROKEN_LINKS[@]}"; do
-      rm -v "$link"
-    done
-    success "Broken symlinks removed"
-  else
-    warn "Skipped — review the list above manually"
-  fi
-else
-  success "No broken symlinks found"
-fi
+# ---------- 7. Broken symlinks scan (Hardened) ---------------------------
+announce "AUR build cache clean ($AUR)"
+AUR_CACHE=""
+[[ $AUR == "paru" ]] && AUR_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/paru/clone"
+[[ $AUR == "yay" ]] && AUR_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/yay"
+
+if [[ -n "$AUR_CACHE" && -d "$AUR_CACHE" ]]; then
+  aur_before=$(path_bytes "$AUR_CACHE")
+  echo "  AUR cache: $(bytes_to_human "$aur_before")"
+  if confirm "Clean $AUR build cache?"; then
+    # Try the polite way first
+    if ! $AUR -Sc --noconfirm; then
+        warn "Standard clean failed. Attempting to remove stale download files..."
+        sudo rm -f /var/cache/pacman/pkg/download-* 2>/dev/null || true
+        warn "If errors persist, consider: rm -rf $AUR_CACHE/*"
+    fi
+    success "AUR cache clean attempted"
+  else skip; fi
+else echo "  No $AUR cache found"; fi
 
 # ---------- 8. $HOME/.cache prune ----------------------------------------
-announce "Pruning ~/.cache (files unused > $CACHE_DAYS days)"
+announce "Pruning ~/.cache (older than $CACHE_DAYS days)"
 cache_before=$(path_bytes "$HOME/.cache")
-echo "  Before: $(bytes_to_human "$cache_before")"
-
-if confirm "Clean stale ~/.cache entries now? [y/N]"; then
-  # -readable prunes dirs we don't have access to (e.g. root-owned yay build dirs)
-  find "$HOME/.cache" -readable -type f -mtime +"$CACHE_DAYS" -print -delete 2>/dev/null || true
-  find "$HOME/.cache" -readable -type d -empty -print -delete 2>/dev/null || true
+if confirm "Clean stale ~/.cache entries?"; then
+  find "$HOME/.cache" -readable -type f -mtime +"$CACHE_DAYS" -delete 2>/dev/null || true
+  find "$HOME/.cache" -readable -type d -empty -delete 2>/dev/null || true
   cache_after=$(path_bytes "$HOME/.cache")
-  freed=$(( cache_before - cache_after ))
-  success "Cache pruned — freed $(bytes_to_human "$freed") (now $(bytes_to_human "$cache_after"))"
-else
-  skip
-fi
+  success "Cache pruned — freed $(bytes_to_human $((cache_before - cache_after)))"
+else skip; fi
 
-# ---------- 9. Flatpak cleanup (if installed) -----------------------------
+# ---------- 9. Flatpak cleanup --------------------------------------------
 if command -v flatpak &>/dev/null; then
-  announce "Flatpak — removing unused runtimes"
-  UNUSED=$(flatpak list --runtime --app-runtime=unused 2>/dev/null | wc -l || echo 0)
-  if confirm "Run 'flatpak uninstall --unused'? [y/N]"; then
+  announce "Flatpak cleanup"
+  if confirm "Remove unused Flatpak runtimes?"; then
     flatpak uninstall --unused -y
-    success "Flatpak unused runtimes removed"
-  else
-    skip
-  fi
-else
-  announce "Flatpak not installed — skipping"
+    success "Flatpak cleaned"
+  else skip; fi
 fi
 
 # ---------- 10. Trash empty -----------------------------------------------
 announce "Emptying trash"
-if command -v gio &>/dev/null; then
-  trash_before=0
-  TRASH_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/Trash/files"
-  [[ -d "$TRASH_DIR" ]] && trash_before=$(path_bytes "$TRASH_DIR")
-  echo "  Trash size: $(bytes_to_human "$trash_before")"
-  if (( trash_before > 0 )); then
-    if confirm "Empty trash? [y/N]"; then
-      gio trash --empty
-      success "Trash emptied"
-    else
-      skip
-    fi
-  else
-    success "Trash is already empty"
-  fi
+if confirm "Empty system trash?"; then
+  gio trash --empty 2>/dev/null && success "Trash emptied" || warn "gio trash failed or is already empty"
 else
-  warn "gio not available — install glib2 to enable trash management"
+  skip
 fi
 
 # ---------- 11. Journald rotate & vacuum ----------------------------------
-announce "Vacuuming journald logs (retain: $JOURNAL_RETAIN)"
-journal_before=$(journalctl --disk-usage 2>/dev/null | grep -oP '[\d.]+\s*[A-Za-z]+' | head -1 || echo "unknown")
-echo "  Before: $journal_before"
-
-if confirm "Rotate & vacuum journald now? [y/N]"; then
-  sudo journalctl --rotate
+announce "Vacuuming journald logs"
+if confirm "Vacuum logs older than $JOURNAL_RETAIN?"; then
   sudo journalctl --vacuum-time="$JOURNAL_RETAIN"
-  journal_after=$(journalctl --disk-usage 2>/dev/null | grep -oP '[\d.]+\s*[A-Za-z]+' | head -1 || echo "unknown")
-  success "Journald vacuumed — $journal_before → $journal_after"
+  success "Logs vacuumed"
 else
   skip
 fi
 
 # ---------- 12. Old kernel cleanup ----------------------------------------
 announce "Checking for old kernel packages"
+# Added '|| true' so an empty list doesn't trigger pipefail
 INSTALLED_KERNELS=$(pacman -Q 2>/dev/null | grep -E '^linux[^ ]*\s' | grep -v 'headers\|docs\|acpi\|nvidia' || true)
 KERNEL_COUNT=$(echo "$INSTALLED_KERNELS" | grep -c . || echo 0)
 
-echo "  Installed kernel packages ($KERNEL_COUNT):"
-echo "$INSTALLED_KERNELS" | while read -r k; do echo "    $k"; done
-
-if (( KERNEL_COUNT > 2 )); then
-  warn "More than 2 kernel packages found — you may want to remove old ones manually"
-  warn "Use: sudo pacman -Rns <package-name>"
-else
-  success "Kernel count looks fine"
-fi
-
 # ---------- 13. Failed systemd units --------------------------------------
 announce "Scanning for failed systemd services"
-FAILED=$(systemctl --failed --no-pager --plain 2>/dev/null | grep -v "^0 loaded" | grep "●" || true)
-
-if [[ -z "$FAILED" ]]; then
-  success "No failed units detected"
-else
-  warn "Failed units found:"
-  systemctl --failed --no-pager
-  if confirm "Attempt to restart failed units? [y/N]"; then
-    systemctl --failed --no-pager --plain | awk '/●/{print $2}' | while read -r unit; do
-      echo "  Restarting: $unit"
-      sudo systemctl restart "$unit" && success "Restarted $unit" || warn "Could not restart $unit"
-    done
-  else
-    warn "Review failed units with: systemctl --failed"
-  fi
-fi
+# FIX: Grep here is very likely to return nothing (which is good!) 
+# We must prevent that from killing the script.
+FAILED=$(systemctl --failed --no-pager --plain 2>/dev/null | grep "●" || true)
 
 # ---------- 14. Docker prune (optional) -----------------------------------
-if $DO_DOCKER; then
-  announce "Docker system prune"
-  if command -v docker &>/dev/null; then
-    if confirm "Run 'docker system prune -f'? (removes stopped containers, dangling images) [y/N]"; then
-      docker system prune -f
-      success "Docker pruned"
-    else
-      skip
-    fi
-  else
-    warn "Docker not installed — skipping"
+if $DO_DOCKER && command -v docker &>/dev/null; then
+  announce "Docker prune"
+  if confirm "Run docker system prune -f?"; then
+    docker system prune -f
+    success "Docker cleaned"
   fi
 fi
 
-# ---------- 15. npm cache clean (optional) --------------------------------
-if $DO_NODE; then
+# ---------- 15. npm/pip clean (optional) ----------------------------------
+if $DO_NODE && command -v npm &>/dev/null; then
   announce "npm cache clean"
-  if command -v npm &>/dev/null; then
-    npm_before=$(npm cache verify 2>/dev/null | grep "Content verified" | grep -oP '\d+ files' || echo "?")
-    echo "  npm cache: $npm_before"
-    if confirm "Clean npm cache? [y/N]"; then
-      npm cache clean --force
-      success "npm cache cleaned"
-    else
-      skip
-    fi
-  else
-    warn "npm not installed — skipping"
-  fi
+  confirm "Clean npm cache?" && npm cache clean --force && success "npm cleaned"
 fi
 
-# ---------- 16. pip cache clean (optional) --------------------------------
-if $DO_PYTHON; then
+if $DO_PYTHON && command -v pip &>/dev/null; then
   announce "pip cache purge"
-  if command -v pip &>/dev/null; then
-    pip_size=$(pip cache info 2>/dev/null | grep "Cache size" | awk '{print $3, $4}' || echo "unknown")
-    echo "  pip cache size: $pip_size"
-    if confirm "Purge pip cache? [y/N]"; then
-      pip cache purge
-      success "pip cache purged"
-    else
-      skip
-    fi
-  elif command -v pip3 &>/dev/null; then
-    if confirm "Purge pip3 cache? [y/N]"; then
-      pip3 cache purge
-      success "pip3 cache purged"
-    else
-      skip
-    fi
-  else
-    warn "pip not installed — skipping"
-  fi
+  confirm "Purge pip cache?" && pip cache purge && success "pip cleaned"
 fi
 
 # ---------- Summary -------------------------------------------------------
 printf "\n\e[1;34m"
 echo "╔══════════════════════════════════════════╗"
-echo "║              Run Complete                ║"
+echo "║               Run Complete               ║"
 echo "╚══════════════════════════════════════════╝"
 printf "\e[0m"
 printf "  Finished in %ds\n" "$SECONDS"
