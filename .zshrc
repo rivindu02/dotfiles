@@ -14,7 +14,7 @@ export ZSH="$HOME/.oh-my-zsh"
 
 export LANG=en_US.UTF-8
 
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+export JAVA_HOME=/usr/lib/jvm/java-26-openjdk
 export PATH="$JAVA_HOME/bin:$HOME/.local/bin:$PATH"
 
 
@@ -162,7 +162,7 @@ alias nv="nvim"
 
 export TERMINAL=ghostty
 export TERM_PROGRAM=ghostty
-export TERM=xterm-256color
+#export TERM=xterm-256color
 export EDITOR=nvim
 export VISUAL=nvim
 
@@ -188,7 +188,12 @@ alias ai-kimi="aider -c ~/.config/aider/aider.kimi.yml"
 OLLAMA_BASE="http://100.70.177.46:11434"
 alias ai-7b="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/qwen2.5-coder:7b"
 alias ai-3b="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/qwen2.5-coder:3b"
-alias ai-deepseek-op="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/qwen2.5-coder:7b"
+alias ai-gemma2="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/gemma4:e2b"
+alias ai-deepseek-op="OLLAMA_API_BASE=$OLLAMA_BASE aider --novaforgeai/deepseek-coder:6.7b-optimized"
 alias ai-deepseek="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/deepseek-coder:6.7b-instruct-q4_K_M"
+alias ai-gemma4="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/gemma4:e4b"
 
-
+# OPENCLAUDE (agentic, via Ollama)
+alias oc-gemma="CLAUDE_CODE_USE_OPENAI=1 OPENAI_API_KEY=ollama OPENAI_BASE_URL=$OLLAMA_BASE/v1 OPENAI_MODEL=gemma4:e2b openclaude"
+alias oc-3b="CLAUDE_CODE_USE_OPENAI=1 OPENAI_API_KEY=ollama OPENAI_BASE_URL=$OLLAMA_BASE/v1 OPENAI_MODEL=qwen2.5-coder:3b openclaude"
+alias oc-7b="CLAUDE_CODE_USE_OPENAI=1 OPENAI_API_KEY=ollama OPENAI_BASE_URL=$OLLAMA_BASE/v1 OPENAI_MODEL=qwen2.5-coder:7b openclaude"
