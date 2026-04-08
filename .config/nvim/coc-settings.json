@@ -45,5 +45,7 @@
     "interface": "\uf417",
     "enum": "\uf15d",
     "keyword": "\uf1de"
-  }
+  },
+  "suggest.autoTrigger": "always",
+  "suggest.minTriggerInputLength": 1
 }
