@@ -13,12 +13,12 @@
   ],
   "modules-right": [
     "pulseaudio",
-	"backlight",
+    "backlight",
     "memory",
     "battery",
-	"network",	
+    "network",
     "tray",
-	"custom/power"
+    "custom/power"
   ],
   "hyprland/workspaces": {
     "format": "{icon}",
@@ -35,38 +35,59 @@
       "*": 5
     }
   },
+  "hyprland/window": {
+    "format": "{}",
+    "max-length": 40,
+    "separate-outputs": true
+  },
   "clock": {
     "format": " {:%a %b %d  %I:%M %p}",
-	"tooltip": false,
-	"on-click": "brave --profile-directory=Default --app-id=kjbdgfilnfhdoflbpgamdcdgpehopbep"
+    "tooltip": false,
+    "on-click": "brave --profile-directory=Default --app-id=kjbdgfilnfhdoflbpgamdcdgpehopbep"
   },
-"memory": {
+  "memory": {
     "format": "󰍛 {}%",
+    "tooltip-format": "{used:0.1f}G / {total:0.1f}G",
     "on-click": "ghostty --class=btop -e btop"
-},
-"battery": {
+  },
+  "battery": {
     "states": {
-        "warning": 30,
-        "critical": 15
+      "warning": 30,
+      "critical": 15
     },
     "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
     "format-icons": ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󰁹"],
-	"on-click": "~/.config/scripts/power-toggle.sh",
-    "on-click-right":"Profile: $(powerprofilesctl get)\n{timeTo}"
-	},
+    "tooltip-format": "{timeTo}",
+    "on-click": "~/.config/scripts/power-toggle.sh"
+  },
   "pulseaudio": {
     "format": "{icon} {volume}%",
     "format-muted": "󰝟 Muted",
     "format-icons": {
-      "default": [
-        "󰕿",
-        "󰖀",
-        "󰕾"
-      ]
+      "default": ["󰕿","󰖀","󰕾"]
     },
+    "tooltip-format": "{desc}",
     "on-click": "pavucontrol",
-	"on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ -5%",
+    "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ -5%",
 	"on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ +5% && pactl set-sink-volume @DEFAULT_SINK@ 100%"
+  },
+  "network": {
+    "interval": 2,
+    "format-wifi": "󰇚 {bandwidthDownBytes}",
+    "format-ethernet": "󰇚 {bandwidthDownBytes}",
+    "format-disconnected": "󰤭",
+    "tooltip-format-wifi": "{essid}  {signalStrength}%",
+    "tooltip-format-ethernet": "{ifname}",
+    "tooltip-format-disconnected": "Disconnected",
+    "on-click": "nm-connection-editor"
+  },
+  "backlight": {
+    "format": "{icon} {percent}%",
+    "format-icons": ["󰃞","󰃟","󰃠"],
+    "on-scroll-up": "brightnessctl set 5%-",
+    "on-scroll-down": "brightnessctl set 5%+",
+    "tooltip": false
   },
   "tray": {
     "spacing": 8
@@ -83,35 +104,17 @@
       "inhibited-none": "󰪑",
       "dnd-inhibited-notification": "󰂛",
       "dnd-inhibited-none": "󰪑"
-	  },
-	 "return-type": "json",
-	 "exec-if": "which swaync-client",
-	 "exec": "swaync-client -swb",
-	 "on-click": "swaync-client -t -sw",
-	 "on-click-right": "swaync-client -d -sw",
-	 "escape": true
-	},
-	"network": {
-		"interval": 2,
-		"format-wifi": "󰇚 {bandwidthDownBytes}",
-		"format-ethernet": "󰇚 {bandwidthDownBytes}",
-		"format-disconnected": "󰤭",
-		"tooltip-format-wifi": "{essid} {signalStrength}%",
-		"tooltip-format-ethernet": "{ifname}",
-		"tooltip-format-disconnected": "Disconnected",
-		"on-click": "nm-connection-editor"
-	},
+    },
+    "return-type": "json",
+    "exec-if": "which swaync-client",
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true
+  },
   "custom/power": {
     "format": "⏻",
     "tooltip": false,
-    "on-click": "~/.config/rofi/powermenu/type-1/powermenu.sh" 
-	},
-  "backlight": {
-    "format": "{icon} {percent}%",
-    "format-icons": ["󰃞","󰃟","󰃠"],
-    "on-scroll-up": "brightnessctl set 5%-",
-    "on-scroll-down": "brightnessctl set 5%+",
-    "tooltip": false
-	},
-
+    "on-click": "~/.config/rofi/powermenu/type-1/powermenu.sh"
+  }
 }

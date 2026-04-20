@@ -1,52 +1,154 @@
-* { font-family: "Caskaydia Mono Nerd Font Propo"; font-size: 16px; }
+/* ═══════════════════════════════════════════════════════════════
+   Waybar — One Dark Warm (navarasu/onedark.nvim)
+   bg0     : #2c2d30   bg1 : #35373b   bg_d : #242628
+   fg      : #b1b4b9   grey: #646568   light_grey: #8b8d91
+   red     : #e16d77   green: #99bc80  orange: #c99a6e
+   blue    : #68aee8   yellow: #dfbe81 cyan  : #5fafb9
+   purple  : #c27fd7   black : #191a1c
+   ═══════════════════════════════════════════════════════════════ */
 
-window#waybar {
-  background: rgba(30, 30, 46, 0.85);
-  border-bottom: 2px solid rgba(203, 166, 247, 0.4);
-  color: #cdd6f4;
+* {
+  font-family: "Caskaydia Mono Nerd Font Propo";
+  font-size: 14px;
+  min-height: 0;
 }
 
+window#waybar {
+  background: rgba(24, 26, 28, 0.85);
+  border-bottom: 1px solid rgba(194, 127, 215, 0.30);
+  color: #b1b4b9;
+}
+
+/* ── Workspaces ─────────────────────────────────────────────── */
 #workspaces button {
   padding: 0 8px;
-  color: #6c7086;
+  color: #646568;
   background: transparent;
   border-radius: 6px;
   margin: 4px 2px;
   transition: all 0.2s;
+  border: none;
 }
-#workspaces button.active {
-  color: #cba6f7;
-  background: rgba(203,166,247,0.15);
-}
-#workspaces button:hover { color: #cdd6f4; background: rgba(255,255,255,0.08); }
 
-#clock { color: #89b4fa; font-weight: bold; padding: 0 12px; }
-#memory { color: #fab387; padding: 0 8px; }
-#battery { color: #a6e3a1; padding: 0 8px; }
-#battery.warning { color: #f9e2af; }
-#battery.critical { color: #f38ba8; }
-#network { color: #89dceb; padding: 0 8px; }
-#pulseaudio { color: #f5c2e7; padding: 0 8px; }
-#tray { padding: 0 8px; }
-#custom-notification { color: #f5c2e7; padding: 0 6px; }
-#custom-power {
-    color: #f38ba8;
-    padding: 0 10px;
-    font-size: 15px;
-    border-radius: 6px;
-    margin: 4px 2px;
+#workspaces button.active {
+  color: #c27fd7;
+  background: rgba(194, 127, 215, 0.15);
 }
-#custom-power:hover {
-    color: #ffffff;
-    background: rgba(243, 139, 168, 0.2);
-    border-radius: 2px;
+
+#workspaces button:hover {
+  color: #b1b4b9;
+  background: rgba(255, 255, 255, 0.06);
 }
+
+#workspaces button.urgent {
+  color: #191a1c;
+  background: #e16d77;
+}
+
+/* ── Clock ──────────────────────────────────────────────────── */
+#clock {
+  color: #dfbe81;
+  font-weight: bold;
+  padding: 0 12px;
+}
+
+/* ── System modules ─────────────────────────────────────────── */
+#memory {
+  color: #c99a6e;
+  padding: 0 8px;
+}
+
+#battery {
+  color: #99bc80;
+  padding: 0 8px;
+}
+
+#battery.warning {
+  color: #dfbe81;
+}
+
+#battery.critical {
+  color: #e16d77;
+}
+
+#battery.charging {
+  color: #99bc80;
+}
+
 #network {
-    color: #89dceb;
-    padding: 0 8px;
+  color: #5fafb9;
+  padding: 0 8px;
 }
+
+#network.disconnected {
+  color: #646568;
+}
+
+#pulseaudio {
+  color: #68aee8;
+  padding: 0 8px;
+}
+
+#pulseaudio.muted {
+  color: #646568;
+}
+
 #backlight {
-    color: #f9e2af;
-    padding: 0 8px;
+  color: #dfbe81;
+  padding: 0 8px;
+}
+
+#tray {
+  padding: 0 8px;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: rgba(225, 109, 119, 0.20);
+  border-radius: 4px;
+}
+
+/* ── Notification bell ──────────────────────────────────────── */
+#custom-notification {
+  color: #c27fd7;
+  padding: 0 8px;
+}
+
+/* ── Power button ───────────────────────────────────────────── */
+#custom-power {
+  color: #e16d77;
+  padding: 0 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+}
+
+#custom-power:hover {
+  color: #b1b4b9;
+  background: rgba(225, 109, 119, 0.18);
+}
+
+/* ── Window title ───────────────────────────────────────────── */
+#window {
+  color: #8b8d91;
+  padding: 0 8px;
+  font-style: italic;
+}
+
+/* ── Tooltip ────────────────────────────────────────────────── */
+tooltip {
+  background: rgba(24, 26, 28, 0.95);
+  border: 1px solid rgba(194, 127, 215, 0.30);
+  border-radius: 8px;
+  color: #b1b4b9;
+}
+
+tooltip label {
+  color: #b1b4b9;
 }
 
