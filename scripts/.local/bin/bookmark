@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────────────────────────
+# brave-bookmarks.sh  —  Rofi bookmark launcher + manager for Brave
+# ─────────────────────────────────────────────────────────────────────────────
+# Dependencies: rofi, jq, python3
+
+ROFI_THEME="$HOME/.config/rofi/launchers/type-1/style.rasi"
+BOOKMARKS_JSON="$HOME/.config/BraveSoftware/Brave-Browser/Default/Bookmarks"
+
+# ── Brave binary ──────────────────────────────────────────────────────────────
+BRAVE_BIN=""
+for b in brave brave-browser brave-browser-stable brave-browser-nightly; do
+    command -v "$b" &>/dev/null && { BRAVE_BIN="$b"; break; }
+done
+[[ -z "$BRAVE_BIN" ]] && { notify-send "brave-bookmarks" "Brave not found"; exit 1; }
+
+[[ ! -f "$BOOKMARKS_JSON" ]] && {
+    notify-send "brave-bookmarks" "Bookmarks file not found:\n$BOOKMARKS_JSON"
+    exit 1
+}
+
+# ── Strip scheme + www, keep clean domain + path (max 55 chars) ──────────────
+pretty_url() {
+    echo "$1" \
+        | sed 's|https\?://||; s|^www\.||; s|/$||' \
+        | cut -c1-55
+}
+
+# ── Derive a display name from URL when bookmark name is empty ───────────────
+name_from_url() {
+    local url="$1"
+    # Extract just the domain, strip TLD for readability
+    echo "$url" \
+        | sed 's|https\?://||; s|^www\.||' \
+        | cut -d'/' -f1 \
+        | sed 's|\.[^.]*$||'   # drop last .tld
+}
+
+# ── Flatten entire bookmark tree → "URL<TAB>Name" per line ───────────────────
+get_bookmarks() {
+    jq -r '
+        def recurse_nodes:
+            if   .type == "url"    then "\(.url)\t\(.name)"
+            elif .type == "folder" then (.children // [] | .[] | recurse_nodes)
+            else empty end;
+        .roots | to_entries[].value | recurse_nodes
+    ' "$BOOKMARKS_JSON" 2>/dev/null
+}
+
+# ── Add a new bookmark ────────────────────────────────────────────────────────
+add_bookmark() {
+    local raw_input="$1"
+
+    # Resolve URL
+    local url
+    if   echo "$raw_input" | grep -qP '^\s*https?://'; then
+        url="$raw_input"
+    elif echo "$raw_input" | grep -qP '^\s*[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/|$)'; then
+        url="https://$raw_input"
+    else
+        local encoded
+        encoded=$(python3 -c \
+            "import urllib.parse,sys; print(urllib.parse.quote_plus(sys.argv[1]))" \
+            "$raw_input")
+        url="https://duckduckgo.com/?q=${encoded}"
+    fi
+
+    # Suggest a name derived from the URL
+    local suggested_name
+    suggested_name=$(name_from_url "$url")
+    # Capitalise first letter
+    suggested_name="$(tr '[:lower:]' '[:upper:]' <<< "${suggested_name:0:1}")${suggested_name:1}"
+
+    # Ask user to confirm / edit the name
+    local bname
+    bname=$(rofi -dmenu \
+        -theme "$ROFI_THEME" \
+        -p "  Name" \
+        -filter "$suggested_name" \
+        -mesg "  URL: $(pretty_url "$url")" \
+        < /dev/null)
+    [[ -z "$bname" ]] && return
+
+    # Write into Bookmarks JSON (Other bookmarks folder)
+    python3 - "$BOOKMARKS_JSON" "$url" "$bname" <<'PYEOF'
+import json, sys, time, shutil, uuid
+
+bm_file, url, name = sys.argv[1], sys.argv[2], sys.argv[3]
+shutil.copy2(bm_file, bm_file + ".bak")
+
+with open(bm_file, "r", encoding="utf-8") as f:
+    data = json.load(f)
+
+new_node = {
+    "date_added":     str(int(time.time() * 1000000)),
+    "date_last_used": "0",
+    "guid":           str(uuid.uuid4()),
+    "id":             "99999",
+    "name":           name,
+    "type":           "url",
+    "url":            url,
+}
+
+data["roots"]["other"].setdefault("children", []).append(new_node)
+
+with open(bm_file, "w", encoding="utf-8") as f:
+    json.dump(data, f, ensure_ascii=False, indent=3)
+PYEOF
+
+    notify-send "Bookmark saved" "$bname\n$url"
+    "$BRAVE_BIN" "$url" &
+}
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+main() {
+    declare -a labels urls
+
+    while IFS=$'\t' read -r url name; do
+        [[ -z "$url" ]] && continue
+
+        # Fall back to a domain-derived name if the bookmark name is blank
+        if [[ -z "$name" ]]; then
+            name=$(name_from_url "$url")
+            # Capitalise
+            name="$(tr '[:lower:]' '[:upper:]' <<< "${name:0:1}")${name:1}"
+        fi
+
+        local purl
+        purl=$(pretty_url "$url")
+
+        # "Name                                     —  domain.com/path"
+        labels+=("$(printf '%-40s  —  %s' "$name" "$purl")")
+        urls+=("$url")
+    done < <(get_bookmarks)
+
+    local chosen
+    chosen=$(printf '%s\n' "${labels[@]}" | rofi -dmenu \
+        -theme "$ROFI_THEME" \
+        -p "  Bookmarks" \
+        -mesg "  Select to open  ·  type a URL or search term to add a new bookmark" \
+        -i)
+
+    [[ -z "$chosen" ]] && exit 0
+
+    # Match against label list
+    local matched_url=""
+    for i in "${!labels[@]}"; do
+        if [[ "${labels[$i]}" == "$chosen" ]]; then
+            matched_url="${urls[$i]}"
+            break
+        fi
+    done
+
+    if [[ -n "$matched_url" ]]; then
+        "$BRAVE_BIN" "$matched_url" &
+    else
+        add_bookmark "$chosen"
+    fi
+}
+
+main

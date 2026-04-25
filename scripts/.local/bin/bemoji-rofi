@@ -1,0 +1,3 @@
+#!/bin/bash
+export BEMOJI_PICKER_CMD="rofi -dmenu -p '󰞅 Emoji' -theme ~/.config/rofi//launchers/type-1/style.rasi"
+bemoji -c

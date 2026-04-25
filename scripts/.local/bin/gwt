@@ -1,0 +1,67 @@
+#!/bin/bash
+# ~/.local/bin/gwt
+
+# Check if we're in a git repo
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "❌ Error: Not a git repository."
+    exit 1
+fi
+
+REPO_NAME=$(basename $(git rev-parse --show-toplevel))
+BASE_DIR=$(dirname $(git rev-parse --show-toplevel))
+MAIN_DOTENV="$(git rev-parse --show-toplevel)/.env"
+
+# Logic to handle subcommands
+case "$1" in
+  add)
+    BRANCH="${2:?Usage: gwt add <branch>}"
+    SAFE_BRANCH="${BRANCH//\//-}"
+    WORKTREE_PATH="$BASE_DIR/${REPO_NAME}__${SAFE_BRANCH}"
+    
+    echo "🛠️  Adding worktree for existing branch: $BRANCH"
+    git worktree add "$WORKTREE_PATH" "$BRANCH"
+    ;;
+
+  new)
+    BRANCH="${2:?Usage: gwt new <branch>}"
+    SAFE_BRANCH="${BRANCH//\//-}"
+    WORKTREE_PATH="$BASE_DIR/${REPO_NAME}__${SAFE_BRANCH}"
+
+    echo "🌱 Creating new branch and worktree: $BRANCH"
+    git worktree add -b "$BRANCH" "$WORKTREE_PATH"
+    ;;
+
+  ls)
+    git worktree list
+    exit 0
+    ;;
+
+  rm)
+    BRANCH="${2:?Usage: gwt rm <branch>}"
+    SAFE_BRANCH="${BRANCH//\//-}"
+    WORKTREE_PATH="$BASE_DIR/${REPO_NAME}__${SAFE_BRANCH}"
+    
+    git worktree remove "$WORKTREE_PATH"
+    git worktree prune
+    echo "🗑️  Removed: $WORKTREE_PATH"
+    exit 0
+    ;;
+
+  *)
+    echo "Usage: gwt [add|new|ls|rm] <branch>"
+    exit 1
+    ;;
+esac
+
+# --- Post-Setup Actions (Only for 'add' and 'new') ---
+
+# 1. Copy .env if it exists
+if [ -f "$MAIN_DOTENV" ]; then
+    cp "$MAIN_DOTENV" "$WORKTREE_PATH/"
+    echo "📝 Copied .env to workspace"
+fi
+
+# 2. Open in Ghostty (Optional - remove if you don't want a new window)
+ghostty --working-directory="$WORKTREE_PATH" & 
+
+echo "✅ Done! Workspace at: $WORKTREE_PATH"
