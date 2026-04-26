@@ -137,7 +137,6 @@ main() {
     chosen=$(printf '%s\n' "${labels[@]}" | rofi -dmenu \
         -theme "$ROFI_THEME" \
         -p "  Bookmarks" \
-        -mesg "  Select to open  ·  type a URL or search term to add a new bookmark" \
         -i)
 
     [[ -z "$chosen" ]] && exit 0
