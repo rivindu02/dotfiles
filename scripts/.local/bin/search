@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# --- Config ---
+ROFI_THEME="$HOME/.config/rofi/launchers/type-1/style.rasi"
+
+# Get search query from rofi
+query=$(rofi \
+    -dmenu \
+    -p "Search" \
+    -theme "$ROFI_THEME")
+
+[ -z "$query" ] && exit 0
+
+# URL encode the query
+encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$query'))")
+
+# Open in Brave
+brave --new-tab "https://search.brave.com/search?q=$encoded" 2>/dev/null

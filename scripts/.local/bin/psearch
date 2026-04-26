@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# --- Config ---
+ROFI_THEME="$HOME/.config/rofi/launchers/type-1/style.rasi"
+
+query=$(rofi \
+    -dmenu \
+    -p "Search" \
+    -mesg "Private Search" \
+    -theme "$ROFI_THEME")
+
+[ -z "$query" ] && exit 0
+
+encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$query'))")
+
+brave --incognito "https://search.brave.com/search?q=$encoded" 2>/dev/null
