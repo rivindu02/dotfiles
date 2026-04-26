@@ -1,34 +1,32 @@
 #!/usr/bin/env bash
-
 # --- Config ---
 NOTES_DIR="$HOME/Documents/QuickNotes"
 EDITOR_CMD="nvim"
 ROFI_THEME="$HOME/.config/rofi/launchers/type-1/style.rasi"
-
 mkdir -p "$NOTES_DIR"
 
-# List notes
-options=$(ls "$NOTES_DIR" | sed 's/\.md$//')
-new_note_option="󰎚  New Writ"
+# List notes (strip .md)
+options=$(ls "$NOTES_DIR" 2>/dev/null | sed 's/\.md$//')
 
 # Rofi Menu
-choice=$(echo -e "$new_note_option\n$options" | rofi \
-    -dmenu \
-    -i \
-    -p "Writ" \
-    -theme "$ROFI_THEME")
+choice=$(echo "$options" | rofi \
+	-dmenu \
+	-i \
+	-p "Writ" \
+	-theme "$ROFI_THEME")
 
-if [ -z "$choice" ]; then
-    exit 0
+[ -z "$choice" ] && exit 0
+
+NOTE_PATH="$NOTES_DIR/$choice.md"
+
+if [ ! -f "$NOTE_PATH" ]; then
+	# Typed something that doesn't exist — confirm creation
+	confirm=$(echo -e "Yes\nNo" | rofi \
+		-dmenu \
+		-p "New?" \
+		-mesg "Create a new Writ '$choice'?" \
+		-theme "$ROFI_THEME")
+	[ "$confirm" != "Yes" ] && exit 0
 fi
 
-# Launch Logic
-if [ "$choice" == "$new_note_option" ]; then
-    title=$(rofi -dmenu -p "Title" -theme "$ROFI_THEME")
-    if [ -n "$title" ]; then
-        # Use --class= (with the equals sign) for Ghostty
-        ghostty --class=writ_float -e "$EDITOR_CMD" "$NOTES_DIR/$title.md" 2>/dev/null
-    fi
-else
-    ghostty --class=writ_float -e "$EDITOR_CMD" "$NOTES_DIR/$choice.md" 2>/dev/null
-fi
+ghostty --class=writ_float -e "$EDITOR_CMD" "$NOTE_PATH" 2>/dev/null
