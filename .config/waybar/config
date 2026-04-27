@@ -59,7 +59,7 @@
     "format-charging": "󰂄 {capacity}%",
     "format-icons": ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󰁹"],
     "tooltip-format": "{timeTo}",
-    "on-click": "~/.config/scripts/power-toggle.sh"
+    "on-click": "$HOME/.local/bin/power-toggle"
   },
   "pulseaudio": {
     "format": "{icon} {volume}%",
@@ -69,8 +69,8 @@
     },
     "tooltip-format": "{desc}",
     "on-click": "pavucontrol",
-    "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ -5%",
-	"on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ +5% && pactl set-sink-volume @DEFAULT_SINK@ 100%"
+    "on-scroll-down": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
+	"on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
   },
   "network": {
     "interval": 2,
@@ -115,6 +115,6 @@
   "custom/power": {
     "format": "⏻",
     "tooltip": false,
-    "on-click": "~/.config/rofi/powermenu/type-1/powermenu.sh"
+    "on-click": "$HOME/.local/bin/powermenu"
   }
 }
