@@ -1,3 +1,5 @@
+[[ $- != *i* ]] && return # fiz for aliase error in openclaude
+
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 # ===========================================================
 # 1) Powerlevel10k instant prompt (must stay at top)
@@ -14,9 +16,39 @@ export ZSH="$HOME/.oh-my-zsh"
 
 export LANG=en_US.UTF-8
 
-export JAVA_HOME=/usr/lib/jvm/java-26-openjdk
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 export PATH="$JAVA_HOME/bin:$HOME/.local/bin:$PATH"
 
+# ── Gemini (Google AI Studio - Free tier) ──────────
+
+export CLAUDE_CODE_USE_OPENAI=1  
+export OPENAI_API_KEY="$(cat ~/.secrets/gemini 2>/dev/null)"
+export OPENAI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
+export OPENAI_MODEL="gemini-flash-latest"
+
+oc-gemini(){
+	export OPENAI_API_KEY="$(cat ~/.secrets/gemini 2>/dev/null)"
+	export OPENAI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
+	export OPENAI_MODEL="gemini-flash-latest"
+}
+oc-gemini2(){
+	export OPENAI_API_KEY="$(cat ~/.secrets/gemini2 2>/dev/null)"
+	export OPENAI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
+	export OPENAI_MODEL="gemini-flash-latest"
+}
+# ── OpenRouter: Llama 4 Maverick (free, fast) ─────────
+oc-open() {
+  export OPENAI_API_KEY="$(cat ~/.secrets/openroute 2>/dev/null)"
+  export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
+  export OPENAI_MODEL="openrouter/auto"
+  echo "OpenClaude → OpenRouter Auto (free)"
+}
+oc-open2() {
+  export OPENAI_API_KEY="$(cat ~/.secrets/openroute2 2>/dev/null)"
+  export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
+  export OPENAI_MODEL="openrouter/auto"
+  echo "OpenClaude → OpenRouter Auto (free)"
+}
 
 # ===========================================================
 # 3) Oh My Zsh configuration
@@ -146,6 +178,7 @@ alias ga="git add"
 alias gc="git commit"
 alias gco="git checkout"
 alias gl="git log --oneline --graph --decorate"
+unalias gwt
 
 
 # ===========================================================
@@ -189,11 +222,13 @@ OLLAMA_BASE="http://100.70.177.46:11434"
 alias ai-7b="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/qwen2.5-coder:7b"
 alias ai-3b="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/qwen2.5-coder:3b"
 alias ai-gemma2="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/gemma4:e2b"
+alias ai-gemma="aider --openai-api-base 'http://100.70.177.46:11434/v1' --openai-api-key ollama --model openai/gemma4:e2b --map-tokens 0 --timeout 600"
 alias ai-deepseek-op="OLLAMA_API_BASE=$OLLAMA_BASE aider --novaforgeai/deepseek-coder:6.7b-optimized"
 alias ai-deepseek="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/deepseek-coder:6.7b-instruct-q4_K_M"
 alias ai-gemma4="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/gemma4:e4b"
 
 # OPENCLAUDE (agentic, via Ollama)
+
 alias oc-gemma="CLAUDE_CODE_USE_OPENAI=1 OPENAI_API_KEY=ollama OPENAI_BASE_URL=$OLLAMA_BASE/v1 OPENAI_MODEL=gemma4:e2b openclaude"
 alias oc-3b="CLAUDE_CODE_USE_OPENAI=1 OPENAI_API_KEY=ollama OPENAI_BASE_URL=$OLLAMA_BASE/v1 OPENAI_MODEL=qwen2.5-coder:3b openclaude"
 alias oc-7b="CLAUDE_CODE_USE_OPENAI=1 OPENAI_API_KEY=ollama OPENAI_BASE_URL=$OLLAMA_BASE/v1 OPENAI_MODEL=qwen2.5-coder:7b openclaude"
