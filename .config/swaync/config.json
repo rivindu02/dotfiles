@@ -10,27 +10,27 @@
   "timeout-critical": 0,
   "widgets": [
     "title",
-    "dnd",
     "label#gcal-header",
     "label#gcal-events",
     "mpris",
-    "notifications"
+    "notifications",
+    "dnd"
   ],
   "widget-config": {
     "title": {
       "text": "Notifications",
       "clear-all-button": true,
-      "button-text": "Clear All"
+      "button-text": "󰃯 Clear All"
     },
     "dnd": {
       "text": "Do Not Disturb"
     },
     "label#gcal-header": {
-      "text": "󰃭  Upcoming Events",
+      "text": "󰃭 Upcoming Events",
       "markup": false
     },
     "label#gcal-events": {
-      "text": "Today 09:30  •  P8 Proudct Standup\nTomorrow 09:30  •  P8 Proudct Standup\nTomorrow 10:00  •  AI Code Analysis",
+      "text": "Today 09:30  •  P8 Proudct Standup\nTomorrow 09:30  •  P8 Proudct Standup\nTomorrow 10:00  •  AI code analysis\nTomorrow 10:00  •  P8 Product Sprint Retrospect…\nWed Apr 29 09:30  •  P8 Proudct Standup",
       "markup": false
     },
     "mpris": {
