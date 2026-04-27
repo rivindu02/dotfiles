@@ -34,6 +34,9 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
+" Search & Replace
+Plug 'nvim-pack/nvim-spectre'
+
 " LSP / Completion
 "Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'neovim/nvim-lspconfig'
@@ -52,6 +55,9 @@ Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
 "Plug 'alvan/vim-closetag'
 Plug 'windwp/nvim-ts-autotag'
 Plug 'lepture/vim-jinja'
+Plug 'stevearc/conform.nvim'
+Plug 'mfussenegger/nvim-lint'
+Plug 'rafamadriz/friendly-snippets'
 
 Plug 'folke/todo-comments.nvim'
 Plug 'norcalli/nvim-colorizer.lua'
@@ -60,7 +66,11 @@ Plug 'norcalli/nvim-colorizer.lua'
 Plug 'voldikss/vim-floaterm'
 
 " Tags / Outline (legacy but useful)
-Plug 'preservim/tagbar'
+"Plug 'preservim/tagbar'
+" Replace Tagbar with these:
+Plug 'stevearc/aerial.nvim'             " Modern LSP-based outline
+Plug 'SmiteshP/nvim-navic'              " Breadcrumbs (Context at top)
+Plug 'aznhe21/actions-preview.nvim'     " Visual Quick-fixes (Lightbulb alternative)
 
 " Motion
 Plug 'folke/flash.nvim'
@@ -78,6 +88,11 @@ Plug 'ThePrimeagen/harpoon', {'branch': 'harpoon2'}
 Plug 'MeanderingProgrammer/render-markdown.nvim'
 "Plug 'OXY2DEV/markview.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+" Treesitter Text Objects (Structural editing)
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+
+Plug 'mfussenegger/nvim-jdtls'
 
 call plug#end()
 
@@ -126,13 +141,14 @@ nnoremap <S-h> :BufferLineCyclePrev<CR>
 nnoremap <leader>bd :bd<CR>
 
 " Clear highlights
+" same as :nohl
 nnoremap <F3> :noh<CR>
 
 " Format file
 "nmap <C-i> :call CocAction('format')<CR>
 
 " Tagbar
-nnoremap <F6> :TagbarToggle<CR>
+" nnoremap <F6> :TagbarToggle<CR>
 
 " Undotree
 nnoremap <leader>u :UndotreeToggle<CR>
@@ -141,7 +157,8 @@ nnoremap <leader>u :UndotreeToggle<CR>
 inoremap jk <Esc>
 
 " Center screen on navigation
-nnoremap n nzzzv
+" TODO
+nnoremap n nzzzv 
 nnoremap N Nzzzv
 nnoremap <C-d> <C-d>zz
 nnoremap <C-u> <C-u>zz
@@ -153,6 +170,7 @@ vnoremap <S-j> :m '>+1<CR>gv=gv
 vnoremap <S-k> :m '<-2<CR>gv=gv
 
 " Split navigation
+" TODO
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -180,8 +198,8 @@ let g:floaterm_keymap_prev   = '<F8>'
 let g:floaterm_keymap_next   = '<F9>'
 let g:floaterm_keymap_toggle = '<F12>'
 
-nnoremap <F5> :w<CR>:FloatermNew --autoclose=0 python3 %<CR>
-
+autocmd FileType python nnoremap <buffer> <F5> :w<CR>:FloatermNew --autoclose=0 python3 %<CR>
+autocmd FileType java nnoremap <buffer> <F5> :w<CR>:FloatermNew --autoclose=0 mvn clean compile<CR>
 " -----------------------------------------------------------
 " 5. COC.NVIM
 " -----------------------------------------------------------
@@ -241,7 +259,7 @@ nnoremap <F5> :w<CR>:FloatermNew --autoclose=0 python3 %<CR>
 " -----------------------------------------------------------
 " 6. TAGBAR
 " -----------------------------------------------------------
-let g:tagbar_ctags_bin = 'ctags'
+"let g:tagbar_ctags_bin = 'ctags'
 
 
 " Reminder:
@@ -254,6 +272,29 @@ let g:tagbar_ctags_bin = 'ctags'
 " -----------------------------------------------------------
 
 lua << EOF
+
+-- -----------------------
+-- AERIAL (Outline)
+-- -----------------------
+require("aerial").setup({
+  on_attach = function(bufnr)
+    -- Jump forwards/backwards with { and } ----> Use this to move arround functions
+    vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+    vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+  end,
+})
+-- Map it to your old Tagbar key (F6) or something new
+vim.keymap.set("n", "<F6>", "<cmd>AerialToggle! left<CR>")
+
+-- -----------------------
+-- NAVIC (Breadcrumbs)
+-- -----------------------
+local navic = require("nvim-navic")
+navic.setup({
+    highlight = true,
+    separator = "  ",
+    depth_limit = 5,
+})
 
 -- -----------------------
 -- NVIM-TREE
@@ -290,7 +331,7 @@ require('onedark').load()
 -- -----------------------
 require("bufferline").setup({
   options = {
-    diagnostics = "coc",
+    diagnostics = "nvim_lsp",
     show_buffer_close_icons = false,
     separator_style = "slant",
   }
@@ -312,7 +353,7 @@ require('todo-comments').setup({})
 -- COLORIZER
 -- -----------------------
 require('colorizer').setup({
-  '*', -- all filetypes
+	'css', 'javascript', 'typescript', 'html', 'lua'
 })
 
 -- -----------------------
@@ -328,7 +369,10 @@ require("lualine").setup({
   sections = {
     lualine_a = { "mode" },
     lualine_b = { "branch", "diff" },
-    lualine_c = { { "filename", path = 1 } },
+	lualine_c = { 
+        { "filename", path = 1 },
+        { function() return navic.get_location() end, cond = navic.is_available } 
+    },
     lualine_x = {
       { "diagnostics", sources = { "nvim_lsp" } },
       "encoding",
@@ -387,8 +431,8 @@ require('gitsigns').setup({
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
     local opts = { buffer = bufnr }
-    vim.keymap.set('n', ']c', gs.next_hunk, opts)
-    vim.keymap.set('n', '[c', gs.prev_hunk, opts)
+    vim.keymap.set('n', ']c', gs.next_hunk, opts)  -- TODO 
+    vim.keymap.set('n', '[c', gs.prev_hunk, opts)  -- TODO
     vim.keymap.set('n', '<leader>hp', gs.preview_hunk, opts)
     vim.keymap.set('n', '<leader>hs', gs.stage_hunk, opts)
     vim.keymap.set('n', '<leader>hu', gs.undo_stage_hunk, opts)
@@ -428,17 +472,34 @@ vim.keymap.set({'n', 'x', 'o'}, 's', function() require('flash').jump() end)
 vim.keymap.set({'n', 'x', 'o'}, 'S', function() require('flash').treesitter() end)
 
 -- -----------------------
--- TREESITTER
+-- TREESITTER & TEXTOBJECTS
 -- -----------------------
 local ok, treesitter = pcall(require, 'nvim-treesitter.configs')
 if ok then
   treesitter.setup({
     ensure_installed = {
       "java", "python", "javascript", "typescript",
-      "json", "yaml", "xml", "lua", "bash", "markdown","c","cpp"
+      "json", "yaml", "xml", "lua", "bash", "markdown", "markdown_inline", "c", "cpp"
     },
     highlight = { enable = true },
     indent = { enable = true },
+    textobjects = {
+      select = {
+        enable = true,
+        lookahead = true,
+        keymaps = {
+          ['af'] = '@function.outer',
+          ['if'] = '@function.inner',
+          ['ac'] = '@class.outer',
+          ['ic'] = '@class.inner',
+        },
+      },
+      move = {
+        enable = true,
+        goto_next_start = { [']f'] = '@function.outer', [']c'] = '@class.outer' },
+        goto_prev_start = { ['[f'] = '@function.outer', ['[c'] = '@class.outer' },
+      },
+    },
   })
 end
 
@@ -462,21 +523,16 @@ lsp_zero.on_attach(function(client, bufnr)
  
   -- Refactor
   vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
   vim.keymap.set('n', '<leader>qf', function()
     vim.lsp.buf.code_action({ apply = true })
   end, opts)
  
-  -- Format
-  vim.keymap.set('n', '<leader>fm', function()
-    vim.lsp.buf.format({ async = true })
-  end, opts)
  
   -- Diagnostics
   vim.keymap.set('n', '[g', vim.diagnostic.goto_prev, opts)
   vim.keymap.set('n', ']g', vim.diagnostic.goto_next, opts)
  
-  -- Java (jdtls) specific — only attach when jdtls is the client
+  -- Java (jdtls) specific — only attach when jdtls is the client  -- TODO
   if client.name == 'jdtls' then
     vim.keymap.set('n', '<leader>jm', function()
       require('jdtls').organize_imports()
@@ -492,6 +548,19 @@ lsp_zero.on_attach(function(client, bufnr)
       vim.cmd('edit')
     end, opts)
   end
+
+  -- 1. Enable Breadcrumbs if the server supports it
+  if client.server_capabilities.documentSymbolProvider then
+    navic.attach(client, bufnr)
+  end
+
+  -- 2. Enable Inlay Hints (Parameter names like VS Code)
+  if client.server_capabilities.inlayHintProvider then
+    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+  end
+
+  -- 3. Visual Code Actions (Replaces standard menu with a preview)
+  vim.keymap.set({ "v", "n" }, "<leader>ca", require("actions-preview").code_actions)
 end)
  
 -- Diagnostic display
@@ -512,6 +581,7 @@ require('mason-lspconfig').setup({
     'bashls',      -- Shell scripts
     'lua_ls',      -- Lua (for editing this config)
     'jdtls',       -- Java
+	'solidity_ls_nomicfoundation'	   -- solidity	
   },
   handlers = {
     lsp_zero.default_setup,
@@ -520,22 +590,54 @@ require('mason-lspconfig').setup({
   },
 })
  
--- jdtls manual setup (workspace per project)
+ -- -----------------------
+-- JDTLS MANUAL SETUP
+-- -----------------------
+local lombok_path = vim.fn.expand("~/.local/share/nvim/mason/packages/jdtls/lombok.jar")
 local jdtls_ok, jdtls = pcall(require, 'jdtls')
-if not jdtls_ok then
-  -- jdtls not installed yet, skip silently
-else
-  local workspace = vim.fn.stdpath('data') .. '/jdtls-workspace/' ..
-    vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
- 
-  jdtls.start_or_attach({
-    cmd = { 'jdtls', '--data', workspace },
-    root_dir = vim.fs.dirname(
-      vim.fs.find({ 'pom.xml', 'build.gradle', '.git' }, { upward = true })[1]
-    ),
+if jdtls_ok then
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = "java",
+    callback = function()
+      local workspace = vim.fn.stdpath('data') .. '/jdtls-workspace/' ..
+        vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
+
+      local config = {
+        -- 1. FORCE THE SERVER TO RUN WITH JAVA 21
+        cmd = {
+          '/usr/lib/jvm/java-21-openjdk/bin/java', 
+          '-Xmx1g',
+		  "-javaagent:" .. lombok_path,
+          '-jar', vim.fn.glob(vim.fn.stdpath('data') .. '/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_*.jar'),
+          '-configuration', vim.fn.stdpath('data') .. '/mason/packages/jdtls/config_linux',
+          '-data', workspace,
+        },
+        root_dir = vim.fs.dirname(vim.fs.find({'pom.xml', 'build.gradle', '.git'}, { upward = true })[1]),
+        
+        -- 2. TELL THE SERVER TO COMPLIE WITH JAVA 17
+        settings = {
+          java = {
+            configuration = {
+              runtimes = {
+                {
+                  name = "JavaSE-17",
+                  path = "/usr/lib/jvm/java-17-openjdk/",
+                  default = true, -- This ensures your project uses 17
+                },
+                {
+                  name = "JavaSE-21",
+                  path = "/usr/lib/jvm/java-21-openjdk/",
+                },
+              },
+            },
+          },
+        },
+      }
+      jdtls.start_or_attach(config)
+    end,
   })
 end
- 
+
 -- -----------------------
 -- COMPLETION (nvim-cmp)
 -- -----------------------
@@ -562,6 +664,7 @@ cmp.setup({
     { name = 'path' },
   }),
 })
+require('luasnip.loaders.from_vscode').lazy_load()
 
 -- -----------------------
 -- HARPOON2
@@ -641,6 +744,59 @@ dashboard.section.buttons.val = {
 dashboard.section.footer.val = "Neovim ready."
 
 alpha.setup(dashboard.opts)
+
+-- -----------------------
+-- CONFORM (Formatting)
+-- -----------------------
+require('conform').setup({
+  formatters_by_ft = {
+    python = { 'black' },
+    javascript = { 'prettier' },
+    typescript = { 'prettier' },
+    java = { 'google-java-format' },
+    solidity = { 'forge_fmt' }, -- change to 'prettier' if using hardhat
+    json = { 'prettier' },
+  },
+  format_on_save = { 
+    timeout_ms = 500, 
+    lsp_fallback = true,
+	ignore_filetypes = { "java" },  -- jdtls format is very slow
+  },
+})
+
+-- Override manual format key to use Conform
+vim.keymap.set('n', '<leader>fm', function()
+  require('conform').format({ async = true, lsp_fallback = true })
+end, { desc = "Format file" })
+
+-- -----------------------
+-- NVIM-LINT (Linting)
+-- -----------------------
+local lint_ok, lint = pcall(require, 'nvim-lint')
+if lint_ok then
+  -- nvim-lint does NOT have a .setup() function. 
+  -- We define the linters directly like this:
+  lint.linters_by_ft = {
+    javascript = { 'eslint_d' },
+    typescript = { 'eslint_d' },
+    python = { 'pylint' },
+  }
+
+  -- Trigger linting on save
+  vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
+    callback = function()
+	local lint_ok, lint = pcall(require, 'nvim-lint')
+      lint.try_lint()
+    end,
+  })
+end
+
+
+-- -----------------------
+-- SPECTRE (Project Search & Replace)
+-- -----------------------
+vim.keymap.set('n', '<leader>sr', function() require('spectre').open() end, { desc = "Spectre Global Replace" })
+vim.keymap.set('n', '<leader>sw', function() require('spectre').open_visual({ select_word = true }) end, { desc = "Spectre Replace Word" })
 
 EOF
 
