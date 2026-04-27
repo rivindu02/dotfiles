@@ -1,0 +1,13 @@
+@import 'colors.css';
+@define-color theme_bg_color #2c2d30;
+@define-color theme_fg_color #b1b4b9;
+@define-color theme_base_color #242628;
+@define-color theme_selected_bg_color #c27fd7;
+@define-color theme_selected_fg_color #191a1c;
+@define-color theme_tooltip_bg_color #35373b;
+@define-color theme_tooltip_fg_color #b1b4b9;
+@define-color borders #404247;
+@define-color unfocused_borders #35373b;
+@define-color warning_color #dfbe81;
+@define-color error_color #e16d77;
+@define-color success_color #99bc80;
