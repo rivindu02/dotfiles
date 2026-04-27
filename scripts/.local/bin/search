@@ -2,16 +2,50 @@
 # --- Config ---
 ROFI_THEME="$HOME/.config/rofi/launchers/type-1/style.rasi"
 
-# Get search query from rofi
-query=$(rofi \
+PLATFORMS=(
+    "*  Gemini"
+    ">  Claude"
+    "▶  YouTube"
+)
+
+# First rofi: pick platform OR type a search query (platforms pinned at top)
+result=$(printf '%s\n' "${PLATFORMS[@]}" | rofi \
     -dmenu \
     -p "Search" \
     -theme "$ROFI_THEME")
 
+[ -z "$result" ] && exit 0
+
+# Check if the result matches one of the platform entries
+matched_platform=""
+for p in "${PLATFORMS[@]}"; do
+    if [ "$result" = "$p" ]; then
+        matched_platform="$p"
+        break
+    fi
+done
+
+if [ -z "$matched_platform" ]; then
+    # User typed a query directly — search Brave (original behaviour)
+    encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$result'))")
+    brave --new-tab "https://search.brave.com/search?q=$encoded" 2>/dev/null
+    exit 0
+fi
+
+# User picked a platform — second rofi for the query
+query=$(rofi \
+    -dmenu \
+    -p "Query" \
+    -theme "$ROFI_THEME")
 [ -z "$query" ] && exit 0
 
-# URL encode the query
 encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$query'))")
 
-# Open in Brave
-brave --new-tab "https://search.brave.com/search?q=$encoded" 2>/dev/null
+case "$matched_platform" in
+    *Gemini*)
+        brave --new-tab "https://gemini.google.com/app" 2>/dev/null ;;
+    *Claude*)
+        brave --new-tab "https://claude.ai/new?q=$encoded" 2>/dev/null ;;
+    *YouTube*)
+        brave --new-tab "https://www.youtube.com/results?search_query=$encoded" 2>/dev/null ;;
+esac
