@@ -1,7 +1,7 @@
 @import "~/.config/rofi/colors/catppuccin.rasi"
 
 
-/* ── Waybar/SwayNC match overrides ── */
+/* ── Waybar/SwayNC match overrides ── 
 * {
     background-colour:    rgba(30, 30, 46, 0.85);
     alternate-background: rgba(49, 50, 68, 0.90);
@@ -11,4 +11,16 @@
     foreground-colour:    #cdd6f4;
     border-colour:        rgba(203, 166, 247, 0.40);
     handle-colour:        rgba(203, 166, 247, 0.50);
+}
+*/
+/**
+ * One Dark Warm (navarasu/onedark.nvim)
+ **/
+* {
+    background:     #2c2d30FF;
+    background-alt: #35373bFF;
+    foreground:     #b1b4b9FF;
+    selected:       #68aee8FF;
+    active:         #99bc80FF;
+    urgent:         #e16d77FF;
 }
