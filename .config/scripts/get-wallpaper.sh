@@ -1,2 +1,3 @@
 #!/bin/bash
-grep '^wallpaper' ~/.config/waypaper/config.ini | cut -d'=' -f2 | sed 's|~|/home/rivindu02|' | tr -d ' \n'
+# Find the exact line, take the path, trim spaces, and expand the tilde
+grep '^wallpaper =' ~/.config/waypaper/config.ini | head -n 1 | cut -d'=' -f2 | xargs | sed "s|^~|$HOME|"
