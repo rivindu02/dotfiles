@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
-# ~/.config/hypr/scripts/battery-warn.sh
 
+# Thresholds
 WARN_THRESHOLD=30
 CRITICAL_THRESHOLD=15
 
+# Assets
 SOUND_WARN="/usr/share/sounds/freedesktop/stereo/dialog-warning.oga"
 SOUND_CRITICAL="/usr/share/sounds/freedesktop/stereo/battery-caution.oga"
 
-WARNED_30=false
-WARNED_15=false
-DIMMED=false
+# State files (using files instead of variables to bypass subshell issues)
+STATE_DIR="/tmp/battery_warn"
+mkdir -p "$STATE_DIR"
+echo "false" > "$STATE_DIR/warn_30"
+echo "false" > "$STATE_DIR/warn_15"
+echo "false" > "$STATE_DIR/dimmed"
 
 play_sound() {
     if command -v paplay &>/dev/null; then
@@ -26,69 +30,54 @@ get_battery() {
 }
 
 notify_warn() {
-    notify-send \
-        -u normal \
-        -i battery-low \
-        -t 10000 \
+    notify-send -u normal -i battery-low -t 10000 \
         -h string:x-dunst-stack-tag:battery \
-        "🟡 Battery Low" \
-        "Battery is at ${1}% — consider charging soon."
+        "🟡 Battery Low" "Battery is at ${1}% — consider charging soon."
     play_sound "$SOUND_WARN"
+    echo "true" > "$STATE_DIR/warn_30"
 }
 
 notify_critical() {
-    notify-send \
-        -u critical \
-        -i battery-caution \
-        -t 0 \
+    notify-send -u critical -i battery-caution -t 0 \
         -h string:x-dunst-stack-tag:battery \
-        "🔴 Plug in your charger!" \
-        "Battery is at ${1}% — plug in now!"
+        "🔴 Plug in your charger!" "Battery is at ${1}% — plug in now!"
     play_sound "$SOUND_CRITICAL"
-
-    # Dim screen
+    
     brightnessctl -s set 30% 2>/dev/null
     wlsunset -t 2500 -T 2501 2>/dev/null &
-    DIMMED=true
+    echo "true" > "$STATE_DIR/dimmed"
+    echo "true" > "$STATE_DIR/warn_15"
 }
 
 restore_screen() {
-    if [ "$DIMMED" = true ]; then
+    if [ "$(cat "$STATE_DIR/dimmed")" = "true" ]; then
         brightnessctl -r 2>/dev/null
         pkill wlsunset 2>/dev/null
-        DIMMED=false
+        echo "false" > "$STATE_DIR/dimmed"
     fi
+    echo "false" > "$STATE_DIR/warn_30"
+    echo "false" > "$STATE_DIR/warn_15"
 }
 
 BAT_PATH=$(get_battery)
+[ -z "$BAT_PATH" ] && exit 1
 
-if [ -z "$BAT_PATH" ]; then
-    notify-send -u critical "Battery Warning Script" "No battery found, exiting."
-    exit 1
-fi
+# Main Loop: Poll every 60 seconds (lighter on resources than monitoring lines)
+while true; do
+    BATTERY=$(cat "$BAT_PATH/capacity")
+    STATUS=$(cat "$BAT_PATH/status")
 
-upower --monitor 2>/dev/null | while read -r _line; do
-    BATTERY=$(cat "$BAT_PATH/capacity" 2>/dev/null)
-    STATUS=$(cat "$BAT_PATH/status" 2>/dev/null)
+    WARNED_30=$(cat "$STATE_DIR/warn_30")
+    WARNED_15=$(cat "$STATE_DIR/warn_15")
 
-    [ -z "$BATTERY" ] && continue
-
-    if [ "$STATUS" = "Charging" ] || [ "$STATUS" = "Full" ]; then
-        WARNED_30=false
-        WARNED_15=false
+    if [[ "$STATUS" == "Charging" || "$STATUS" == "Full" ]]; then
         restore_screen
-        continue
-    fi
-
-    if [ "$STATUS" = "Discharging" ]; then
-        if [ "$BATTERY" -le "$CRITICAL_THRESHOLD" ] && [ "$WARNED_15" = false ]; then
+    else
+        if [ "$BATTERY" -le "$CRITICAL_THRESHOLD" ] && [ "$WARNED_15" = "false" ]; then
             notify_critical "$BATTERY"
-            WARNED_15=true
-            WARNED_30=true
-
-        elif [ "$BATTERY" -le "$WARN_THRESHOLD" ] && [ "$WARNED_30" = false ]; then
+        elif [ "$BATTERY" -le "$WARN_THRESHOLD" ] && [ "$WARNED_30" = "false" ]; then
             notify_warn "$BATTERY"
-            WARNED_30=true
         fi
     fi
+    sleep 60
 done
