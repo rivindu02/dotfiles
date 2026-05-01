@@ -1,0 +1,1 @@
+SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", ATTR{capacity}=="10", RUN+="/usr/bin/notify-send -u critical 'Low Battery' 'Battery at 10%%'"

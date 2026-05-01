@@ -1,0 +1,6 @@
+[Unit]
+Description=Auto suspend
+
+[Service]
+Type=oneshot
+ExecStart=systemctl suspend

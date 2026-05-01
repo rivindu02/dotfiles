@@ -1,0 +1,9 @@
+[Unit]
+Description=Auto suspend after 30 min
+
+[Timer]
+OnBootSec=30min
+OnUnitActiveSec=30min
+
+[Install]
+WantedBy=timers.target
