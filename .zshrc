@@ -1,26 +1,54 @@
-[[ $- != *i* ]] && return # fiz for aliase error in openclaude
+# ===========================================================
+# 1) Non-interactive shell check
+# ===========================================================
+[[ $- != *i* ]] && return 
 
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
-# ===========================================================
-# 1) Powerlevel10k instant prompt (must stay at top)
-
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# ===========================================================
+# 2) Environment & Basics
+# ===========================================================
+
+export TERMINAL=ghostty
+export TERM_PROGRAM=ghostty
+export EDITOR=nvim
+export VISUAL=nvim
+export LANG=en_US.UTF-8
+export TERM_PROGRAM=ghostty
+export TERM=xterm-256color
+
+# Defensive PATH additions
+[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
+[[ -d "$HOME/.npm-global/bin" ]] && export PATH="$HOME/.npm-global/bin:$PATH"
+
+# Guarded JAVA_HOME (Only sets if the path actually exists)
+if [[ -d /usr/lib/jvm/java-17-openjdk ]]; then
+    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+    export PATH="$JAVA_HOME/bin:$PATH"
+fi
+
+# Load P10k config if present
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+
 
 # ===========================================================
-# 2) Environment & PATH
+# 3) Oh My Zsh & Theme (Only load if installed)
+# ===========================================================
 
 export ZSH="$HOME/.oh-my-zsh"
+if [[ -d "$ZSH" ]]; then
+    ZSH_THEME="powerlevel10k/powerlevel10k"
+    plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+    source "$ZSH/oh-my-zsh.sh"
+fi
 
-export LANG=en_US.UTF-8
 
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
-export PATH="$JAVA_HOME/bin:$HOME/.local/bin:$PATH"
-
-# ── Gemini (Google AI Studio - Free tier) ──────────
-
+# ===========================================================
+# 4) AI Tooling & API Config (Aider, Gemini, OpenRouter)
+# ===========================================================
 export CLAUDE_CODE_USE_OPENAI=1  
 export OPENAI_API_KEY="$(cat ~/.secrets/gemini 2>/dev/null)"
 export OPENAI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
@@ -50,42 +78,11 @@ oc-open2() {
   echo "OpenClaude → OpenRouter Auto (free)"
 }
 
-# ===========================================================
-# 3) Oh My Zsh configuration
 
-ZSH_THEME="powerlevel10k/powerlevel10k"
-
-plugins=(
-  git
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-)
-
-# Load Oh My Zsh only if installed
-if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
-  source "$ZSH/oh-my-zsh.sh"
-fi
-
-
-# ===========================================================
-# 4) Powerlevel10k config (do NOT manually source theme)
-
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-
-
-# ===========================================================
-# 5) tmux auto-start (terminal aware)
-# # || "$TERM_PROGRAM" == "ghostty" 
-export TERMINAL=ghostty   
-
-if [[ -z "$TMUX" ]]; then
-  if [[ -n "$ALACRITTY_WINDOW_ID" ]]; then
-    command -v tmux >/dev/null && tmux new-session -A -s default
-  fi
-fi
 
 # ===========================================================
 # 6) Navigation & history
+# ===========================================================
 
 # zoxide (if installed)
 command -v zoxide >/dev/null && {
@@ -95,15 +92,21 @@ command -v zoxide >/dev/null && {
 
 # fzf (cross-distro path handling)
 if command -v fzf >/dev/null; then
-  # Arch path
-  [[ -f /usr/share/fzf/key-bindings.zsh ]] && source /usr/share/fzf/key-bindings.zsh
-  [[ -f /usr/share/fzf/completion.zsh ]] && source /usr/share/fzf/completion.zsh
+	# Arch path
+	[[ -f /usr/share/fzf/key-bindings.zsh ]] && source /usr/share/fzf/key-bindings.zsh
+	[[ -f /usr/share/fzf/completion.zsh ]] && source /usr/share/fzf/completion.zsh
 
   # Ubuntu path
   [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]] && \
-    source /usr/share/doc/fzf/examples/key-bindings.zsh
+	  source /usr/share/doc/fzf/examples/key-bindings.zsh
   [[ -f /usr/share/doc/fzf/examples/completion.zsh ]] && \
-    source /usr/share/doc/fzf/examples/completion.zsh
+	  source /usr/share/doc/fzf/examples/completion.zsh
+  # Improve Ctrl+R
+  export FZF_CTRL_R_OPTS="
+  --preview 'echo {}'
+  --preview-window down:3:hidden
+  --bind '?:toggle-preview'
+  "
 fi
 
 # Navigation using yazi
@@ -126,12 +129,7 @@ setopt SHARE_HISTORY
 setopt INC_APPEND_HISTORY
 
 
-# Improve Ctrl+R
-export FZF_CTRL_R_OPTS="
-  --preview 'echo {}'
-  --preview-window down:3:hidden
-  --bind '?:toggle-preview'
-"
+
 
 
 # ===========================================================
@@ -193,11 +191,7 @@ export NVM_DIR="$HOME/.nvm"
 alias nv="nvim"
 
 
-export TERMINAL=ghostty
-export TERM_PROGRAM=ghostty
-#export TERM=xterm-256color
-export EDITOR=nvim
-export VISUAL=nvim
+
 
 
 # ===========================================================
