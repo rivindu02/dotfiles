@@ -1,4 +1,48 @@
+# openclaude profile
+.openclaude-profile.json
 .config/aider/aider.groq.yml
 .config/aider/aider.kimi.yml
 .config/gh/hosts.yml
 .config/gcalcli
+
+# Nvim undo history
+.config/nvim/undo/
+
+# Nvim swap/backup files
+*.swp
+*.swo
+*~
+
+# Nvim shada (session data)
+.local/share/nvim/
+
+# SSH keys (safety net)
+.ssh/*.pem
+.ssh/id_*
+.ssh/known_hosts
+
+# Secrets
+.secrets/
+
+# Thumbnails / cache
+.cache/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# GTK4 symlinks (point to system theme, not yours)
+.config/gtk-4.0/assets
+.config/gtk-4.0/gtk.css
+
+# nwg-displays active profile (runtime state, not config)
+.config/nwg-displays/active_profile.json
+
+# waypaper (runtime wallpaper state)
+.config/waypaper/
+
+# Thunar (runtime/GUI generated)
+.config/Thunar/
+
+# VLC (bloated auto-generated config)
+.config/vlc/
