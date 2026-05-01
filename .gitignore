@@ -48,3 +48,6 @@ Thumbs.db
 
 # VLC (bloated auto-generated config)
 .config/vlc/
+
+# monitors
+.config/hypr/monitors.cofig
