@@ -32,7 +32,7 @@ get_battery() {
 notify_warn() {
     notify-send -u normal -i battery-low -t 10000 \
         -h string:x-dunst-stack-tag:battery \
-        "🟡 Battery Low" "Battery is at ${1}% — consider charging soon."
+        "Battery Low" "Battery is at ${1}% — consider charging soon."
     play_sound "$SOUND_WARN"
     echo "true" > "$STATE_DIR/warn_30"
 }
@@ -40,7 +40,7 @@ notify_warn() {
 notify_critical() {
     notify-send -u critical -i battery-caution -t 0 \
         -h string:x-dunst-stack-tag:battery \
-        "🔴 Plug in your charger!" "Battery is at ${1}% — plug in now!"
+        "Plug in your charger!" "Battery is at ${1}% — plug in now!"
     play_sound "$SOUND_CRITICAL"
     
     brightnessctl -s set 30% 2>/dev/null
