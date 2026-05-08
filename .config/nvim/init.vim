@@ -753,14 +753,14 @@ require('conform').setup({
     python = { 'black' },
     javascript = { 'prettier' },
     typescript = { 'prettier' },
-    java = { 'google-java-format' },
+    java = {},
     solidity = { 'forge_fmt' }, -- change to 'prettier' if using hardhat
     json = { 'prettier' },
   },
   format_on_save = { 
     timeout_ms = 500, 
-    lsp_fallback = true,
-	ignore_filetypes = { "java" },  -- jdtls format is very slow
+    lsp_fallback = false,
+	ignore_filetypes = {},  -- jdtls format is very slow
   },
 })
 
