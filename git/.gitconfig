@@ -1,0 +1,16 @@
+[user]
+	name = rivindu-yl
+	email = kumarage.rivindu@yaalalabs.com
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[core]
+	pager = delta
+[delta]
+	side-by-side = true
+	line-numbers = true
+[push]
+	autoSetupRemote = true

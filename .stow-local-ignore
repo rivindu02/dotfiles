@@ -1,0 +1,9 @@
+# Files to ignore in the dotfiles root
+aurlist.txt
+pkglist.txt
+README.md
+LICENSE
+.git
+.gitignore
+
+
