@@ -6,4 +6,4 @@ Target = *
 
 [Action]
 When = PostTransaction
-Exec = /bin/sh -c '/usr/bin/pacman -Qqen > /home/rivindu/dotfiles/pkglist.txt && /usr/bin/pacman -Qqm > /home/rivindu/dotfiles/aurlist.txt'
+Exec = /bin/sh -c '/usr/bin/pacman -Qqen > /home/rivindu02/dotfiles/pkglist.txt && /usr/bin/pacman -Qqm > /home/rivindu02/dotfiles/aurlist.txt'
