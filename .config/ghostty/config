@@ -55,7 +55,7 @@ font-family = "Caskaydia Mono Nerd Font"
 font-size = 12
 # OneDark Warm
 background = #2d2d31
-foreground = #d4be98
+foreground = #abb2bf
 
 # Normal colors
 palette = 0=#3c3836
