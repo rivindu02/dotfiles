@@ -200,24 +200,16 @@ else success "No orphaned packages detected"; fi
 
 
 # ---------- 7. Broken symlinks scan (Hardened) ---------------------------
-announce "AUR build cache clean ($AUR)"
-AUR_CACHE=""
-[[ $AUR == "paru" ]] && AUR_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/paru/clone"
-[[ $AUR == "yay" ]] && AUR_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/yay"
-
-if [[ -n "$AUR_CACHE" && -d "$AUR_CACHE" ]]; then
-  aur_before=$(path_bytes "$AUR_CACHE")
-  echo "  AUR cache: $(bytes_to_human "$aur_before")"
-  if confirm "Clean $AUR build cache?"; then
-    # Try the polite way first
-    if ! $AUR -Sc --noconfirm; then
-        warn "Standard clean failed. Attempting to remove stale download files..."
-        sudo rm -f /var/cache/pacman/pkg/download-* 2>/dev/null || true
-        warn "If errors persist, consider: rm -rf $AUR_CACHE/*"
-    fi
-    success "AUR cache clean attempted"
-  else skip; fi
-else echo "  No $AUR cache found"; fi
+announce "Scanning for broken symlinks"
+if confirm "Scan /usr and /etc for broken symlinks?"; then
+  BROKEN=$(find /usr /etc -xtype l 2>/dev/null | head -20)
+  if [[ -n "$BROKEN" ]]; then
+    warn "Broken symlinks found:"
+    echo "$BROKEN"
+  else
+    success "No broken symlinks found"
+  fi
+else skip; fi
 
 # ---------- 8. $HOME/.cache prune ----------------------------------------
 announce "Pruning ~/.cache (older than $CACHE_DAYS days)"
@@ -256,16 +248,25 @@ else
 fi
 
 # ---------- 12. Old kernel cleanup ----------------------------------------
-announce "Checking for old kernel packages"
-# Added '|| true' so an empty list doesn't trigger pipefail
-INSTALLED_KERNELS=$(pacman -Q 2>/dev/null | grep -E '^linux[^ ]*\s' | grep -v 'headers\|docs\|acpi\|nvidia' || true)
-KERNEL_COUNT=$(echo "$INSTALLED_KERNELS" | grep -c . || echo 0)
+echo "$INSTALLED_KERNELS"
+if (( KERNEL_COUNT > 1 )); then
+  warn "$KERNEL_COUNT kernel(s) installed — consider removing old ones manually"
+else
+  success "Only one kernel installed"
+fi
 
 # ---------- 13. Failed systemd units --------------------------------------
 announce "Scanning for failed systemd services"
 # FIX: Grep here is very likely to return nothing (which is good!) 
 # We must prevent that from killing the script.
 FAILED=$(systemctl --failed --no-pager --plain 2>/dev/null | grep "●" || true)
+
+if [[ -n "$FAILED" ]]; then
+  warn "Failed units detected:"
+  echo "$FAILED"
+else
+  success "No failed systemd units"
+fi
 
 # ---------- 14. Docker prune (optional) -----------------------------------
 if $DO_DOCKER && command -v docker &>/dev/null; then
