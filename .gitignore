@@ -6,7 +6,8 @@
 .config/gcalcli
 
 # Nvim undo history
-.config/nvim/undo/
+.config/nvim/undo/**
+
 
 # Nvim swap/backup files
 *.swp
