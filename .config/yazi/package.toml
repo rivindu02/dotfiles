@@ -8,5 +8,10 @@ use = "stelcodes/bunny"
 rev = "71b14a3"
 hash = "18a2829738214fe9bca99a2fef19113d"
 
+[[plugin.deps]]
+use = "yazi-rs/plugins:mount"
+rev = "1db18bb"
+hash = "e3260d0b1feded8c8e3ae3afa1169e30"
+
 [flavor]
 deps = []
