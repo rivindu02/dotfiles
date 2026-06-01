@@ -13,7 +13,6 @@ brightnessctl
 btop
 btrfs-assistant
 btrfs-progs
-chromium
 clang
 cliphist
 cmake
@@ -25,6 +24,7 @@ efibootmgr
 evtest
 eza
 fastfetch
+fd
 firefox
 flatpak
 fzf

@@ -310,6 +310,9 @@ require("nvim-tree").setup({
   renderer = {
     icons = { show = { git = true, folder = true, file = true } },
   },
+  git ={
+	ignore = false,
+  },
   filters = {
     dotfiles = false,
     custom = { "^.git$", "target", "__pycache__" },
@@ -670,7 +673,11 @@ require('luasnip.loaders.from_vscode').lazy_load()
 -- HARPOON2
 -- -----------------------
 local harpoon = require("harpoon")
-harpoon:setup()
+harpoon:setup({
+  settings = {
+    save_on_toggle = true,
+  }
+})
 
 vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
 vim.keymap.set("n", "<C-e>", function()
@@ -751,8 +758,8 @@ alpha.setup(dashboard.opts)
 require('conform').setup({
   formatters_by_ft = {
     python = { 'black' },
-    javascript = { 'prettier' },
-    typescript = { 'prettier' },
+    javascript = {},
+    typescript = {},
     java = {},
     solidity = { 'forge_fmt' }, -- change to 'prettier' if using hardhat
     json = { 'prettier' },

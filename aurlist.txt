@@ -1,5 +1,5 @@
+arduino-ide-bin
 asusctl
-asusctl-debug
 aws-session-manager-plugin
 bemoji
 bibata-cursor-theme
@@ -22,9 +22,11 @@ python-screeninfo
 python312
 rofi-power-menu
 sddm-sugar-candy-git
+slack-desktop-wayland
 swww
 visual-studio-code-bin
 waypaper
 xdg-desktop-portal-termfilechooser
 yay
+zoom
 zsh-theme-powerlevel10k-git

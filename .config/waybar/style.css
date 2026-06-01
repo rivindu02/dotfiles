@@ -50,17 +50,36 @@ window#waybar {
   color: #dfbe81;
   font-weight: bold;
   padding: 0 12px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+}
+
+#clock:hover {
+  background: rgba(223, 190, 129, 0.12);
+  color: #dfbe81;
 }
 
 /* ── System modules ─────────────────────────────────────────── */
 #memory {
   color: #c99a6e;
   padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+
+}
+#memory:hover {
+  background: rgba(201, 154, 110, 0.12);
+  color: #c99a6e;
 }
 
 #battery {
   color: #99bc80;
   padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
 }
 
 #battery.warning {
@@ -75,27 +94,68 @@ window#waybar {
   color: #99bc80;
 }
 
+#battery:hover {
+  background: rgba(153, 188, 128, 0.12);
+  color: #99bc80;
+}
+#battery.warning:hover {
+  background: rgba(223, 190, 129, 0.12);
+  color: #dfbe81;
+}
+#battery.critical:hover {
+  background: rgba(225, 109, 119, 0.12);
+  color: #e16d77;
+}
+
 #network {
   color: #5fafb9;
   padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
 }
 
 #network.disconnected {
   color: #646568;
 }
 
+#network:hover {
+  background: rgba(95, 175, 185, 0.12);
+  color: #5fafb9;
+}
+
 #pulseaudio {
   color: #68aee8;
   padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
 }
 
 #pulseaudio.muted {
   color: #646568;
 }
 
+#pulseaudio:hover {
+  background: rgba(104, 174, 232, 0.12);
+  color: #68aee8;
+}
+#pulseaudio.muted:hover {
+  background: rgba(100, 101, 104, 0.12);
+  color: #8b8d91;
+}
+
 #backlight {
   color: #dfbe81;
   padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+}
+
+#backlight:hover {
+  background: rgba(223, 190, 129, 0.12);
+  color: #dfbe81;
 }
 
 #tray {
@@ -116,6 +176,14 @@ window#waybar {
 #custom-notification {
   color: #c27fd7;
   padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+}
+
+#custom-notification:hover {
+  background: rgba(194, 127, 215, 0.12);
+  color: #c27fd7;
 }
 
 /* ── Power button ───────────────────────────────────────────── */
@@ -138,6 +206,14 @@ window#waybar {
   color: #8b8d91;
   padding: 0 8px;
   font-style: italic;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+
+}
+#window:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #b1b4b9;
 }
 
 /* ── Tooltip ────────────────────────────────────────────────── */

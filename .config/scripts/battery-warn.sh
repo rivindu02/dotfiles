@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
-
 # Thresholds
 WARN_THRESHOLD=30
 CRITICAL_THRESHOLD=15
+EMERGENCY_THRESHOLD=10
 
-# Assets
-SOUND_WARN="/usr/share/sounds/freedesktop/stereo/dialog-warning.oga"
-SOUND_CRITICAL="/usr/share/sounds/freedesktop/stereo/battery-caution.oga"
+# Assets — only use files that actually exist
+SOUND_WARN="~/.local/share/sounds/dialog-warning.oga"
+SOUND_CRITICAL="~/.local/share/sounds/battery-warn.oga"
 
-# State files (using files instead of variables to bypass subshell issues)
+# State files
 STATE_DIR="/tmp/battery_warn"
 mkdir -p "$STATE_DIR"
 echo "false" > "$STATE_DIR/warn_30"
 echo "false" > "$STATE_DIR/warn_15"
+echo "false" > "$STATE_DIR/warn_10"
 echo "false" > "$STATE_DIR/dimmed"
 
 play_sound() {
@@ -42,11 +43,32 @@ notify_critical() {
         -h string:x-dunst-stack-tag:battery \
         "Plug in your charger!" "Battery is at ${1}% — plug in now!"
     play_sound "$SOUND_CRITICAL"
-    
-    brightnessctl -s set 30% 2>/dev/null
+
+    # Only dim if current brightness is above 20%, to avoid accidentally increasing it
+    CURRENT=$(brightnessctl -m 2>/dev/null | cut -d, -f4 | tr -d '%')
+    if [ -n "$CURRENT" ] && [ "$CURRENT" -gt 20 ]; then
+        brightnessctl -s set 20% 2>/dev/null
+        echo "true" > "$STATE_DIR/dimmed"
+    else
+        brightnessctl -s 2>/dev/null   # save current level without changing it
+    fi
+
     wlsunset -t 2500 -T 2501 2>/dev/null &
-    echo "true" > "$STATE_DIR/dimmed"
     echo "true" > "$STATE_DIR/warn_15"
+}
+
+notify_emergency() {
+    notify-send -u critical -i battery-empty -t 0 \
+        -h string:x-dunst-stack-tag:battery \
+        "Battery Critical!" "Battery is at ${1}% — save your work now!"
+    play_sound "$SOUND_CRITICAL"
+
+    if [ "$(cat "$STATE_DIR/dimmed")" = "true" ]; then
+        brightnessctl -r 2>/dev/null
+        pkill wlsunset 2>/dev/null
+        echo "false" > "$STATE_DIR/dimmed"
+    fi
+    echo "true" > "$STATE_DIR/warn_10"
 }
 
 restore_screen() {
@@ -57,27 +79,30 @@ restore_screen() {
     fi
     echo "false" > "$STATE_DIR/warn_30"
     echo "false" > "$STATE_DIR/warn_15"
+    echo "false" > "$STATE_DIR/warn_10"
 }
 
 BAT_PATH=$(get_battery)
 [ -z "$BAT_PATH" ] && exit 1
 
-# Main Loop: Poll every 60 seconds (lighter on resources than monitoring lines)
 while true; do
     BATTERY=$(cat "$BAT_PATH/capacity")
     STATUS=$(cat "$BAT_PATH/status")
-
     WARNED_30=$(cat "$STATE_DIR/warn_30")
     WARNED_15=$(cat "$STATE_DIR/warn_15")
+    WARNED_10=$(cat "$STATE_DIR/warn_10")
 
     if [[ "$STATUS" == "Charging" || "$STATUS" == "Full" ]]; then
         restore_screen
     else
-        if [ "$BATTERY" -le "$CRITICAL_THRESHOLD" ] && [ "$WARNED_15" = "false" ]; then
+        if [ "$BATTERY" -le "$EMERGENCY_THRESHOLD" ] && [ "$WARNED_10" = "false" ]; then
+            notify_emergency "$BATTERY"
+        elif [ "$BATTERY" -le "$CRITICAL_THRESHOLD" ] && [ "$WARNED_15" = "false" ]; then
             notify_critical "$BATTERY"
         elif [ "$BATTERY" -le "$WARN_THRESHOLD" ] && [ "$WARNED_30" = "false" ]; then
             notify_warn "$BATTERY"
         fi
     fi
+
     sleep 60
 done

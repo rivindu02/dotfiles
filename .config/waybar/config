@@ -74,8 +74,8 @@
   },
   "network": {
     "interval": 2,
-    "format-wifi": "󰇚 {bandwidthDownBytes}",
-    "format-ethernet": "󰇚 {bandwidthDownBytes}",
+    "format-wifi": "󰇚 {bandwidthDownBits}",
+    "format-ethernet": "󰇚 {bandwidthDownBits}",
     "format-disconnected": "󰤭",
     "tooltip-format-wifi": "{essid}  {signalStrength}%",
     "tooltip-format-ethernet": "{ifname}",
