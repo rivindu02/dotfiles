@@ -1,109 +1,76 @@
 /* ═══════════════════════════════════════════════════════════════
-   SwayNC — One Dark Warm (navarasu/onedark.nvim)
-   bg0     : #2c2d30   bg1 : #35373b   bg_d : #242628
-   fg      : #b1b4b9   grey: #646568   light_grey: #8b8d91
-   red     : #e16d77   green: #99bc80  orange: #c99a6e
-   blue    : #68aee8   yellow: #dfbe81 cyan  : #5fafb9
-   purple  : #c27fd7   black : #191a1c
+   SwayNC — Gruvbox Material Dark
+   bg0     : #282828   bg1 : #32302f   bg2 : #3c3836
+   fg      : #d4be98   grey: #928374   dim : #7c6f64
+   red     : #ea6962   green: #a9b665  orange: #e78a4e
+   yellow  : #d8a657   blue : #7daea3  teal : #83a598
+   aqua    : #89b482   bg kept: rgba(24,26,28,…)
    ═══════════════════════════════════════════════════════════════ */
 
 * {
   font-family: "Caskaydia Mono Nerd Font Propo";
   font-size: 13px;
-  color: #b1b4b9;
+  color: #d4be98;
   -gtk-icon-style: symbolic;
 }
 
 /* ── Control-center shell ───────────────────────────────────── */
 .control-center {
   background: rgba(24, 26, 28, 0.85);
-  border: 1px solid rgba(194, 127, 215, 0.30);
+  border: 1px solid rgba(131, 165, 152, 0.30);
   border-radius: 14px;
   padding: 10px;
 }
 
 /* ── Notification cards ─────────────────────────────────────── */
-.notification-row {
-  margin: 3px 0;
-}
+.notification-row { margin: 2px 0; }
 
 .notification {
-  background: rgba(44, 45, 48, 0.75);
-  border: 1px solid rgba(194, 127, 215, 0.15);
+  background: rgba(50, 48, 47, 0.75);
+  border: 1px solid rgba(131, 165, 152, 0.15);
   border-radius: 10px;
-  padding: 10px 12px;
-  margin: 3px 0;
-  color: #b1b4b9;
+  padding: 8px 12px;
+  margin: 2px 0;
+  color: #d4be98;
   transition: all 0.2s ease;
 }
-
 .notification:hover {
-  background: rgba(53, 55, 59, 0.90);
-  border-color: rgba(194, 127, 215, 0.38);
+  background: rgba(60, 56, 54, 0.90);
+  border-color: rgba(131, 165, 152, 0.38);
 }
 
 /* ── Urgency tints ──────────────────────────────────────────── */
-.notification.low {
-  border-left: 3px solid #68aee8;
-}
-.notification.normal {
-  border-left: 3px solid #c27fd7;
-}
+.notification.low      { border-left: 3px solid #7daea3; }
+.notification.normal   { border-left: 3px solid #83a598; }
 .notification.critical {
-  border-left: 3px solid #e16d77;
-  background: rgba(225, 109, 119, 0.08);
+  border-left: 3px solid #ea6962;
+  background: rgba(234, 105, 98, 0.08);
 }
 
 /* ── Notification default action ───────────────────────────── */
-.notification-default-action {
-  border-radius: 10px;
-  background: transparent;
-  padding: 0;
-}
-
-.notification-default-action:hover {
-  background: transparent;
-}
+.notification-default-action { border-radius: 10px; background: transparent; padding: 0; }
+.notification-default-action:hover { background: transparent; }
 
 /* ── Text ───────────────────────────────────────────────────── */
-.summary {
-  font-size: 13px;
-  font-weight: bold;
-  color: #b1b4b9;
-}
-
-.time {
-  font-size: 11px;
-  color: #646568;
-}
-
-.body {
-  font-size: 12px;
-  color: #8b8d91;
-  opacity: 0.90;
-}
-
-.app-name {
-  font-size: 11px;
-  color: #5fafb9;
-  opacity: 0.80;
-}
+.summary  { font-size: 13px; font-weight: bold; color: #d4be98; }
+.time     { font-size: 11px; color: #7c6f64; }
+.body     { font-size: 12px; color: #928374; opacity: 0.90; }
+.app-name { font-size: 11px; color: #89b482; opacity: 0.80; }
 
 /* ── Action buttons ─────────────────────────────────────────── */
 .notification-action {
-  background: rgba(194, 127, 215, 0.10);
-  border: 1px solid rgba(194, 127, 215, 0.22);
+  background: rgba(131, 165, 152, 0.10);
+  border: 1px solid rgba(131, 165, 152, 0.22);
   border-radius: 6px;
-  color: #c27fd7;
+  color: #83a598;
   font-size: 12px;
   padding: 4px 10px;
   margin: 2px;
   transition: all 0.2s;
 }
-
 .notification-action:hover {
-  background: rgba(194, 127, 215, 0.22);
-  color: #b1b4b9;
+  background: rgba(131, 165, 152, 0.22);
+  color: #d4be98;
 }
 
 /* ── Close button ───────────────────────────────────────────── */
@@ -111,153 +78,194 @@
   background: transparent;
   border: none;
   border-radius: 6px;
-  color: #646568;
+  color: #7c6f64;
   font-size: 13px;
   padding: 2px 6px;
   transition: all 0.2s;
 }
-
 .close-button:hover {
-  background: rgba(225, 109, 119, 0.15);
-  color: #e16d77;
+  background: rgba(234, 105, 98, 0.15);
+  color: #ea6962;
 }
 
-/* ── Widget title (header bar) ──────────────────────────────── */
+/* ── Widget title ───────────────────────────────────────────── */
 .widget-title {
   background: rgba(36, 38, 40, 0.95);
   border-radius: 10px;
-  color: #c27fd7;
+  color: #83a598;
   font-size: 28px;
   font-weight: bold;
   padding: 8px 12px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   letter-spacing: 0.1em;
 }
-
 .widget-title > button {
-  background: rgba(194, 127, 215, 0.10);
-  border: 1px solid rgba(194, 127, 215, 0.25);
+  background: rgba(131, 165, 152, 0.10);
+  border: 1px solid rgba(131, 165, 152, 0.25);
   border-radius: 6px;
-  color: #8b8d91;
+  color: #928374;
   font-size: 11px;
   padding: 3px 10px;
   transition: all 0.2s;
 }
-
 .widget-title > button:hover {
-  background: rgba(194, 127, 215, 0.20);
-  color: #c27fd7;
+  background: rgba(131, 165, 152, 0.20);
+  color: #83a598;
 }
 
-/* ── DND toggle — footer strip ──────────────────────────────── */
+/* ── DND ────────────────────────────────────────────────────── */
 .widget-dnd {
   background: rgba(36, 38, 40, 0.95);
   border-radius: 10px;
-  border: 1px solid rgba(194, 127, 215, 0.20);
-  padding: 8px 14px;
-  margin-top: 6px;
+  border: 1px solid rgba(131, 165, 152, 0.20);
+  padding: 6px 14px;
+  margin-top: 4px;
 }
-
-.widget-dnd > label {
-  color: #8b8d91;
-  font-size: 12px;
-}
-
+.widget-dnd > label { color: #928374; font-size: 12px; }
 .widget-dnd > switch {
   border-radius: 20px;
-  background: rgba(100, 101, 104, 0.35);
-  border: 1px solid rgba(100, 101, 104, 0.45);
+  background: rgba(124, 111, 100, 0.35);
+  border: 1px solid rgba(124, 111, 100, 0.45);
 }
-
 .widget-dnd > switch:checked {
-  background: rgba(194, 127, 215, 0.50);
-  border-color: #c27fd7;
+  background: rgba(131, 165, 152, 0.50);
+  border-color: #83a598;
 }
-
 .widget-dnd > switch slider {
-  background: #b1b4b9;
+  background: #d4be98;
   border-radius: 50%;
   min-width: 18px;
   min-height: 18px;
 }
 
-/* ── Calendar label — header ────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   CALENDAR WIDGETS
+   nth-child order (dynamic — only present widgets are counted):
+   1   title
+   2   label#gcal-header
+   3   label#gcal-today-header      ─┐
+   4   label#gcal-today-allday       │ today group
+   5   label#gcal-today-timed       ─┘
+   6   label#gcal-tomorrow-header   ─┐
+   7   label#gcal-tomorrow-allday    │ tomorrow group (if present)
+   8   label#gcal-tomorrow-timed    ─┘
+   9   label#gcal-day3-header       ─┐
+   10  label#gcal-day3-allday        │ day3 group (if present)
+   11  label#gcal-day3-timed        ─┘
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── "Upcoming Events" header ───────────────────────────────── */
 .widgets > .widget-label:nth-child(2) > label {
   font-size: 11px;
   font-weight: bold;
-  color: #dfbe81;
-  padding: 6px 4px 4px 4px;
+  color: #d8a657;
+  padding: 4px 4px 2px 4px;
   opacity: 0.90;
   letter-spacing: 0.08em;
 }
 
-/* ── Calendar label — events block ─────────────────────────── */
-.widgets > .widget-label:nth-child(3) {
-  background: rgba(44, 45, 48, 0.75);
-  border: 1px solid rgba(223, 190, 129, 0.18);
-  border-left: 2px solid #dfbe81;
-  border-radius: 10px;
-  margin: 15 0 6px 0;
-  padding: 2px;
+/* ── Large outer box wrapping all calendar widgets ──────────── */
+.widgets > .widget-label:nth-child(2),
+.widgets > .widget-label:nth-child(3),
+.widgets > .widget-label:nth-child(4),
+.widgets > .widget-label:nth-child(5),
+.widgets > .widget-label:nth-child(6),
+.widgets > .widget-label:nth-child(7),
+.widgets > .widget-label:nth-child(8),
+.widgets > .widget-label:nth-child(9),
+.widgets > .widget-label:nth-child(10),
+.widgets > .widget-label:nth-child(11) {
+  background: rgba(40, 40, 40, 0.60);
+  border-left: 3px solid rgba(216, 166, 87, 0.50);
+  border-radius: 0;
+  margin: 0 2px;
 }
 
-.widgets > .widget-label:nth-child(3) > label {
+/* ── Round top of first calendar widget ─────────────────────── */
+.widgets > .widget-label:nth-child(2) {
+  border-top: 1px solid rgba(216, 166, 87, 0.25);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  margin-top: 4px;
+}
+
+/* ── Round bottom of last calendar widget ───────────────────── */
+.widgets > .widget-label:nth-child(11) {
+  border-bottom: 1px solid rgba(216, 166, 87, 0.25);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  margin-bottom: 4px;
+}
+
+/* ── Day headers ────────────────────────────────────────────── */
+.widgets > .widget-label:nth-child(3) > label,
+.widgets > .widget-label:nth-child(6) > label,
+.widgets > .widget-label:nth-child(9) > label {
   font-size: 12px;
-  color: #8b8d91;
-  padding: 8px 10px;
-  opacity: 0.90;
+  font-weight: bold;
+  color: #d8a657;
+  padding: 6px 8px 2px 8px;
+}
+
+/* ── All-day blocks ─────────────────────────────────────────── */
+.widgets > .widget-label:nth-child(4),
+.widgets > .widget-label:nth-child(7),
+.widgets > .widget-label:nth-child(10) {
+  background: rgba(137, 180, 130, 0.08);
+  border-left: 3px solid #89b482;
+  border-top: 1px solid rgba(137, 180, 130, 0.20);
+  border-bottom: 1px solid rgba(137, 180, 130, 0.10);
+  border-radius: 0;
+  margin: 0 2px;
+}
+.widgets > .widget-label:nth-child(4) > label,
+.widgets > .widget-label:nth-child(7) > label,
+.widgets > .widget-label:nth-child(10) > label {
+  font-size: 12px;
+  color: #89b482;
+  padding: 4px 10px;
+}
+
+/* ── Timed blocks ───────────────────────────────────────────── */
+.widgets > .widget-label:nth-child(5),
+.widgets > .widget-label:nth-child(8),
+.widgets > .widget-label:nth-child(11) {
+  background: rgba(125, 174, 163, 0.06);
+  border-left: 3px solid rgba(125, 174, 163, 0.50);
+  border-top: 1px solid rgba(125, 174, 163, 0.12);
+  border-radius: 0;
+  margin: 0 2px;
+}
+.widgets > .widget-label:nth-child(5) > label,
+.widgets > .widget-label:nth-child(8) > label,
+.widgets > .widget-label:nth-child(11) > label {
+  font-size: 12px;
+  color: #928374;
+  padding: 4px 10px;
 }
 
 /* ── Scrollbar ───────────────────────────────────────────────── */
-scrollbar {
-  background: transparent;
-}
-
+scrollbar { background: transparent; }
 scrollbar slider {
-  background: rgba(194, 127, 215, 0.20);
+  background: rgba(131, 165, 152, 0.20);
   border-radius: 4px;
   min-width: 4px;
   min-height: 4px;
 }
-
-scrollbar slider:hover {
-  background: rgba(194, 127, 215, 0.42);
-}
+scrollbar slider:hover { background: rgba(131, 165, 152, 0.42); }
 
 /* ── Floating notifications ─────────────────────────────────── */
-.floating-notifications {
-  background: transparent;
-}
-
+.floating-notifications { background: transparent; }
 .floating-notifications .notification {
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55);
 }
 
 /* ── Notification grouping ───────────────────────────────────── */
-.notification-group {
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-
-.notification-group-header {
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-  font-size: 0;
-}
-
-.notification-group-icon {
-  background: transparent;
-}
-
-.notification-group-buttons {
-  background: transparent;
-  border: none;
-}
+.notification-group         { background: transparent; border: none; padding: 0; margin: 0; }
+.notification-group-header  { background: transparent; border: none; padding: 0; margin: 0; font-size: 0; }
+.notification-group-icon    { background: transparent; }
+.notification-group-buttons { background: transparent; border: none; }
 
 /* ── Kill GTK4 focus indicator ───────────────────────────────── */
 *:focus,
@@ -266,13 +274,12 @@ scrollbar slider:hover {
   box-shadow: none;
   -gtk-outline-radius: 0;
 }
-
 .notification:focus,
 .notification:focus-visible,
 .notification-default-action:focus,
 .notification-default-action:focus-visible {
   outline: none;
   box-shadow: none;
-  border-color: rgba(194, 127, 215, 0.38);
+  border-color: rgba(131, 165, 152, 0.38);
   -gtk-outline-radius: 0;
 }
