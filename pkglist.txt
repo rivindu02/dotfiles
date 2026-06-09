@@ -1,3 +1,4 @@
+7zip
 acpid
 adw-gtk-theme
 aws-cli
@@ -20,7 +21,9 @@ distrobox
 docker
 docker-compose
 dotnet-sdk
+dust
 efibootmgr
+entr
 evtest
 eza
 fastfetch
@@ -50,6 +53,7 @@ libpulse
 libva-intel-driver
 linux
 linux-firmware
+linux-headers
 man-db
 maven
 mpv
@@ -61,10 +65,12 @@ nodejs
 noto-fonts-cjk
 noto-fonts-emoji
 npm
+ntfsprogs
 nvm
 nwg-displays
 nwg-look
 obs-studio
+obsidian
 ollama
 openssh
 pacman-contrib
@@ -79,13 +85,17 @@ plymouth
 podman
 polkit-gnome
 power-profiles-daemon
+procs
 python-build
 python-installer
 python-pip
 python-pipx
+qt5-wayland
+qt6-wayland
 rofi
 rsync
 rust
+sbctl
 sddm
 seahorse
 slurp
@@ -99,6 +109,7 @@ swayimg
 swaync
 syntax-highlighting
 tailscale
+thunar
 tldr
 tmux
 tree
