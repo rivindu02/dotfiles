@@ -33,6 +33,11 @@ fi
 # Load P10k config if present
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
+# tmuxifier
+export PATH="$HOME/.tmuxifier/bin:$PATH"
+
+eval "$(tmuxifier init -)"
+
 
 # ===========================================================
 # 3) Oh My Zsh & Theme (Only load if installed)
@@ -44,6 +49,8 @@ if [[ -d "$ZSH" ]]; then
     plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
     source "$ZSH/oh-my-zsh.sh"
 fi
+
+ZSH_HIGHLIGHT_STYLES[comment]='fg=#a89984' # for comments
 
 
 # ===========================================================
@@ -108,6 +115,8 @@ if command -v fzf >/dev/null; then
   --bind '?:toggle-preview'
   "
 fi
+
+
 
 # Navigation using yazi
 function y() {
@@ -191,7 +200,7 @@ export NVM_DIR="$HOME/.nvm"
 alias nv="nvim"
 
 
-
+alias inv='nvim $(fzf -m --preview="bat --color=always {}")'
 
 
 # ===========================================================
