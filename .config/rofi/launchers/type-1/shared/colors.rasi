@@ -15,7 +15,7 @@
 
 /* Import color-scheme from `colors` directory */
 
-@import "~/.config/rofi/colors/catppuccin.rasi"
+@import "~/.config/rofi/colors/gruvbox.rasi"
 
 /* ── Waybar/SwayNC match overrides ── */
 /*
@@ -30,14 +30,4 @@
     handle-colour:        rgba(203, 166, 247, 0.50);
 }
 */
-/**
- * One Dark Warm (navarasu/onedark.nvim)
- **/
-* {
-    background:     #2c2d30FF;
-    background-alt: #35373bFF;
-    foreground:     #b1b4b9FF;
-    selected:       #68aee8FF;
-    active:         #99bc80FF;
-    urgent:         #e16d77FF;
-}
+

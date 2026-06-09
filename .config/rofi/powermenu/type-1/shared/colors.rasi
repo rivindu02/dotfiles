@@ -14,13 +14,13 @@
 }
 */
 /**
- * One Dark Warm (navarasu/onedark.nvim)
+ * Gruvbox 
  **/
 * {
-    background:     #2c2d30FF;
-    background-alt: #35373bFF;
-    foreground:     #b1b4b9FF;
-    selected:       #68aee8FF;
-    active:         #99bc80FF;
-    urgent:         #e16d77FF;
+    background:     #282828FF;
+    background-alt: #353535FF;
+    foreground:     #EBDBB2FF;
+    selected:       #83A598FF;
+    active:         #B8BB26FF;
+    urgent:         #FB4934FF;
 }

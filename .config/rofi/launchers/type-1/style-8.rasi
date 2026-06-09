@@ -30,19 +30,19 @@ configuration {
     background-colour:           rgba(24, 26, 28, 0.85);
     foreground-colour:           var(foreground);
     alternate-background:        var(background-alt);
-    normal-background:           var(background);
+    normal-background:           transparent;
     normal-foreground:           var(foreground);
     urgent-background:           var(urgent);
-    urgent-foreground:           var(background);
+    urgent-foreground:           rgba(24, 26, 28, 0.85);
     active-background:           var(active);
-    active-foreground:           var(background);
+    active-foreground:           rgba(24, 26, 28, 0.85);
     selected-normal-background:  var(selected);
-    selected-normal-foreground:  var(background);
+    selected-normal-foreground:  rgba(24, 26, 28, 0.85);
     selected-urgent-background:  var(active);
-    selected-urgent-foreground:  var(background);
+    selected-urgent-foreground:  rgba(24, 26, 28, 0.85);
     selected-active-background:  var(urgent);
-    selected-active-foreground:  var(background);
-    alternate-normal-background: var(background);
+    selected-active-foreground:  rgba(24, 26, 28, 0.85);
+    alternate-normal-background: transparent;
     alternate-normal-foreground: var(foreground);
     alternate-urgent-background: var(urgent);
     alternate-urgent-foreground: var(background);
@@ -97,7 +97,7 @@ mainbox {
 /*****----- A Custom Box -----*****/
 custombox {
     spacing:                     10px;
-    background-color:            @background-colour;
+    background-color:            transparent;
     text-color:                  @foreground-colour;
     orientation:                 horizontal;
     children:                    [ "mode-switcher", "listview" ];
