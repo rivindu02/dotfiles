@@ -13,5 +13,11 @@ use = "yazi-rs/plugins:mount"
 rev = "1db18bb"
 hash = "e3260d0b1feded8c8e3ae3afa1169e30"
 
+[[flavor.deps]]
+use = "yazi-rs/flavors:gruvbox-material"
+rev = "0f9204b"
+hash = "99aa06d3014798d86001c324468d497f"
+
 [flavor]
-deps = []
+dark  = "gruvbox-material"
+light = "gruvbox-material"
