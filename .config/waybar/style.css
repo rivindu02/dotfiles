@@ -1,10 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════
-   Waybar — One Dark Warm (navarasu/onedark.nvim)
-   bg0     : #2c2d30   bg1 : #35373b   bg_d : #242628
-   fg      : #b1b4b9   grey: #646568   light_grey: #8b8d91
-   red     : #e16d77   green: #99bc80  orange: #c99a6e
-   blue    : #68aee8   yellow: #dfbe81 cyan  : #5fafb9
-   purple  : #c27fd7   black : #191a1c
+   Waybar — Gruvbox Material Dark (sainnhe/gruvbox-material)
+   bg0     : #282828   bg1 : #32302f   bg2 : #3c3836
+   bg3     : #504945   bg4 : #665c54   fg  : #d4be98
+   grey    : #928374   red  : #ea6962  green: #a9b665
+   yellow  : #d8a657   blue : #7daea3  teal : #83a598
+   aqua    : #89b482   orange: #e78a4e
    ═══════════════════════════════════════════════════════════════ */
 
 * {
@@ -14,15 +14,15 @@
 }
 
 window#waybar {
-  background: rgba(24, 26, 28, 0.85);
-  border-bottom: 1px solid rgba(194, 127, 215, 0.30);
-  color: #b1b4b9;
+  background: rgba(40, 40, 40, 0.85);
+  border-bottom: 1px solid rgba(131, 165, 152, 0.30);  /* #83A598 */
+  color: #d4be98;
 }
 
 /* ── Workspaces ─────────────────────────────────────────────── */
 #workspaces button {
   padding: 0 8px;
-  color: #646568;
+  color: #928374;
   background: transparent;
   border-radius: 6px;
   margin: 4px 2px;
@@ -31,23 +31,23 @@ window#waybar {
 }
 
 #workspaces button.active {
-  color: #c27fd7;
-  background: rgba(194, 127, 215, 0.15);
+  color: #d3869b;
+  background: rgba(211, 134, 155, 0.15);
 }
 
 #workspaces button:hover {
-  color: #b1b4b9;
+  color: #d4be98;
   background: rgba(255, 255, 255, 0.06);
 }
 
 #workspaces button.urgent {
-  color: #191a1c;
-  background: #e16d77;
+  color: #282828;
+  background: #ea6962;
 }
 
 /* ── Clock ──────────────────────────────────────────────────── */
 #clock {
-  color: #dfbe81;
+  color: #d8a657;
   font-weight: bold;
   padding: 0 12px;
   border-radius: 6px;
@@ -56,26 +56,25 @@ window#waybar {
 }
 
 #clock:hover {
-  background: rgba(223, 190, 129, 0.12);
-  color: #dfbe81;
+  background: rgba(216, 166, 87, 0.12);
+  color: #d8a657;
 }
 
 /* ── System modules ─────────────────────────────────────────── */
 #memory {
-  color: #c99a6e;
+  color: #e78a4e;
   padding: 0 8px;
   border-radius: 6px;
   margin: 4px 2px;
   transition: all 0.2s;
-
 }
 #memory:hover {
-  background: rgba(201, 154, 110, 0.12);
-  color: #c99a6e;
+  background: rgba(231, 138, 78, 0.12);
+  color: #e78a4e;
 }
 
 #battery {
-  color: #99bc80;
+  color: #a9b665;
   padding: 0 8px;
   border-radius: 6px;
   margin: 4px 2px;
@@ -83,32 +82,32 @@ window#waybar {
 }
 
 #battery.warning {
-  color: #dfbe81;
+  color: #d8a657;
 }
 
 #battery.critical {
-  color: #e16d77;
+  color: #ea6962;
 }
 
 #battery.charging {
-  color: #99bc80;
+  color: #a9b665;
 }
 
 #battery:hover {
-  background: rgba(153, 188, 128, 0.12);
-  color: #99bc80;
+  background: rgba(169, 182, 101, 0.12);
+  color: #a9b665;
 }
 #battery.warning:hover {
-  background: rgba(223, 190, 129, 0.12);
-  color: #dfbe81;
+  background: rgba(216, 166, 87, 0.12);
+  color: #d8a657;
 }
 #battery.critical:hover {
-  background: rgba(225, 109, 119, 0.12);
-  color: #e16d77;
+  background: rgba(234, 105, 98, 0.12);
+  color: #ea6962;
 }
 
 #network {
-  color: #5fafb9;
+  color: #89b482;
   padding: 0 8px;
   border-radius: 6px;
   margin: 4px 2px;
@@ -116,16 +115,16 @@ window#waybar {
 }
 
 #network.disconnected {
-  color: #646568;
+  color: #928374;
 }
 
 #network:hover {
-  background: rgba(95, 175, 185, 0.12);
-  color: #5fafb9;
+  background: rgba(137, 180, 130, 0.12);
+  color: #89b482;
 }
 
 #pulseaudio {
-  color: #68aee8;
+  color: #7daea3;
   padding: 0 8px;
   border-radius: 6px;
   margin: 4px 2px;
@@ -133,20 +132,20 @@ window#waybar {
 }
 
 #pulseaudio.muted {
-  color: #646568;
+  color: #928374;
 }
 
 #pulseaudio:hover {
-  background: rgba(104, 174, 232, 0.12);
-  color: #68aee8;
+  background: rgba(125, 174, 163, 0.12);
+  color: #7daea3;
 }
 #pulseaudio.muted:hover {
-  background: rgba(100, 101, 104, 0.12);
-  color: #8b8d91;
+  background: rgba(146, 131, 116, 0.12);
+  color: #928374;
 }
 
 #backlight {
-  color: #dfbe81;
+  color: #d8a657;
   padding: 0 8px;
   border-radius: 6px;
   margin: 4px 2px;
@@ -154,8 +153,8 @@ window#waybar {
 }
 
 #backlight:hover {
-  background: rgba(223, 190, 129, 0.12);
-  color: #dfbe81;
+  background: rgba(216, 166, 87, 0.12);
+  color: #d8a657;
 }
 
 #tray {
@@ -168,13 +167,13 @@ window#waybar {
 
 #tray > .needs-attention {
   -gtk-icon-effect: highlight;
-  background-color: rgba(225, 109, 119, 0.20);
+  background-color: rgba(234, 105, 98, 0.20);
   border-radius: 4px;
 }
 
 /* ── Notification bell ──────────────────────────────────────── */
 #custom-notification {
-  color: #c27fd7;
+  color: #83a598;
   padding: 0 8px;
   border-radius: 6px;
   margin: 4px 2px;
@@ -182,13 +181,13 @@ window#waybar {
 }
 
 #custom-notification:hover {
-  background: rgba(194, 127, 215, 0.12);
-  color: #c27fd7;
+  background: rgba(131, 165, 152, 0.12);
+  color: #83a598;
 }
 
 /* ── Power button ───────────────────────────────────────────── */
 #custom-power {
-  color: #e16d77;
+  color: #ea6962;
   padding: 0 12px;
   font-size: 15px;
   border-radius: 6px;
@@ -197,34 +196,32 @@ window#waybar {
 }
 
 #custom-power:hover {
-  color: #b1b4b9;
-  background: rgba(225, 109, 119, 0.18);
+  color: #d4be98;
+  background: rgba(234, 105, 98, 0.18);
 }
 
 /* ── Window title ───────────────────────────────────────────── */
 #window {
-  color: #8b8d91;
+  color: #928374;
   padding: 0 8px;
   font-style: italic;
   border-radius: 6px;
   margin: 4px 2px;
   transition: all 0.2s;
-
 }
 #window:hover {
   background: rgba(255, 255, 255, 0.05);
-  color: #b1b4b9;
+  color: #d4be98;
 }
 
 /* ── Tooltip ────────────────────────────────────────────────── */
 tooltip {
-  background: rgba(24, 26, 28, 0.95);
-  border: 1px solid rgba(194, 127, 215, 0.30);
+  background: rgba(40, 40, 40, 0.95);
+  border: 1px solid rgba(131, 165, 152, 0.30);  /* #83A598 */
   border-radius: 8px;
-  color: #b1b4b9;
+  color: #d4be98;
 }
 
 tooltip label {
-  color: #b1b4b9;
+  color: #d4be98;
 }
-
