@@ -1,300 +1,251 @@
-" ===========================================================
-" NEOVIM CONFIG
-" ===========================================================
+-- ===========================================================
+-- NEOVIM CONFIG
+-- ===========================================================
 
-" -----------------------------------------------------------
-" 1. PLUGINS
-" -----------------------------------------------------------
+-- -----------------------------------------------------------
+-- 1. LAZY.NVIM BOOTSTRAPPER
+-- -----------------------------------------------------------
 
-call plug#begin('~/.local/share/nvim/plugged')
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
+end
+vim.opt.rtp:prepend(lazypath)
 
-" Core editing
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-fugitive'
-Plug 'matze/vim-move'
-Plug 'mbbill/undotree'
-Plug 'windwp/nvim-autopairs'
+vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
 
-" UI
-Plug 'nvim-tree/nvim-tree.lua'
-Plug 'nvim-tree/nvim-web-devicons'
-Plug 'nvim-lualine/lualine.nvim'
-Plug 'akinsho/bufferline.nvim', { 'tag': 'v4.*' }
-Plug 'goolord/alpha-nvim'
-Plug 'folke/which-key.nvim'
-Plug 'lukas-reineke/indent-blankline.nvim'
-Plug 'lewis6991/gitsigns.nvim'
-Plug 'folke/trouble.nvim'
+-- =============================================================================
+-- 2. PLUGIN DECLARATIONS (lazy.nvim format)
+-- =============================================================================
+local plugins = {
+	-- Core Editing Utilities
+	{ "tpope/vim-surround" },
+	{ "tpope/vim-commentary" },
+	{ "tpope/vim-fugitive" },
+	{ "matze/vim-move" },
+	{ "mbbill/undotree" },
+	{ "windwp/nvim-autopairs", config = true },
 
-" Search
-"Plug 'junegunn/fzf'
-"Plug 'junegunn/fzf.vim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
-Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+	-- UI Components
+	{ "nvim-tree/nvim-tree.lua" },
+	{ "nvim-tree/nvim-web-devicons" },
+	{ "nvim-lualine/lualine.nvim" },
+	{ "akinsho/bufferline.nvim", version = "v4.*" },
+	{ "goolord/alpha-nvim" },
+	{ "folke/which-key.nvim", config = true },
+	{ "lukas-reineke/indent-blankline.nvim", main = "ibl" },
+	{ "lewis6991/gitsigns.nvim" },
+	{ "folke/trouble.nvim" },
 
-" Search & Replace
-Plug 'nvim-pack/nvim-spectre'
+	-- Search Infrastructures
+	{
+		'nvim-telescope/telescope.nvim', version = '*',
+		dependencies = {
+			'nvim-lua/plenary.nvim',
+			{ 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+		}
+	},
+	{ "nvim-pack/nvim-spectre" },
 
-" LSP / Completion
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'neovim/nvim-lspconfig'
-Plug 'williamboman/mason.nvim'
-Plug 'williamboman/mason-lspconfig.nvim'
-Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-path'
-Plug 'L3MON4D3/LuaSnip'
-Plug 'saadparwaiz1/cmp_luasnip'
-Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v3.x'}
-
-" Languages
-"Plug 'vim-python/python-syntax'
-"Plug 'alvan/vim-closetag'
-Plug 'windwp/nvim-ts-autotag'
-Plug 'lepture/vim-jinja'
-Plug 'stevearc/conform.nvim'
-Plug 'mfussenegger/nvim-lint'
-Plug 'rafamadriz/friendly-snippets'
-
-Plug 'folke/todo-comments.nvim'
-Plug 'norcalli/nvim-colorizer.lua'
-
-" Terminal (KEPT)
-Plug 'voldikss/vim-floaterm'
-
-" Tags / Outline (legacy but useful)
-"Plug 'preservim/tagbar'
-" Replace Tagbar with these:
-Plug 'stevearc/aerial.nvim'             " Modern LSP-based outline
-Plug 'SmiteshP/nvim-navic'              " Breadcrumbs (Context at top)
-Plug 'aznhe21/actions-preview.nvim'     " Visual Quick-fixes (Lightbulb alternative)
-
-" Motion
-Plug 'folke/flash.nvim'
-
-Plug 'ahmedkhalf/project.nvim'
-
-" Colors
-Plug 'navarasu/onedark.nvim'
-Plug 'morhetz/gruvbox'
-
-" Tab manager
-Plug 'ThePrimeagen/harpoon', {'branch': 'harpoon2'}
-
-" Markdown
-Plug 'MeanderingProgrammer/render-markdown.nvim'
-"Plug 'OXY2DEV/markview.nvim'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
-" Treesitter Text Objects (Structural editing)
-Plug 'nvim-treesitter/nvim-treesitter-textobjects'
-
-Plug 'mfussenegger/nvim-jdtls'
-
-call plug#end()
-
-" -----------------------------------------------------------
-" 2. GENERAL SETTINGS
-" -----------------------------------------------------------
-set number
-set relativenumber
-set mouse=a
-set autoindent
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-set smarttab
-set encoding=UTF-8
-set visualbell
-set scrolloff=5
-set cursorline
-set signcolumn=yes
-set termguicolors
-set hidden
-set splitbelow
-set splitright
-set timeoutlen=400
-set inccommand=split
-
-" Persistent undo
-set undofile
-set undodir=~/.config/nvim/undo
-
-" Use man pages when LSP has no hover
-set keywordprg=:Man
-
-" -----------------------------------------------------------
-" 3. KEYMAPS
-" -----------------------------------------------------------
-" Leader
-let mapleader = " "
-
-" File tree
-nnoremap <C-n> :NvimTreeToggle<CR>
-
-" Buffer navigation
-nnoremap <S-l> :BufferLineCycleNext<CR>
-nnoremap <S-h> :BufferLineCyclePrev<CR>
-nnoremap <leader>bd :bd<CR>
-
-" Clear highlights
-" same as :nohl
-nnoremap <F3> :noh<CR>
-
-" Format file
-"nmap <C-i> :call CocAction('format')<CR>
-
-" Tagbar
-" nnoremap <F6> :TagbarToggle<CR>
-
-" Undotree
-nnoremap <leader>u :UndotreeToggle<CR>
-
-" Fast escape
-inoremap jk <Esc>
-
-" Center screen on navigation
-" TODO
-nnoremap n nzzzv 
-nnoremap N Nzzzv
-nnoremap <C-d> <C-d>zz
-nnoremap <C-u> <C-u>zz
-nnoremap <C-o> <C-o>zz
-nnoremap <C-i> <C-i>zz
-
-" Move lines
-vnoremap <S-j> :m '>+1<CR>gv=gv
-vnoremap <S-k> :m '<-2<CR>gv=gv
-
-" Split navigation
-" TODO
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-
-" Git (fugitive)
-nnoremap <leader>gg :Git<CR>
-nnoremap <leader>gb :Git blame<CR>
-nnoremap <leader>gd :Gdiffsplit<CR>
-nnoremap <leader>gl :Git log --oneline<CR>
-
-" Trouble diagnostics
-nnoremap <leader>xx :TroubleToggle<CR>
-nnoremap <leader>xw :TroubleToggle workspace_diagnostics<CR>
-nnoremap <leader>xd :TroubleToggle document_diagnostics<CR>
-
-" FZF
-"nnoremap <leader>hi :History<CR>
-
-" -----------------------------------------------------------
-" 4. FLOATERM
-" -----------------------------------------------------------
-let g:floaterm_keymap_new    = '<F7>'
-let g:floaterm_keymap_prev   = '<F8>'
-let g:floaterm_keymap_next   = '<F9>'
-let g:floaterm_keymap_toggle = '<F12>'
-
-autocmd FileType python nnoremap <buffer> <F5> :w<CR>:FloatermNew --autoclose=0 python3 %<CR>
-autocmd FileType java nnoremap <buffer> <F5> :w<CR>:FloatermNew --autoclose=0 mvn clean compile<CR>
-" -----------------------------------------------------------
-" 5. COC.NVIM
-" -----------------------------------------------------------
-"let g:coc_disable_startup_warning = 1
-"let g:coc_diagnostic_virtual_text = 1
-"let g:coc_diagnostic_virtual_text_prefix = "● "
-
-" Diagnostics navigation
-"nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
-"nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" LSP navigation
-"nmap gd <Plug>(coc-definition)
-"nmap gr <Plug>(coc-references)
-"nmap gi <Plug>(coc-implementation)
-"nmap gt <Plug>(coc-type-definition)
-
-" Refactoring
-"nmap <leader>rn <Plug>(coc-rename)
-"nmap <leader>ca <Plug>(coc-codeaction-cursor)
-"nmap <leader>qf <Plug>(coc-fix-current)
-
-" Hover and signature
-"nnoremap <silent> K :call CocAction('doHover')<CR>
-"nnoremap <leader>si :call CocActionAsync('showSignatureHelp')<CR>
-
-" Java specific
-"nnoremap <leader>jm :CocCommand java.action.overrideMethodsPrompt<CR>
-"nnoremap <leader>ji :CocCommand java.action.organizeImports<CR>
-"nnoremap <leader>jt :CocCommand java.action.showTypeHierarchy<CR>
-"nnoremap <leader>jr :CocCommand java.clean.workspace<CR>
-
-" Completion
-"inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : \<CR>"
-"inoremap <expr> <Tab> pumvisible() ? \<"C-n>" : \<Tab>"
-"inoremap <expr> <S-Tab> pumvisible() ? \<C-p>" : \<C-h>"
-"
-" -----------------------------------------------------------
-" 5. LSP KEYMAPS (set in lua on_attach, listed here as reference)
-" -----------------------------------------------------------
-" gd        -> definition
-" gr        -> references
-" gi        -> implementation
-" gt        -> type definition
-" K         -> hover
-" <leader>rn -> rename
-" <leader>ca -> code action
-" <leader>qf -> quick fix
-" <leader>fm -> format
-" [g / ]g   -> prev/next diagnostic
-" <leader>si -> signature help
-" <leader>jm -> override methods (jdtls)
-" <leader>ji -> organize imports (jdtls)
-" <leader>jt -> type hierarchy (jdtls)
-" <leader>jr -> restart jdtls
-
-" -----------------------------------------------------------
-" 6. TAGBAR
-" -----------------------------------------------------------
-"let g:tagbar_ctags_bin = 'ctags'
+	-- LSP Core & Intelligent Auto-Completion
+	{ "neovim/nvim-lspconfig" },
+	{ "williamboman/mason.nvim" },
+	{ "williamboman/mason-lspconfig.nvim" },
+	{ "hrsh7th/nvim-cmp" },
+	{ "hrsh7th/cmp-nvim-lsp" },
+	{ "hrsh7th/cmp-buffer" },
 
 
-" Reminder:
-" Ctrl-]  -> jump to tag (ctags)
-" Ctrl-T  -> jump back (ONLY for tags)
-" <C-o>   -> jump back (LSP, fzf, everything)
+	{ "hrsh7th/cmp-path" },
+	{ "L3MON4D3/LuaSnip" },
+	{ "saadparwaiz1/cmp_luasnip" },
+	{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
 
-" -----------------------------------------------------------
-" 7. LUA CONFIG (UI COMPONENTS)
-" -----------------------------------------------------------
+	-- Languages, Linters & Formatters
+	{ "windwp/nvim-ts-autotag", config = true },
+	{ "lepture/vim-jinja" },
+	{ "stevearc/conform.nvim" },
+	{ "mfussenegger/nvim-lint" },
+	{ "rafamadriz/friendly-snippets" },
+	{ "folke/todo-comments.nvim", config = true },
+	{ "norcalli/nvim-colorizer.lua" },
 
-lua << EOF
+	-- Integrated Terminal & Testing Tools
+	{ "voldikss/vim-floaterm" },
+	{ "vim-test/vim-test" },
+	{ "preservim/vimux" },
 
--- -----------------------
--- AERIAL (Outline)
--- -----------------------
-require("aerial").setup({
-  on_attach = function(bufnr)
-    -- Jump forwards/backwards with { and } ----> Use this to move arround functions
-    vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-    vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+	-- Enhanced Code Motion & Structural Navigation
+	{ "stevearc/aerial.nvim" },
+	{ "SmiteshP/nvim-navic" },
+	{ "aznhe21/actions-preview.nvim" },
+	{ "folke/flash.nvim" },
+	{ "ahmedkhalf/project.nvim" },
+	{ "ThePrimeagen/harpoon", branch = "harpoon2" },
+	{ "MeanderingProgrammer/render-markdown.nvim" },
+	{ "mfussenegger/nvim-jdtls" },
+
+	-- Colorscheme Theme
+	{
+		'f4z3r/gruvbox-material.nvim',
+		name = 'gruvbox-material',
+		lazy = false,
+		priority = 1000,
+		opts = {},
+	},
+}
+
+local ops = {}
+
+require("lazy").setup(plugins, ops)
+
+
+-- -----------------------------------------------------------
+-- 3. GENERAL SETTINGS
+-- -----------------------------------------------------------
+local opt = vim.opt
+
+opt.number = true
+opt.relativenumber = true
+opt.mouse = "a"
+opt.tabstop = 4
+opt.softtabstop = 4
+opt.shiftwidth = 4
+opt.visualbell = true
+opt.scrolloff = 5
+opt.cursorline = true
+opt.signcolumn = "yes"
+opt.termguicolors = true
+opt.hidden = true
+opt.splitbelow = true
+opt.splitright = true
+opt.timeoutlen = 400
+opt.inccommand = "split"
+
+-- Persistent undo mechanics
+opt.undofile = true
+opt.undodir = vim.fn.expand("~/.config/nvim/undo")
+
+-- Help lookup fallback targeting system manual entries
+opt.keywordprg = ":Man"
+
+-- -----------------------------------------------------------
+-- 4. CORE GLOBAL KEYMAPS
+-- -----------------------------------------------------------
+local map = vim.keymap.set
+
+-- UI Toggles & General Utilities
+map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>")
+map("n", "<F3>", "<cmd>noh<CR>")
+map("n", "<leader>u", "<cmd>UndotreeToggle<CR>")
+map("i", "jk", "<Esc>")
+
+-- Tab & Buffer Management Line Switching
+map("n", "<S-l>", "<cmd>BufferLineCycleNext<CR>")
+map("n", "<S-h>", "<cmd>BufferLineCyclePrev<CR>")
+map("n", "<leader>bd", "<cmd>bd<CR>")
+
+
+-- Keep screen locked center when jumping files/searches
+map("n", "n", "nzzzv")
+map("n", "N", "Nzzzv")
+map("n", "<C-d>", "<C-d>zz")
+map("n", "<C-u>", "<C-u>zz")
+map("n", "<C-o>", "<C-o>zz")
+map("n", "<C-i>", "<C-i>zz")
+
+-- Visual Mode Line Relocation
+map("v", "<S-j>", ":m '>+1<CR>gv=gv")
+map("v", "<S-k>", ":m '<-2<CR>gv=gv")
+
+-- Native Splitting Window Navigation Panel Switches  --> replace with tmux
+map("n", "<C-h>", "<C-w>h")
+map("n", "<C-j>", "<C-w>j")
+map("n", "<C-k>", "<C-w>k")
+map("n", "<C-l>", "<C-w>l")
+
+-- Fugitive Wrapper Engine Mappings
+map("n", "<leader>gg", "<cmd>Git<CR>")
+map("n", "<leader>gb", "<cmd>Git blame<CR>")
+map("n", "<leader>gd", "<cmd>Gdiffsplit<CR>")
+map("n", "<leader>gl", "<cmd>Git log --oneline<CR>")
+
+-- Trouble diagnostics
+-- Project-Wide Diagnostics Panel (Bottom persistent window)
+map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>")
+
+-- Current Buffer Only Diagnostics Panel (Filter out workspace noise)
+map("n", "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<CR>")
+
+-- LSP Symbols Panel (Replaces old side-bars / outlines on the right)
+map("n", "<leader>cs", "<cmd>Trouble symbols toggle focus=true win.position=right win.size=35<CR>")
+
+-- Cross-File LSP References Grid (Fuzzy searching is bad for this; a tree view is perfect)
+map("n", "<leader>cl", "<cmd>Trouble lsp toggle focus=true win.position=bottom<CR>")
+
+-- Traditional Fallbacks
+map("n", "<leader>xq", "<cmd>Trouble qflist toggle<CR>")
+map("n", "<leader>xl", "<cmd>Trouble loclist toggle<CR>")
+
+
+-- =============================================================================
+-- 5. PLUGIN SPECIFIC LUA CONFIGURATION BLOCKS
+-- =============================================================================
+
+-- FLOATERM TERMINAL WINDOW MANAGER CONFIG
+vim.g.floaterm_keymap_new    = "<F7>"
+vim.g.floaterm_keymap_prev   = "<F8>"
+vim.g.floaterm_keymap_next   = "<F9>"
+vim.g.floaterm_keymap_toggle = "<F12>"
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "python",
+  callback = function()
+    map("n", "<F5>", "<cmd>w<CR><cmd>FloatermNew --autoclose=0 python3 %<CR>", { buffer = true })
   end,
 })
--- Map it to your old Tagbar key (F6) or something new
-vim.keymap.set("n", "<F6>", "<cmd>AerialToggle! left<CR>")
-
--- -----------------------
--- NAVIC (Breadcrumbs)
--- -----------------------
-local navic = require("nvim-navic")
-navic.setup({
-    highlight = true,
-    separator = "  ",
-    depth_limit = 5,
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "java",
+  callback = function()
+    map("n", "<F5>", "<cmd>w<CR><cmd>FloatermNew --autoclose=0 mvn clean compile<CR>", { buffer = true })
+  end,
 })
+
+-- VIM-TEST RUNNER FRAMEWORK INTEGRATION
+vim.g["test#strategy"] = "vimux"
+vim.g.VimuxHeight = "30"
+vim.g.VimuxOrientation = "h"
+
+map("n", "<leader>tn", "<cmd>TestNearest<CR>", { silent = true })
+map("n", "<leader>tf", "<cmd>TestFile<CR>", { silent = true })
+map("n", "<leader>ts", "<cmd>TestSuite<CR>", { silent = true })
+map("n", "<leader>tl", "<cmd>TestLast<CR>", { silent = true })
+map("n", "<leader>tv", "<cmd>TestVisit<CR>", { silent = true })
+
+
+-- AERIAL SIDE PANEL OUTLINE
+require("aerial").setup({
+  on_attach = function(bufnr)
+    map("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+    map("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+  end,
+})
+map("n", "<F6>", "<cmd>AerialToggle! left<CR>")
+
+-- NAVIC BREADCRUMBS ENGINE
+local navic = require("nvim-navic")
+navic.setup({ highlight = true, separator = "  ", depth_limit = 5 })
 
 -- -----------------------
 -- NVIM-TREE
@@ -320,14 +271,28 @@ require("nvim-tree").setup({
 })
 
 -- -----------------------
--- ONEDARK
+-- GRUVBOX MATERIAL
 -- -----------------------
-require('onedark').setup {
-  style = 'warm',
-  --transparent = false
+-- values shown are defaults and will be used if not provided
+local theme = require("gruvbox-material.lualine").theme("medium")
+
+require('lualine').setup {
+  options = { theme  = theme },
 }
 
-require('onedark').load()
+
+-- -----------------------
+-- CUSTOM HIGHLIGHT OVERRIDES (To style Alpha Dashboard & NvimTree)
+-- -----------------------
+-- Dashboard header matching the retro look
+vim.api.nvim_set_hl(0, "AlphaHeader", { fg = "#a9b665", bold = true }) -- Gruvbox Green
+vim.api.nvim_set_hl(0, "AlphaButton", { fg = "#ea6962" })              -- Gruvbox Red
+vim.api.nvim_set_hl(0, "AlphaButtonShortcut", { fg = "#d8a657" })      -- Gruvbox Yellow
+
+-- Force NvimTree folder text and background behavior
+vim.api.nvim_set_hl(0, "NvimTreeFolderName", { fg = "#a9b665", bold = true })
+vim.api.nvim_set_hl(0, "NvimTreeOpenedFolderName", { fg = "#a9b665", bold = true })
+
 
 -- -----------------------
 -- BUFFERLINE
@@ -364,7 +329,7 @@ require('colorizer').setup({
 -- -----------------------
 require("lualine").setup({
   options = {
-    theme = "onedark",
+    theme = "gruvbox-material",
     globalstatus = true,
     section_separators = { left = "", right = "" },
     component_separators = { left = "", right = "" },
@@ -391,19 +356,27 @@ require("lualine").setup({
 -- -----------------------
 local telescope = require('telescope')
 local builtin = require('telescope.builtin')
+local open_with_trouble = require("trouble.sources.telescope").open
 
 telescope.setup({
   defaults = {
     file_ignore_patterns = { "target/", ".git/", "node_modules/", "%.class" },
     layout_strategy = 'horizontal',
     layout_config = { preview_width = 0.55 },
+    mappings = {
+      i = { ["<C-t>"] = open_with_trouble }, -- Send results to Trouble from Insert mode
+      n = { ["<C-t>"] = open_with_trouble }, -- Send results to Trouble from Normal mode
+    },
   }
 })
-telescope.load_extension('fzf')
 
-vim.keymap.set('n', '<leader>ff', builtin.find_files)
-vim.keymap.set('n', '<leader>fg', builtin.live_grep)
-vim.keymap.set('n', '<leader>fb', builtin.buffers)
+vim.keymap.set('n', '<leader>ff', function()
+	builtin.find_files({ hidden = true })
+end)
+vim.keymap.set('n', '<leader>fg', function()
+	builtin.live_grep({ hidden = true })
+end)
+vim.keymap.set('n', '<leader>fb', builtin.buffers)	
 vim.keymap.set('n', '<leader>fs', builtin.lsp_document_symbols)
 vim.keymap.set('n', '<leader>fw', builtin.lsp_workspace_symbols)
 vim.keymap.set('n', '<leader>fd', builtin.diagnostics)
@@ -445,18 +418,29 @@ require('gitsigns').setup({
 })
 
 -- -----------------------
--- TROUBLE
+-- TROUBLE 
 -- -----------------------
 require('trouble').setup({
-  icons = true,
-  fold_open = "",
-  fold_closed = "",
-  signs = {
-    error = "",
-    warning = "",
-    hint = "",
-    information = "",
+  auto_close = false,      -- Keep window open even if errors hit 0
+  auto_preview = true,     -- Automatically open file preview when highlighting an item
+  focus = true,            -- Automatically jump focus into the Trouble list window when opened
+  follow = true,           -- Follow the current code position
+  indent_guides = true,    -- Render vertical tree lines
+  multiline = true,        -- Break long error messages across lines neatly
+  win = {
+    position = "bottom",   -- Default layout position for errors
+    size = 12,
   },
+  icons = {
+    indent = {
+      top           = "│ ",
+      middle        = "├╴",
+      last          = "└╴",
+      fold_open     = " ",
+      fold_closed   = " ",
+      ws            = "  ",
+    }
+  }
 })
 
 -- -----------------------
@@ -472,39 +456,39 @@ require('ibl').setup({
 -- -----------------------
 require('flash').setup({})
 vim.keymap.set({'n', 'x', 'o'}, 's', function() require('flash').jump() end)
-vim.keymap.set({'n', 'x', 'o'}, 'S', function() require('flash').treesitter() end)
+--vim.keymap.set({'n', 'x', 'o'}, 'S', function() require('flash').treesitter() end)
 
 -- -----------------------
 -- TREESITTER & TEXTOBJECTS
 -- -----------------------
-local ok, treesitter = pcall(require, 'nvim-treesitter.configs')
-if ok then
-  treesitter.setup({
-    ensure_installed = {
-      "java", "python", "javascript", "typescript",
-      "json", "yaml", "xml", "lua", "bash", "markdown", "markdown_inline", "c", "cpp"
-    },
-    highlight = { enable = true },
-    indent = { enable = true },
-    textobjects = {
-      select = {
-        enable = true,
-        lookahead = true,
-        keymaps = {
-          ['af'] = '@function.outer',
-          ['if'] = '@function.inner',
-          ['ac'] = '@class.outer',
-          ['ic'] = '@class.inner',
-        },
-      },
-      move = {
-        enable = true,
-        goto_next_start = { [']f'] = '@function.outer', [']c'] = '@class.outer' },
-        goto_prev_start = { ['[f'] = '@function.outer', ['[c'] = '@class.outer' },
-      },
-    },
-  })
-end
+--local ok, treesitter = pcall(require, 'nvim-treesitter.configs')
+--if ok then
+--  treesitter.setup({
+--    ensure_installed = {
+--      "java", "python", "javascript", "typescript",
+--      "json", "yaml", "xml", "lua", "bash", "markdown", "markdown_inline", "c", "cpp"
+--    },
+--    highlight = { enable = true },
+--    indent = { enable = true },
+--    textobjects = {
+--      select = {
+--        enable = true,
+--        lookahead = true,
+--        keymaps = {
+--          ['af'] = '@function.outer',
+--          ['if'] = '@function.inner',
+--          ['ac'] = '@class.outer',
+--          ['ic'] = '@class.inner',
+--        },
+--      },
+--      move = {
+--        enable = true,
+--        goto_next_start = { [']f'] = '@function.outer', [']c'] = '@class.outer' },
+--        goto_prev_start = { ['[f'] = '@function.outer', ['[c'] = '@class.outer' },
+--      },
+--    },
+--  })
+--end
 
 -- -----------------------
 -- LSP-ZERO
@@ -680,7 +664,7 @@ harpoon:setup({
 })
 
 vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
-vim.keymap.set("n", "<C-e>", function()
+vim.keymap.set("n", "<C-h>", function()
   local h = require("harpoon")
   h.ui:toggle_quick_menu(h:list())
 end)
@@ -711,12 +695,12 @@ require('render-markdown').setup({
 })
 
 -- this is the critical fix
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "markdown",
-  callback = function()
-    vim.treesitter.start()
-  end,
-})
+--vim.api.nvim_create_autocmd("FileType", {
+--  pattern = "markdown",
+--  callback = function()
+--    vim.treesitter.start()
+--  end,
+--})
 
 -- -----------------------
 -- WHICH-KEY
@@ -805,5 +789,5 @@ end
 vim.keymap.set('n', '<leader>sr', function() require('spectre').open() end, { desc = "Spectre Global Replace" })
 vim.keymap.set('n', '<leader>sw', function() require('spectre').open_visual({ select_word = true }) end, { desc = "Spectre Replace Word" })
 
-EOF
+
 
