@@ -5,8 +5,8 @@ CRITICAL_THRESHOLD=15
 EMERGENCY_THRESHOLD=10
 
 # Assets — only use files that actually exist
-SOUND_WARN="~/.local/share/sounds/dialog-warning.oga"
-SOUND_CRITICAL="~/.local/share/sounds/battery-warn.oga"
+SOUND_WARN="$HOME/.local/share/sounds/dialog-warning.oga"
+SOUND_CRITICAL="$HOME/.local/share/sounds/battery-warn.oga"
 
 # State files
 STATE_DIR="/tmp/battery_warn"
@@ -39,7 +39,7 @@ notify_warn() {
 }
 
 notify_critical() {
-    notify-send -u critical -i battery-caution -t 0 \
+    notify-send -u normal -i battery-caution -t 0 \
         -h string:x-dunst-stack-tag:battery \
         "Plug in your charger!" "Battery is at ${1}% — plug in now!"
     play_sound "$SOUND_CRITICAL"
@@ -58,7 +58,7 @@ notify_critical() {
 }
 
 notify_emergency() {
-    notify-send -u critical -i battery-empty -t 0 \
+    notify-send -u normal -i battery-empty -t 0 \
         -h string:x-dunst-stack-tag:battery \
         "Battery Critical!" "Battery is at ${1}% — save your work now!"
     play_sound "$SOUND_CRITICAL"
