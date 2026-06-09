@@ -11,7 +11,6 @@
   "widgets": [
     "title",
     "label#gcal-header",
-    "label#gcal-events",
     "mpris",
     "notifications",
     "dnd"
@@ -25,17 +24,49 @@
     "dnd": {
       "text": "Do Not Disturb"
     },
-    "label#gcal-header": {
-      "text": "󰃭 Upcoming Events",
-      "markup": false
-    },
-    "label#gcal-events": {
-      "text": "No upcoming events",
-      "markup": false
-    },
     "mpris": {
       "show-album-art": "when-available",
       "autohide": true
+    },
+    "label#gcal-header": {
+      "text": "󰃭  No upcoming events",
+      "markup": false
+    },
+    "label#gcal-today-header": {
+      "text": " Today",
+      "markup": false
+    },
+    "label#gcal-today-allday": {
+      "text": "󰃰 check temu",
+      "markup": false
+    },
+    "label#gcal-today-timed": {
+      "text": "08:30  •  Create Viva peresntation",
+      "markup": false
+    },
+    "label#gcal-tomorrow-header": {
+      "text": " Tomorrow",
+      "markup": false
+    },
+    "label#gcal-tomorrow-allday": {
+      "text": "󰃰 check temu",
+      "markup": false
+    },
+    "label#gcal-tomorrow-timed": {
+      "text": "08:30  •  Create Viva peresntation",
+      "markup": false
+    },
+    "label#gcal-day3-header": {
+      "text": " Tue Jun 09",
+      "markup": false
+    },
+    "label#gcal-day3-allday": {
+      "text": "󰃰 RemoteOK",
+      "markup": false
+    },
+    "label#gcal-day3-timed": {
+      "text": "",
+      "markup": false
     }
   },
   "notification-visibility": {
