@@ -22,3 +22,5 @@ video/x-matroska=mpv.desktop
 x-scheme-handler/about=brave-browser.desktop
 x-scheme-handler/unknown=brave-browser.desktop
 x-scheme-handler/slack=slack.desktop
+x-scheme-handler/com.todoist=todoist.desktop
+x-scheme-handler/todoist=todoist.desktop
