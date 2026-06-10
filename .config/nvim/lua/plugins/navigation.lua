@@ -14,7 +14,7 @@ return {
       map("n", "<leader>a", function() harpoon:list():add() end)
       -- NOTE: <C-h> here shadows the window-nav binding in core/keymaps.lua.
       --       Choose one or remap the window nav to <leader>wh etc.
-      map("n", "<C-h>", function()
+      map("n", "<C-e>", function()
         harpoon.ui:toggle_quick_menu(harpoon:list())
       end)
       map("n", "<A-1>", function() harpoon:list():select(1) end)
@@ -50,6 +50,24 @@ return {
       vim.keymap.set("n", "<F6>", "<cmd>AerialToggle! left<CR>")
     end,
   },
+  {
+	  "christoomey/vim-tmux-navigator",
+	  cmd = {
+		  "TmuxNavigateLeft",
+		  "TmuxNavigateDown",
+		  "TmuxNavigateUp",
+		  "TmuxNavigateRight",
+		  "TmuxNavigatePrevious",
+		  "TmuxNavigatorProcessList",
+	  },
+	  keys = {
+		  { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
+		  { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
+		  { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
+		  { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
+		  { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
+	  },
+  }
 
 
 }
