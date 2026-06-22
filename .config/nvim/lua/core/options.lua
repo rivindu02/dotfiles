@@ -22,6 +22,8 @@ opt.hidden = true
 opt.splitbelow = true
 opt.splitright = true
 
+opt.ignorecase = true
+opt.smartcase = true
 
 -- Persistent undo mechanics
 opt.undofile = true
@@ -29,3 +31,11 @@ opt.undodir = vim.fn.expand("~/.config/nvim/undo")
 
 -- Help lookup fallback targeting system manual entries
 opt.keywordprg = ":Man"
+
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+	desc = "Highlight when yanking text",
+	callback = function()
+		vim.hl.on_yank()
+	end,
+})
