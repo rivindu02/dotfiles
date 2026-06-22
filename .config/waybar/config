@@ -41,9 +41,14 @@
     "separate-outputs": true
   },
   "clock": {
-    "format": " {:%a %b %d  %I:%M %p}",
-    "tooltip": false,
-    "on-click": "brave --profile-directory=Default --app-id=kjbdgfilnfhdoflbpgamdcdgpehopbep"
+	"format": "󰥔 {:%a %b %d  %I:%M %p}", 
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+	"calendar": {
+        "format": {
+          "today": "<span color='#75f1fa'><b>{}</b></span>"
+        }
+      },
+    "on-click": "brave --app=https://calendar.google.com"
   },
   "memory": {
     "format": "󰍛 {}%",
