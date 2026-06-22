@@ -7,6 +7,8 @@ font-size = 12
 
 copy-on-select = clipboard
 
+window-decoration = false
+
 # ── Leader key (ctrl+space, same as your tmux prefix) ─────────────────────
 keybind = ctrl+a>shift+backslash=new_split:right     
 keybind = ctrl+a>minus=new_split:down
@@ -53,5 +55,5 @@ keybind = ctrl+a>slash=start_search
 # keybind = ctrl+shift+S=new_split:right
 # keybind = super+]=goto_split:next
 # keybind = super+[=goto_split:previous
-# confirm-close-surface = false
+confirm-close-surface = false
 
