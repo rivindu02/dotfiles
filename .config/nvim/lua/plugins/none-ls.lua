@@ -11,7 +11,7 @@ return {
                 null_ls.builtins.formatting.stylua,       -- Lua
                 null_ls.builtins.formatting.black,        -- Python
                 null_ls.builtins.formatting.prettier,     -- JS/TS/JSON/HTML/CSS
-                null_ls.builtins.formatting.forge_fmt,	 -- for solidity
+                --null_ls.builtins.formatting.forge_fmt,	 -- for solidity
 
                 -- Diagnostics / Linting
                 null_ls.builtins.completion.spell,

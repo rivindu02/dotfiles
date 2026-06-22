@@ -2,6 +2,7 @@
 return {
     {
         "mfussenegger/nvim-dap",
+		keys = { '<F5>', '<F10>', '<F11>', '<leader>db', '<leader>dc' },
         dependencies = {
             "rcarriga/nvim-dap-ui",
             "nvim-neotest/nvim-nio",         -- required by dap-ui

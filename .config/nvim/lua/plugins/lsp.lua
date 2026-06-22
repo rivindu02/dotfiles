@@ -1,10 +1,10 @@
 -- LSP Core
 return {
     {
-        "VonHeikemen/lsp-zero.nvim",
-        branch = "v3.x",
+        --"VonHeikemen/lsp-zero.nvim",
+        --branch = "v3.x",
+		"neovim/nvim-lspconfig",
         dependencies = {
-            "neovim/nvim-lspconfig",
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
             "hrsh7th/cmp-nvim-lsp",       -- keep this one; lsp-zero needs it for capabilities
@@ -18,14 +18,13 @@ return {
             -- NAVIC BREADCRUMBS
             -- -----------------------
             local navic = require("nvim-navic")
+			require("actions-preview").setup()
             navic.setup({ highlight = true, separator = "  ", depth_limit = 5 })
 
-            -- -----------------------
-            -- LSP-ZERO ON_ATTACH
-            -- -----------------------
-            local lsp_zero = require('lsp-zero')
+            local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-            lsp_zero.on_attach(function(client, bufnr)
+
+            local on_attach = function(client, bufnr)
                 local opts = { buffer = bufnr }
 
                 -- Navigation
@@ -48,22 +47,8 @@ return {
                 vim.keymap.set('n', '[g', vim.diagnostic.goto_prev, opts)
                 vim.keymap.set('n', ']g', vim.diagnostic.goto_next, opts)
 
-                -- Java (jdtls) specific
-                -- if client.name == 'jdtls' then
-                --     vim.keymap.set('n', '<leader>jm', function()
-                --         require('jdtls').organize_imports()
-                --     end, opts)
-                --     vim.keymap.set('n', '<leader>ji', function()
-                --         require('jdtls').organize_imports()
-                --     end, opts)
-                --     vim.keymap.set('n', '<leader>jt', function()
-                --         require('jdtls').type_hierarchy()
-                --     end, opts)
-                --     vim.keymap.set('n', '<leader>jr', function()
-                --         vim.lsp.stop_client(vim.lsp.get_active_clients())
-                --         vim.cmd('edit')
-                --     end, opts)
-                -- end
+				-- Visual code actions
+				vim.keymap.set({ "v", "n" }, "<leader>ca", require("actions-preview").code_actions)
 
                 -- 1. Breadcrumbs
                 if client.server_capabilities.documentSymbolProvider then
@@ -75,9 +60,7 @@ return {
                     vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
                 end
 
-                -- 3. Visual code actions
-                vim.keymap.set({ "v", "n" }, "<leader>ca", require("actions-preview").code_actions)
-            end)
+            end
 
             -- Diagnostic display
             vim.diagnostic.config({
@@ -102,8 +85,13 @@ return {
                     'solidity_ls_nomicfoundation',
                 },
                 handlers = {
-                    lsp_zero.default_setup,
-                    jdtls = lsp_zero.noop,
+                    function(server_name)
+                        require('lspconfig')[server_name].setup({
+                            capabilities = capabilities,
+                            on_attach = on_attach,
+                        })
+                    end,
+                    jdtls = function() end,  -- handled manually below
                 },
             })
 
@@ -131,6 +119,8 @@ return {
                                 { 'pom.xml', 'build.gradle', '.git' },
                                 { upward = true }
                             )[1]),
+							capabilities = capabilities,
+							on_attach = on_attach,
                             settings = {
                                 java = {
                                     configuration = {

@@ -16,35 +16,54 @@ return {
   },
 
   -- ALPHA DASHBOARD
-  {
-    "goolord/alpha-nvim",
-    config = function()
-      local alpha     = require("alpha")
-      local dashboard = require("alpha.themes.dashboard")
-
-      dashboard.section.header.val = {
-        "███╗   ██╗██╗   ██╗██╗███╗   ███╗",
-        "████╗  ██║██║   ██║██║████╗ ████║",
-        "██╔██╗ ██║██║   ██║██║██╔████╔██║",
-        "██║╚██╗██║╚██╗ ██╔╝██║██║╚██╔╝██║",
-        "██║ ╚████║ ╚████╔╝ ██║██║ ╚═╝ ██║",
-        "╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝",
-      }
-      dashboard.section.buttons.val = {
-        dashboard.button("f", "󰈞 Find file",   ":lua require('telescope.builtin').find_files()<CR>"),
-        dashboard.button("g", " Live grep",    ":lua require('telescope.builtin').live_grep()<CR>"),
-        dashboard.button("n", " New file",     ":ene <BAR> startinsert<CR>"),
-        dashboard.button("r", " Recent files", ":lua require('telescope.builtin').oldfiles()<CR>"),
-        dashboard.button("t", "󰙅 File tree",   ":NvimTreeToggle<CR>"),
-        dashboard.button("m", "󱡀 Mason",       ":Mason<CR>"),
-        dashboard.button("q", " Quit",         ":qa<CR>"),
-      }
-      dashboard.section.footer.val = "Neovim ready."
-
-      alpha.setup(dashboard.opts)
-    end,
-  },
-
+{
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+        bigfile   = { enabled = true },
+        dashboard = {
+            preset = {
+                header = table.concat({
+                    "███╗   ██╗██╗   ██╗██╗███╗   ███╗",
+                    "████╗  ██║██║   ██║██║████╗ ████║",
+                    "██╔██╗ ██║██║   ██║██║██╔████╔██║",
+                    "██║╚██╗██║╚██╗ ██╔╝██║██║╚██╔╝██║",
+                    "██║ ╚████║ ╚████╔╝ ██║██║ ╚═╝ ██║",
+                    "╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝",
+                }, "\n"),
+                keys = {
+                    { icon = "󰈞 ", key = "f", desc = "Find file",    action = ":lua require('telescope.builtin').find_files()" },
+                    { icon = " ", key = "g", desc = "Live grep",     action = ":lua require('telescope.builtin').live_grep()" },
+                    { icon = " ", key = "n", desc = "New file",      action = ":ene | startinsert" },
+                    { icon = " ", key = "r", desc = "Recent files",  action = ":lua require('telescope.builtin').oldfiles()" },
+                    { icon = "󰙅 ", key = "t", desc = "File tree",    action = ":NvimTreeToggle" },
+                    { icon = "󱡀 ", key = "m", desc = "Mason",        action = ":Mason" },
+                    { icon = " ", key = "q", desc = "Quit",          action = ":qa" },
+                },
+            },
+        },
+        indent    = { enabled = true },
+        input     = { enabled = true },
+        notifier  = { enabled = true, timeout = 3000 },
+        quickfile = { enabled = true },
+        scroll    = { enabled = false },  -- personal taste, can be jarring
+        words     = { enabled = true },
+        picker    = { enabled = false },
+        explorer  = { enabled = false },
+        scope     = { enabled = false },
+        statuscolumn = { enabled = false },  -- you have lualine already
+    },
+    keys = {
+        { "<leader>G", function() Snacks.lazygit() end,          desc = "Lazygit" },
+        { "<leader>go", function() Snacks.gitbrowse() end,        desc = "Git Browse", mode = { "n", "v" } },
+        { "<c-/>", "<cmd>terminal<CR>", desc = "Toggle Terminal" },
+        { "<leader>n",  function() Snacks.notifier.show_history() end, desc = "Notification History" },
+        { "<leader>bd", function() Snacks.bufdelete() end,        desc = "Delete Buffer" },
+        { "]]", function() Snacks.words.jump(vim.v.count1) end,   desc = "Next Reference" },
+        { "[[", function() Snacks.words.jump(-vim.v.count1) end,  desc = "Prev Reference" },
+    },
+},
   -- WHICH-KEY
   {
     "folke/which-key.nvim",
