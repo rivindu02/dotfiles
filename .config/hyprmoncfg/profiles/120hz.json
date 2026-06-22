@@ -1,0 +1,71 @@
+{
+  "name": "120hz",
+  "created_at": "2026-06-17T18:11:16.921970845Z",
+  "updated_at": "2026-06-17T18:11:16.922596847Z",
+  "outputs": [
+    {
+      "key": "samsung display corp.|0x416d",
+      "match_key": "samsung display corp.|0x416d",
+      "name": "eDP-1",
+      "description": "Samsung Display Corp. 0x416D",
+      "make": "Samsung Display Corp.",
+      "model": "0x416D",
+      "enabled": true,
+      "mode": "2880x1800@120.00Hz",
+      "width": 2880,
+      "height": 1800,
+      "refresh": 120,
+      "x": 3000,
+      "y": 3000,
+      "scale": 1.5,
+      "vrr": 1,
+      "transform": 0,
+      "bitdepth": 8,
+      "cm": "auto",
+      "sdr_brightness": 1,
+      "sdr_saturation": 1,
+      "sdr_min_luminance": 0.2,
+      "sdr_max_luminance": 80,
+      "min_luminance": 0
+    }
+  ],
+  "workspaces": {
+    "enabled": true,
+    "strategy": "manual",
+    "max_workspaces": 9,
+    "group_size": 3,
+    "monitor_order": [
+      "samsung display corp.|0x416d"
+    ],
+    "rules": [
+      {
+        "workspace": "1",
+        "output_key": "samsung display corp.|0x416d",
+        "output_name": "eDP-1",
+        "default": true
+      },
+      {
+        "workspace": "2",
+        "output_key": "samsung display corp.|0x416d",
+        "output_name": "eDP-1"
+      },
+      {
+        "workspace": "3",
+        "output_key": "samsung display corp.|0x416d",
+        "output_name": "eDP-1"
+      },
+      {
+        "workspace": "4",
+        "output_key": "HDMI-A-1",
+        "output_name": "HDMI-A-1",
+        "default": true
+      },
+      {
+        "workspace": "5",
+        "output_key": "HDMI-A-1",
+        "output_name": "HDMI-A-1"
+      }
+    ]
+  },
+  "exec": ""
+}

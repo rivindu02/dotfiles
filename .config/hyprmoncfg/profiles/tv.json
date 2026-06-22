@@ -1,0 +1,97 @@
+{
+  "name": "tv",
+  "created_at": "2026-06-17T18:13:59.141496747Z",
+  "updated_at": "2026-06-17T19:18:55.296551857Z",
+  "outputs": [
+    {
+      "key": "lg electronics|lg tv sscr2|0x01010101",
+      "match_key": "lg electronics|lg tv sscr2|0x01010101",
+      "name": "HDMI-A-1",
+      "description": "LG Electronics LG TV SSCR2 0x01010101",
+      "make": "LG Electronics",
+      "model": "LG TV SSCR2",
+      "serial": "0x01010101",
+      "enabled": true,
+      "mode": "4096x2160@60.00Hz",
+      "width": 4096,
+      "height": 2160,
+      "refresh": 60,
+      "x": 2900,
+      "y": 800,
+      "scale": 1,
+      "transform": 0,
+      "bitdepth": 8,
+      "cm": "srgb",
+      "sdr_brightness": 1,
+      "sdr_saturation": 1,
+      "sdr_min_luminance": 0.2,
+      "sdr_max_luminance": 80,
+      "min_luminance": 0
+    },
+    {
+      "key": "samsung display corp.|0x416d",
+      "match_key": "samsung display corp.|0x416d",
+      "name": "eDP-1",
+      "description": "Samsung Display Corp. 0x416D",
+      "make": "Samsung Display Corp.",
+      "model": "0x416D",
+      "enabled": true,
+      "mode": "2880x1800@120.00Hz",
+      "width": 2880,
+      "height": 1800,
+      "refresh": 120,
+      "x": 3000,
+      "y": 3000,
+      "scale": 1.5,
+      "vrr": 1,
+      "transform": 0,
+      "bitdepth": 8,
+      "cm": "auto",
+      "sdr_brightness": 1,
+      "sdr_saturation": 1,
+      "sdr_min_luminance": 0.2,
+      "sdr_max_luminance": 80,
+      "min_luminance": 0
+    }
+  ],
+  "workspaces": {
+    "enabled": true,
+    "strategy": "manual",
+    "max_workspaces": 9,
+    "group_size": 3,
+    "monitor_order": [
+      "samsung display corp.|0x416d",
+      "lg electronics|lg tv sscr2|0x01010101"
+    ],
+    "rules": [
+      {
+        "workspace": "1",
+        "output_key": "samsung display corp.|0x416d",
+        "output_name": "eDP-1",
+        "default": true
+      },
+      {
+        "workspace": "2",
+        "output_key": "samsung display corp.|0x416d",
+        "output_name": "eDP-1"
+      },
+      {
+        "workspace": "3",
+        "output_key": "samsung display corp.|0x416d",
+        "output_name": "eDP-1"
+      },
+      {
+        "workspace": "4",
+        "output_key": "lg electronics|lg tv sscr2|0x01010101",
+        "output_name": "HDMI-A-1",
+        "default": true
+      },
+      {
+        "workspace": "5",
+        "output_key": "lg electronics|lg tv sscr2|0x01010101",
+        "output_name": "HDMI-A-1"
+      }
+    ]
+  },
+  "exec": ""
+}
