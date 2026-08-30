@@ -22,3 +22,8 @@ desc = "Mount manager"
 [[manager.prepend_keymap]]
 on = "y"
 run = [ 'shell -- for path in %s; do echo "file://$path"; done | wl-copy -t text/uri-list' , "yank" ]
+
+[[mgr.prepend_keymap]]
+on = "Y"
+run = 'shell -- wl-copy -t "$(file --mime-type -b "$1")" < "$1"'
+desc = "Copy file content to clipboard"
