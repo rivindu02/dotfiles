@@ -32,47 +32,47 @@
       "autohide": true
     },
     "label#gcal-header": {
-      "text": "󰃭  Upcoming Events",
+      "text": "",
       "markup": false
     },
     "label#gcal-today-header": {
-      "text": " Today",
+      "text": "",
       "markup": false
     },
     "label#gcal-today-allday": {
-      "text": "󰃰 try to make volume, brightness controller 2026-08-28.md",
+      "text": "",
       "markup": false
     },
     "label#gcal-today-timed": {
-      "text": "19:15  •  do the service for laptop",
+      "text": "",
       "markup": false
     },
     "label#gcal-tomorrow-header": {
-      "text": " Tomorrow",
+      "text": "",
       "markup": false
     },
     "label#gcal-tomorrow-allday": {
-      "text": "󰃰 Nikini Full Moon Poya Day",
+      "text": "",
       "markup": false
     },
     "label#gcal-tomorrow-timed": {
-      "text": "12:00  •  try to make volume, brightness controller 2026-08-28.md\n13:15  •  train a model in github 2026-08-26.md\n16:00  •  do the service for laptop",
+      "text": "",
       "markup": false
     },
     "label#gcal-day3-header": {
-      "text": " Sun Aug 30",
+      "text": "",
       "markup": false
     },
     "label#gcal-day3-allday": {
-      "text": "󰃰 train a model in github 2026-08-26.md",
+      "text": "",
       "markup": false
     },
     "label#gcal-day3-timed": {
-      "text": "10:15  •  Deep learning for vision\n13:15  •  Neural Networks and Fuzzy Logic",
+      "text": "",
       "markup": false
     },
     "label#weather": {
-      "text": "🌦️  31°C  Home  ·  🌦️  30°C  University",
+      "text": "",
       "markup": false
     }
   },

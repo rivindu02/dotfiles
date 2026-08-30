@@ -21,6 +21,7 @@
 .ssh/*.pem
 .ssh/id_*
 .ssh/known_hosts
+.ssh/config
 
 # Secrets
 .secrets/
