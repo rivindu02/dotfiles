@@ -16,7 +16,8 @@ RAW_EVENTS=$(
     $GCAL_PERSONAL agenda --nocolor --nodeclined --tsv "$TODAY" "$END" 2>&1
   } | grep -v '^start_date' | sort | uniq
 )
-echo "RAW: $RAW_EVENTS" > /tmp/gcal-debug.log
+
+GCAL_STATE="${XDG_RUNTIME_DIR:-/tmp}"
 
 # ── Buckets ───────────────────────────────────────────────────
 today_allday=()
@@ -65,12 +66,12 @@ join_or_none() {
 }
 
 # ── Write tmp files FIRST (python reads these) ────────────────
-join_or_none today_allday    > /tmp/gcal-today-allday.txt
-join_or_none today_timed     > /tmp/gcal-today-timed.txt
-join_or_none tomorrow_allday > /tmp/gcal-tomorrow-allday.txt
-join_or_none tomorrow_timed  > /tmp/gcal-tomorrow-timed.txt
-join_or_none day3_allday     > /tmp/gcal-day3-allday.txt
-join_or_none day3_timed      > /tmp/gcal-day3-timed.txt
+join_or_none today_allday    > "$GCAL_STATE/gcal-today-allday.txt"
+join_or_none today_timed     > "$GCAL_STATE/gcal-today-timed.txt"
+join_or_none tomorrow_allday > "$GCAL_STATE/gcal-tomorrow-allday.txt"
+join_or_none tomorrow_timed  > "$GCAL_STATE/gcal-tomorrow-timed.txt"
+join_or_none day3_allday     > "$GCAL_STATE/gcal-day3-allday.txt"
+join_or_none day3_timed      > "$GCAL_STATE/gcal-day3-timed.txt"
 
 # ── Total event count ─────────────────────────────────────────
 total=$(( ${#today_allday[@]} + ${#today_timed[@]} + \
@@ -82,30 +83,36 @@ DAY3_LABEL="$(date -d "$DAY3" '+%a %b %d')"
 # ── Patch swaync config ───────────────────────────────────────
 if command -v python3 &>/dev/null && [[ -f "$SWAYNC_CONFIG" ]]; then
   python3 - "$SWAYNC_CONFIG" "$DAY3_LABEL" "$total" << 'PYEOF'
-import json, sys
+import json, sys, os
 
 config_path = sys.argv[1]
 day3_label  = sys.argv[2]
 total       = int(sys.argv[3])
+gcal_state  = os.environ.get("XDG_RUNTIME_DIR", "/tmp")
 
 def read(path):
     try:
         with open(path) as f: return f.read().strip()
     except: return "None"
 
-today_allday    = read("/tmp/gcal-today-allday.txt")
-today_timed     = read("/tmp/gcal-today-timed.txt")
-tomorrow_allday = read("/tmp/gcal-tomorrow-allday.txt")
-tomorrow_timed  = read("/tmp/gcal-tomorrow-timed.txt")
-day3_allday     = read("/tmp/gcal-day3-allday.txt")
-day3_timed      = read("/tmp/gcal-day3-timed.txt")
+today_allday    = read(f"{gcal_state}/gcal-today-allday.txt")
+today_timed     = read(f"{gcal_state}/gcal-today-timed.txt")
+tomorrow_allday = read(f"{gcal_state}/gcal-tomorrow-allday.txt")
+tomorrow_timed  = read(f"{gcal_state}/gcal-tomorrow-timed.txt")
+day3_allday     = read(f"{gcal_state}/gcal-day3-allday.txt")
+day3_timed      = read(f"{gcal_state}/gcal-day3-timed.txt")
 
 with open(config_path) as f:
     cfg = json.load(f)
 
-wc = cfg["widget-config"]
+wc = cfg.setdefault("widget-config", {})
 
-widgets = ["title", "label#gcal-header"]
+has_weather = "label#weather" in wc
+
+widgets = ["title"]
+if has_weather:
+    widgets.append("label#weather")
+widgets.append("label#gcal-header")
 
 if total == 0:
     wc["label#gcal-header"]["text"] = "󰃭  No upcoming events"

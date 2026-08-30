@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ~/.config/scripts/gcal-notify.sh
 
-NOTIFIED_FILE="/tmp/gcal-notified"
+NOTIFIED_FILE="${XDG_RUNTIME_DIR:-/tmp}/gcal-notified"
 touch "$NOTIFIED_FILE"
 
 GCAL_PERSONAL="gcalcli --config-folder ~/.config/gcalcli/gcalcli-personal"

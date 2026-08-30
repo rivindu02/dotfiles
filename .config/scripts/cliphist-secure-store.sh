@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Silent copy flag check
-SILENT_FLAG="/tmp/cliphist-silent"
+SILENT_FLAG="${XDG_RUNTIME_DIR:-/tmp}/cliphist-silent"
 if [ -f "$SILENT_FLAG" ]; then
     rm "$SILENT_FLAG"
     exit 0

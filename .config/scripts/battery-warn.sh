@@ -9,7 +9,7 @@ SOUND_WARN="$HOME/.local/share/sounds/dialog-warning.oga"
 SOUND_CRITICAL="$HOME/.local/share/sounds/battery-warn.oga"
 
 # State files
-STATE_DIR="/tmp/battery_warn"
+STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/battery_warn"
 mkdir -p "$STATE_DIR"
 echo "false" > "$STATE_DIR/warn_30"
 echo "false" > "$STATE_DIR/warn_15"
