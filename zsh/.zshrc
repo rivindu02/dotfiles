@@ -3,10 +3,13 @@
 # ===========================================================
 [[ $- != *i* ]] && return 
 
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+
+
+
 
 # ===========================================================
 # 2) Environment & Basics
@@ -33,22 +36,33 @@ fi
 # Load P10k config if present
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
-# tmuxifier
-export PATH="$HOME/.tmuxifier/bin:$PATH"
+# tmuxifier — only if tmux actually exists
+if command -v tmux >/dev/null; then
+    export PATH="$HOME/.tmuxifier/bin:$PATH"
+    eval "$(tmuxifier init -)"
+fi
 
-eval "$(tmuxifier init -)"
+# for lazydocker to maintain podman containers and images
+export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
 
 
 # ===========================================================
 # 3) Oh My Zsh & Theme (Only load if installed)
 # ===========================================================
 
+ZSH_DISABLE_COMPFIX=true
+
 export ZSH="$HOME/.oh-my-zsh"
 if [[ -d "$ZSH" ]]; then
     ZSH_THEME="powerlevel10k/powerlevel10k"
-    plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+    plugins=(git zsh-autosuggestions zsh-syntax-highlighting fzf-tab)
     source "$ZSH/oh-my-zsh.sh"
 fi
+
+# ------------- fzf-tab ------------------------
+# Ctrl+Space : select multiple results, can be configured by `fzf-bindings` tag
+# F1/F2		 : switch between groups, can be configured by `switch-group` tag
+# /			 : trigger continuous completion (useful when completing a deep path), can be configured by `continuous-trigger` tag
 
 ZSH_HIGHLIGHT_STYLES[comment]='fg=#a89984' # for comments
 
@@ -88,9 +102,8 @@ oc-open2() {
 
 
 # ===========================================================
-# 6) Navigation & history
+# 5) Navigation & history
 # ===========================================================
-
 # zoxide (if installed)
 command -v zoxide >/dev/null && {
   eval "$(zoxide init zsh)"
@@ -99,15 +112,10 @@ command -v zoxide >/dev/null && {
 
 # fzf (cross-distro path handling)
 if command -v fzf >/dev/null; then
-	# Arch path
+	
 	[[ -f /usr/share/fzf/key-bindings.zsh ]] && source /usr/share/fzf/key-bindings.zsh
 	[[ -f /usr/share/fzf/completion.zsh ]] && source /usr/share/fzf/completion.zsh
 
-  # Ubuntu path
-  [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]] && \
-	  source /usr/share/doc/fzf/examples/key-bindings.zsh
-  [[ -f /usr/share/doc/fzf/examples/completion.zsh ]] && \
-	  source /usr/share/doc/fzf/examples/completion.zsh
   # Improve Ctrl+R
   export FZF_CTRL_R_OPTS="
   --preview 'echo {}'
@@ -116,6 +124,24 @@ if command -v fzf >/dev/null; then
   "
 fi
 
+show_file_or_dir_preview='
+if [ -d {} ]; then
+	command -v eza >/dev/null && eza --tree --color=always {} | head -200 || ls -R {} | head -200
+else
+	if command -v bat >/dev/null; then
+		bat -n --color=always --line-range :500 {}
+	elif command -v batcat >/dev/null; then
+		batcat -n --color=always --line-range :500 {}
+	else
+		head -500 {}
+	fi
+fi
+'
+# folder and dir preview
+export FZF_CTRL_T_OPTS="--preview \"$show_file_or_dir_preview\""
+
+# folder tree view
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 
 # Navigation using yazi
@@ -137,18 +163,12 @@ setopt HIST_SAVE_NO_DUPS
 setopt SHARE_HISTORY
 setopt INC_APPEND_HISTORY
 
-
-
-
-
 # ===========================================================
-# 7) Modern CLI replacements (cross-distro safe)
-
-# bat (Ubuntu uses batcat)
+# 6) Modern CLI replacements (cross-distro safe)
+# ===========================================================
+# bat 
 if command -v bat >/dev/null; then
   alias cat="bat"
-elif command -v batcat >/dev/null; then
-  alias cat="batcat"
 fi
 
 # eza
@@ -158,61 +178,55 @@ if command -v eza >/dev/null; then
 fi
 
 
-show_file_or_dir_preview='
-if [ -d {} ]; then
-  command -v eza >/dev/null && eza --tree --color=always {} | head -200 || ls -R {} | head -200
-else
-  if command -v bat >/dev/null; then
-    bat -n --color=always --line-range :500 {}
-  elif command -v batcat >/dev/null; then
-    batcat -n --color=always --line-range :500 {}
-  else
-    head -500 {}
-  fi
-fi
-'
-
-export FZF_CTRL_T_OPTS="--preview \"$show_file_or_dir_preview\""
-export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
-
-
 # ===========================================================
-# 8) Git productivity
-
+# 7) Git productivity
+# ===========================================================
+#
 alias g="git"
 alias gs="git status"
 alias ga="git add"
 alias gc="git commit"
 alias gco="git checkout"
 alias gl="git log --oneline --graph --decorate"
-unalias gwt
 
 
 # ===========================================================
 # 9) Language/tooling defaults
-
+# ===========================================================
+#
 alias python="python3"
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
 [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
+
+# nvim opeanings
 alias nv="nvim"
-
-
 alias inv='nvim $(fzf -m --preview="bat --color=always {}")'
 
 
 # ===========================================================
-# 10) Local overrides
-# [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+# 10) source ros2
 # ===========================================================
 #
-#
-# ===========================================================
-# 11) source ros2
-#
-[ -f /opt/ros/humble/setup.zsh ] && source /opt/ros/humble/setup.zsh
+[ -f /opt/ros/jazzy/setup.zsh ] && source /opt/ros/jazzy/setup.zsh
+
+# elif [ -f /opt/ros/humble/setup.zsh ]; then
+#     source /opt/ros/humble/setup.zsh
+# fi
+
+# # Only load the bridge workspace under Humble
+# if [ "$ROS_DISTRO" = "humble" ] && [ -f ~/ros_gz_ws/install/setup.zsh ]; then
+#     source ~/ros_gz_ws/install/setup.zsh
+# fi
+
+alias gz="env -u WAYLAND_DISPLAY QT_QPA_PLATFORM=xcb gz"
+
+
+# Colcon autocomplete
+[ -f /usr/share/colcon_argcomplete/hook/colcon-argcomplete.zsh ] && source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.zsh
+
 alias cubeide="ghostty -e zsh -c \"distrobox enter devbox -- /opt/st/stm32cubeide_2.1.0/stm32cubeide\""
 export PATH=~/.npm-global/bin:$PATH
 alias aider="~/.venvs/aider/bin/aider"
@@ -235,3 +249,6 @@ alias ai-gemma4="OLLAMA_API_BASE=$OLLAMA_BASE aider --model ollama/gemma4:e4b"
 alias oc-gemma="CLAUDE_CODE_USE_OPENAI=1 OPENAI_API_KEY=ollama OPENAI_BASE_URL=$OLLAMA_BASE/v1 OPENAI_MODEL=gemma4:e2b openclaude"
 alias oc-3b="CLAUDE_CODE_USE_OPENAI=1 OPENAI_API_KEY=ollama OPENAI_BASE_URL=$OLLAMA_BASE/v1 OPENAI_MODEL=qwen2.5-coder:3b openclaude"
 alias oc-7b="CLAUDE_CODE_USE_OPENAI=1 OPENAI_API_KEY=ollama OPENAI_BASE_URL=$OLLAMA_BASE/v1 OPENAI_MODEL=qwen2.5-coder:7b openclaude"
+
+
+[[ -z "$TMUX" ]] && tmux new-session -A -s main
