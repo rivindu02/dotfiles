@@ -18,6 +18,8 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+vim.g.python3_host_prog = "~/Documents/Machine-Learning/.venv/bin/python"
+
 -- 2. CORE MODULES
 require("core.options")
 require("core.keymaps")
