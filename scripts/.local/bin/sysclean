@@ -11,9 +11,9 @@
 #  Usage: ./sysmaintenance.sh [OPTIONS]
 #    -u | --upgrade      Full system upgrade before cleaning
 #    -m | --mirrors      Refresh mirrorlist via reflector
-#    -d | --docker       Prune Docker images/containers/volumes
 #    -n | --node         Clean npm global cache
 #    -p | --python       Clean pip cache
+#    -v | --uv           Clean uv python package cache
 #    -a | --all          Enable all optional steps
 #    -h | --help         Show this help
 # ------------------------------------------------------------
@@ -36,7 +36,7 @@ LOG_DIR="$HOME/.local/var/log"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/sysmaintenance-$(date +%F_%H-%M-%S).log"
 
-PACCACHE_RETAIN=2   # keep N most recent package versions
+PACCACHE_RETAIN=1   # keep N most recent package versions
 CACHE_DAYS=30       # prune ~/.cache entries older than N days
 JOURNAL_RETAIN="7d" # journald vacuum threshold (e.g. 500M or 7d)
 
@@ -86,23 +86,23 @@ path_bytes() {
 # ---------- CLI Switches --------------------------------------------------
 DO_UPGRADE=false
 DO_MIRRORS=false
-DO_DOCKER=false
 DO_NODE=false
 DO_PYTHON=false
+DO_UV=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     -u|--upgrade) DO_UPGRADE=true ; shift ;;
     -m|--mirrors) DO_MIRRORS=true ; shift ;;
-    -d|--docker)  DO_DOCKER=true  ; shift ;;
     -n|--node)    DO_NODE=true    ; shift ;;
     -p|--python)  DO_PYTHON=true  ; shift ;;
+    -v|--uv)      DO_UV=true      ; shift ;;
     -a|--all)
       DO_UPGRADE=true
       DO_MIRRORS=true
-      DO_DOCKER=true
       DO_NODE=true
       DO_PYTHON=true
+      DO_UV=true
       shift ;;
     -h|--help)
       grep '^#  ' "$0" | sed 's/^#  //'
@@ -182,7 +182,8 @@ if [[ -n "$AUR_CACHE" && -d "$AUR_CACHE" ]]; then
   aur_before=$(path_bytes "$AUR_CACHE")
   echo "  AUR cache: $(bytes_to_human "$aur_before")"
   if confirm "Clean $AUR build cache?"; then
-    $AUR -Sc --noconfirm
+    rm -rf "$AUR_CACHE"
+    mkdir -p "$AUR_CACHE"
     success "AUR cache cleaned"
   else skip; fi
 else echo "  No $AUR cache found"; fi
@@ -268,16 +269,10 @@ else
   success "No failed systemd units"
 fi
 
-# ---------- 14. Docker prune (optional) -----------------------------------
-if $DO_DOCKER && command -v docker &>/dev/null; then
-  announce "Docker prune"
-  if confirm "Run docker system prune -f?"; then
-    docker system prune -f
-    success "Docker cleaned"
-  fi
-fi
+# ---------- 14. Container prune (REMOVED) ---------------------------------
+# Removed to protect distrobox (e.g. devbox) and other containers.
 
-# ---------- 15. npm/pip clean (optional) ----------------------------------
+# ---------- 15. npm/pip/uv clean (optional) -------------------------------
 if $DO_NODE && command -v npm &>/dev/null; then
   announce "npm cache clean"
   confirm "Clean npm cache?" && npm cache clean --force && success "npm cleaned"
@@ -286,6 +281,11 @@ fi
 if $DO_PYTHON && command -v pip &>/dev/null; then
   announce "pip cache purge"
   confirm "Purge pip cache?" && pip cache purge && success "pip cleaned"
+fi
+
+if $DO_UV && command -v uv &>/dev/null; then
+  announce "uv cache clean"
+  confirm "Clean uv cache?" && uv cache clean && success "uv cleaned"
 fi
 
 # ---------- Summary -------------------------------------------------------
