@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 # --- Config ---
-ROFI_THEME="$HOME/.config/rofi/launchers/type-1/style.rasi"
+ROFI_THEME="$HOME/.config/rofi/menus/psearch.rasi"
 
 query=$(rofi \
     -dmenu \
     -p "Search" \
-    -mesg "Private Search" \
     -theme "$ROFI_THEME")
 
 [ -z "$query" ] && exit 0

@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 # --- Config ---
-NOTES_DIR="$HOME/Documents/QuickNotes"
-EDITOR_CMD="nvim"
+NOTES_DIR="$HOME/Documents/Notes"
+VAULT_NAME="Notes"
 ROFI_THEME="$HOME/.config/rofi/launchers/type-1/style.rasi"
 mkdir -p "$NOTES_DIR"
 
-# List notes (strip .md)
-options=$(ls "$NOTES_DIR" 2>/dev/null | sed 's/\.md$//')
+# List notes recursively, relative to NOTES_DIR, strip .md, sort
+# Excludes Obsidian's .trash (deleted notes) and .obsidian (config) folders
+options=$(find "$NOTES_DIR" -type f -name '*.md' \
+	-not -path '*/.trash/*' \
+	-not -path '*/.obsidian/*' \
+	-printf '%P\n' 2>/dev/null | sed 's/\.md$//' | sort)
 
 # Rofi Menu
 choice=$(echo "$options" | rofi \
@@ -14,19 +18,37 @@ choice=$(echo "$options" | rofi \
 	-i \
 	-p "Writ" \
 	-theme "$ROFI_THEME")
-
 [ -z "$choice" ] && exit 0
 
 NOTE_PATH="$NOTES_DIR/$choice.md"
-
+IS_NEW=0
 if [ ! -f "$NOTE_PATH" ]; then
-	# Typed something that doesn't exist — confirm creation
 	confirm=$(echo -e "Yes\nNo" | rofi \
 		-dmenu \
 		-p "New?" \
-		-mesg "Create a new Writ '$choice'?" \
+		-mesg "Create a new writ '$choice'?" \
 		-theme "$ROFI_THEME")
 	[ "$confirm" != "Yes" ] && exit 0
+	IS_NEW=1
 fi
 
-ghostty --class=writ_float -e "$EDITOR_CMD" "$NOTE_PATH" 2>/dev/null
+urlencode() {
+	local s="$1" out="" c
+	for ((i=0; i<${#s}; i++)); do
+		c="${s:$i:1}"
+		case "$c" in
+			[a-zA-Z0-9.~_-]) out+="$c" ;;
+			*) printf -v hex '%%%02X' "'$c"; out+="$hex" ;;
+		esac
+	done
+	echo "$out"
+}
+
+VAULT_ENC=$(urlencode "$VAULT_NAME")
+FILE_ENC=$(urlencode "$choice")
+
+if [ "$IS_NEW" -eq 1 ]; then
+	xdg-open "obsidian://new?vault=${VAULT_ENC}&file=${FILE_ENC}" 2>/dev/null
+else
+	xdg-open "obsidian://open?vault=${VAULT_ENC}&file=${FILE_ENC}" 2>/dev/null
+fi

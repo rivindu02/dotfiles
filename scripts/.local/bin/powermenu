@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## Author : Aditya Shakya (adi1090x)
-## Modified for Hyprland + Catppuccin
+## Modified for Hyprland 
 
 # Current Theme
 dir="$HOME/.config/rofi/powermenu/type-1"
@@ -62,10 +62,9 @@ run_cmd() {
         elif [[ $1 == '--reboot' ]]; then
             systemctl reboot
         elif [[ $1 == '--suspend' ]]; then
-            wpctl set-mute @DEFAULT_AUDIO_SINK@ 1
             systemctl suspend
         elif [[ $1 == '--logout' ]]; then
-            hyprctl dispatch exit
+            hyprctl dispatch 'hl.dsp.exit()'
         fi
     else
         exit 0

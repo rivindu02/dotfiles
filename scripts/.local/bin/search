@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 # --- Config ---
-ROFI_THEME="$HOME/.config/rofi/launchers/type-1/style.rasi"
+ROFI_THEME="$HOME/.config/rofi/menus/search.rasi"
 
 PLATFORMS=(
-    "*  Gemini"
-    ">  Claude"
-    "▶  YouTube"
+    "󰊭  Google"
+    "󱜙  ChatGPT"
+    "󰭎  Claude"
+    "󰗃  YouTube"
 )
 
 # First rofi: pick platform OR type a search query (platforms pinned at top)
 result=$(printf '%s\n' "${PLATFORMS[@]}" | rofi \
     -dmenu \
     -p "Search" \
+    -mesg "Pick a platform" \
     -theme "$ROFI_THEME")
 
 [ -z "$result" ] && exit 0
@@ -27,25 +29,37 @@ done
 
 if [ -z "$matched_platform" ]; then
     # User typed a query directly — search Brave (original behaviour)
-    encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$result'))")
+    encoded=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$result")
     brave --new-tab "https://search.brave.com/search?q=$encoded" 2>/dev/null
     exit 0
 fi
+
+# Per-platform border color for the query prompt
+case "$matched_platform" in
+    *Google*)  border_color="#4285F4" ;;   # google blue
+    *ChatGPT*) border_color="#10A37F" ;;   # openai green
+    *Claude*)  border_color="#D79921" ;;   # yellow
+    *YouTube*) border_color="#FB4934" ;;   # red
+esac
 
 # User picked a platform — second rofi for the query
 query=$(rofi \
     -dmenu \
     -p "Query" \
-    -theme "$ROFI_THEME")
+    -theme "$ROFI_THEME" \
+    -theme-str "window { border-color: ${border_color}; } mainbox { children: [ \"inputbar\", \"listview\" ]; }")
 [ -z "$query" ] && exit 0
 
-encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$query'))")
+encoded=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$query")
 
 case "$matched_platform" in
-    *Gemini*)
-        brave --new-tab "https://gemini.google.com/app" 2>/dev/null ;;
+    *Google*)
+        brave --new-tab "https://search.brave.com/search?q=$encoded" 2>/dev/null ;;
+    *ChatGPT*)
+        brave --new-tab "https://chatgpt.com/?q=$encoded" 2>/dev/null ;;
     *Claude*)
         brave --new-tab "https://claude.ai/new?q=$encoded" 2>/dev/null ;;
     *YouTube*)
         brave --new-tab "https://www.youtube.com/results?search_query=$encoded" 2>/dev/null ;;
 esac
+
