@@ -5,9 +5,11 @@
   "spacing": 4,
   "modules-left": [
     "hyprland/workspaces",
-    "hyprland/window"
+    "hyprland/window",
+    "custom/voxtype"
   ],
   "modules-center": [
+    "custom/idle",
     "clock",
     "custom/notification"
   ],
@@ -17,11 +19,13 @@
     "memory",
     "battery",
     "network",
+    "custom/nightlight",
     "tray",
     "custom/power"
   ],
   "hyprland/workspaces": {
     "format": "{icon}",
+    "tooltip": false,
     "format-icons": {
       "1": "1",
       "2": "2",
@@ -37,17 +41,18 @@
   },
   "hyprland/window": {
     "format": "{}",
+    "tooltip": false,
     "max-length": 40,
     "separate-outputs": true
   },
   "clock": {
-	"format": "󰥔 {:%a %b %d  %I:%M %p}", 
+    "format": "{:%a %b %d  %I:%M %p}",
     "tooltip-format": "<tt><small>{calendar}</small></tt>",
-	"calendar": {
-        "format": {
-          "today": "<span color='#75f1fa'><b>{}</b></span>"
-        }
-      },
+    "calendar": {
+      "format": {
+        "today": "<span color='#75f1fa'><b>{}</b></span>"
+      }
+    },
     "on-click": "brave --app=https://calendar.google.com"
   },
   "memory": {
@@ -62,7 +67,18 @@
     },
     "format": "{icon} {capacity}%",
     "format-charging": "󰂄 {capacity}%",
-    "format-icons": ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󰁹"],
+    "format-icons": [
+      "󰁺",
+      "󰁻",
+      "󰁼",
+      "󰁽",
+      "󰁾",
+      "󰁿",
+      "󰂀",
+      "󰂁",
+      "󰂂",
+      "󰁹"
+    ],
     "tooltip-format": "{timeTo}",
     "on-click": "$HOME/.local/bin/power-toggle"
   },
@@ -70,12 +86,16 @@
     "format": "{icon} {volume}%",
     "format-muted": "󰝟 Muted",
     "format-icons": {
-      "default": ["󰕿","󰖀","󰕾"]
+      "default": [
+        "󰕿",
+        "󰖀",
+        "󰕾"
+      ]
     },
     "tooltip-format": "{desc}",
     "on-click": "pavucontrol",
     "on-scroll-down": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
-	"on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+    "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
   },
   "network": {
     "interval": 2,
@@ -89,7 +109,11 @@
   },
   "backlight": {
     "format": "{icon} {percent}%",
-    "format-icons": ["󰃞","󰃟","󰃠"],
+    "format-icons": [
+      "󰃞",
+      "󰃟",
+      "󰃠"
+    ],
     "on-scroll-up": "brightnessctl set 5%-",
     "on-scroll-down": "brightnessctl set 5%+",
     "tooltip": false
@@ -121,5 +145,34 @@
     "format": "⏻",
     "tooltip": false,
     "on-click": "$HOME/.local/bin/powermenu"
+  },
+  "custom/voxtype": {
+    "exec": "voxtype status --follow --format json",
+    "return-type": "json",
+    "format": "{icon}",
+    "format-icons": {
+      "idle": "󰍰",
+      "recording": "󰑊",
+      "transcribing": "󰔟",
+      "stopped": "󰍭"
+    },
+    "tooltip": true,
+    "on-click": "systemctl --user restart voxtype"
+  },
+  "custom/idle": {
+    "exec": "test -f ${XDG_RUNTIME_DIR:-/tmp}/stay-awake.pid && echo '{\"text\":\"󰛊\",\"class\":\"awake\"}' || echo '{\"text\":\"󰒲\",\"class\":\"idle\"}'",
+    "return-type": "json",
+    "interval": 3600,
+    "signal": 8,
+    "on-click": "~/.config/scripts/toggle-idle.sh",
+    "tooltip-format": "Click to toggle stay-awake"
+  },
+  "custom/nightlight": {
+    "exec": "test -f ${XDG_RUNTIME_DIR:-/tmp}/nightlight-state && echo '{\"text\":\"󰌵\",\"class\":\"on\"}' || echo '{\"text\":\"󰖨\",\"class\":\"off\"}'",
+    "return-type": "json",
+    "interval": 3600,
+    "signal": 9,
+    "on-click": "~/.config/scripts/toggle-nightlight.sh",
+    "tooltip-format": "Click to toggle night light"
   }
 }

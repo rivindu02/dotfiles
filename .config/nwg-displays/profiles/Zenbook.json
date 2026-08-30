@@ -3,8 +3,8 @@
     {
       "name": "eDP-1",
       "description": "Samsung Display Corp. 0x416D",
-      "x": 0,
-      "y": 0,
+      "x": 3000,
+      "y": 2000,
       "physical_width": 2880,
       "physical_height": 1800,
       "transform": "normal",
@@ -30,11 +30,7 @@
   },
   "wallpapers": {
     "eDP-1": {
-      "path": "/home/rivindu02/Pictures/Wallpapers/wallhaven-21yp59.jpg",
-      "mode": ""
-    },
-    "HDMI-A-1": {
-      "path": "/home/rivindu02/Pictures/Wallpapers/wallhaven-po99ee.jpg",
+      "path": "/home/rivindu02/Pictures/Wallpapers/wallhaven-w5mqr6.jpg",
       "mode": ""
     }
   }

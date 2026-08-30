@@ -10,7 +10,10 @@
   "timeout-critical": 0,
   "widgets": [
     "title",
+    "label#weather",
     "label#gcal-header",
+    "label#gcal-today-header",
+    "label#gcal-today-timed",
     "mpris",
     "notifications",
     "dnd"
@@ -29,7 +32,7 @@
       "autohide": true
     },
     "label#gcal-header": {
-      "text": "󰃭  No upcoming events",
+      "text": "󰃭  Upcoming Events",
       "markup": false
     },
     "label#gcal-today-header": {
@@ -37,11 +40,11 @@
       "markup": false
     },
     "label#gcal-today-allday": {
-      "text": "󰃰 check temu",
+      "text": "󰃰 try to make volume, brightness controller 2026-08-28.md",
       "markup": false
     },
     "label#gcal-today-timed": {
-      "text": "08:30  •  Create Viva peresntation",
+      "text": "19:15  •  do the service for laptop",
       "markup": false
     },
     "label#gcal-tomorrow-header": {
@@ -49,23 +52,27 @@
       "markup": false
     },
     "label#gcal-tomorrow-allday": {
-      "text": "󰃰 check temu",
+      "text": "󰃰 Nikini Full Moon Poya Day",
       "markup": false
     },
     "label#gcal-tomorrow-timed": {
-      "text": "08:30  •  Create Viva peresntation",
+      "text": "12:00  •  try to make volume, brightness controller 2026-08-28.md\n13:15  •  train a model in github 2026-08-26.md\n16:00  •  do the service for laptop",
       "markup": false
     },
     "label#gcal-day3-header": {
-      "text": " Tue Jun 09",
+      "text": " Sun Aug 30",
       "markup": false
     },
     "label#gcal-day3-allday": {
-      "text": "󰃰 RemoteOK",
+      "text": "󰃰 train a model in github 2026-08-26.md",
       "markup": false
     },
     "label#gcal-day3-timed": {
-      "text": "",
+      "text": "10:15  •  Deep learning for vision\n13:15  •  Neural Networks and Fuzzy Logic",
+      "markup": false
+    },
+    "label#weather": {
+      "text": "🌦️  31°C  Home  ·  🌦️  30°C  University",
       "markup": false
     }
   },
@@ -73,6 +80,10 @@
     "media-player": {
       "state": "ignored",
       "app-name": ".*player.*|.*mpris.*|.*spotify.*|.*firefox.*|.*brave.*|.*chromium.*"
+    },
+    "remind-silent": {
+      "state": "muted",
+      "app-name": "^remind-silent$"
     }
   }
 }

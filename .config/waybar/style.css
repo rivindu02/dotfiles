@@ -225,3 +225,88 @@ tooltip {
 tooltip label {
   color: #d4be98;
 }
+
+/* ── Voxtype Dictation ──────────────────────────────────────── */
+#custom-voxtype {
+  padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+}
+
+#custom-voxtype.recording {
+  color: #ea6962;  /* Gruvbox red[cite: 2] */
+  animation: pulse 1s ease-in-out infinite;
+}
+
+#custom-voxtype.transcribing {
+  color: #d8a657;  /* Gruvbox yellow[cite: 2] */
+}
+
+#custom-voxtype.idle {
+  color: #a9b665;  /* Gruvbox green[cite: 2] */
+}
+
+#custom-voxtype.stopped {
+  color: #928374;  /* Gruvbox grey[cite: 2] */
+}
+
+#custom-voxtype:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ── Stay Awake ─────────────────────────────────────────────── */
+#custom-idle {
+  padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+  color: #928374;  /* default/off — grey */
+}
+
+#custom-idle.awake {
+  color: #ea6962;  /* Gruvbox yellow — active */
+}
+
+#custom-idle:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+#custom-idle.awake:hover {
+  background: rgba(216, 166, 87, 0.12);
+  color: #d4be98;
+}
+
+/* ── Night Light ────────────────────────────────────────────── */
+#custom-nightlight {
+  padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+  color: #928374;
+}
+
+#custom-nightlight.on {
+  color: #d8a657;
+}
+
+#custom-nightlight:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+#custom-nightlight.on:hover {
+  background: rgba(216, 166, 87, 0.12);
+  color: #d8a657;
+}

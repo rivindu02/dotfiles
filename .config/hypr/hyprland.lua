@@ -20,19 +20,22 @@ local browser     = "brave"
 -------------------
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("swww-daemon && swww img /home/rivindu02/Pictures/Wallpapers/wallhaven-rqyp17.jpg --transition-type none")
+    hl.exec_cmd("awww-daemon && awww img /home/rivindu02/Pictures/Wallpapers/wallhaven-rqyp17.jpg --transition-type none")
     hl.exec_cmd("sleep 0.5 && hyprctl setcursor Bibata-Modern-Classic 24")
     hl.exec_cmd("waybar")
     hl.exec_cmd("swaync")
     hl.exec_cmd("nm-applet --indicator")
-    hl.exec_cmd("mkdir -p /tmp/cliphist-store")
+    hl.exec_cmd("mkdir -p ${XDG_RUNTIME_DIR:-/tmp}/cliphist-store")
     hl.exec_cmd("wl-paste --type text --watch ~/.config/scripts/cliphist-secure-store.sh")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("blueman-applet")
     hl.exec_cmd("~/.config/scripts/gcal-notify.sh")
-    hl.exec_cmd("hypridle")
+    hl.exec_cmd("sleep 5 && ~/.config/scripts/swaync-weather.sh && while sleep 1800; do ~/.config/scripts/swaync-weather.sh; done &")
+    hl.exec_cmd("sleep 3 && hypridle")
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
     hl.exec_cmd("~/.config/scripts/battery-warn.sh")
+	hl.exec_cmd("hyprpm reload")
+
 end)
 
 
@@ -83,7 +86,7 @@ hl.config({
         rounding_power = 2,
 
         active_opacity   = 1.0,
-        inactive_opacity = 0.85,
+        inactive_opacity = 1.0,
 
         shadow = {
             enabled      = true,
@@ -131,7 +134,60 @@ hl.config({
             tap_to_click   = true,
         },
     },
+
+	plugin = {
+		hyprtasking = {
+			layout = "grid",
+
+			gap_size = 10,
+			bg_color = 0xff26233a,
+			border_size = 2,
+			exit_on_hovered = false,
+			warp_on_move_window = 1,
+			close_overview_on_reload = false,
+
+			-- for other mouse buttons see <linux/input-event-codes.h>
+			drag_button = 0x110,   -- left mouse button
+			select_button = 0x111, -- right mouse button
+
+			jump = {
+				enabled = false,
+				label_color = 0xffffffff,
+				label_background = 0x000000cc,
+				label_size = 32,
+			},
+
+			gestures = {
+				enabled = false,
+				move_fingers = false,
+				move_distance = 300,
+				-- open_fingers = 4,
+				open_distance = 300,
+				open_positive = true,
+			},
+
+			grid = {
+				rows = 3,
+				cols = 3,
+				loop = false,
+				layers = 2,
+				loop_layers = true,
+				gaps_use_aspect_ratio = true,
+			},
+
+			linear = {
+				top = false,
+				height = 400,
+				scroll_speed = 1.0,
+				blur = false,
+			}
+		}
+	},
+	xwayland = {
+        force_zero_scaling = true,
+    }
 })
+
 
 
 --------------------
@@ -221,29 +277,37 @@ hl.bind(mainMod .. " + Q",     hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + B",     hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + C",     hl.dsp.window.close())
 hl.bind(mainMod .. " + E",     hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + F",     hl.dsp.window.float({ action = "toggle" }))
-hl.bind(secondMod .. " + F",   hl.dsp.window.fullscreen({ action = "toggle" }))
+hl.bind(mainMod .. " + O",     hl.dsp.exec_cmd("obsidian"))
+hl.bind(mainMod .. " + T",     hl.dsp.exec_cmd("todoist"))
+hl.bind(secondMod .. " + F",     hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + F",   hl.dsp.window.fullscreen({ action = "toggle" }))
 hl.bind(mainMod .. " + P",     hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/presentation"))
 hl.bind(mainMod .. " + J",     hl.dsp.layout("togglesplit"))
 hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("/home/rivindu02/.config/rofi/launchers/type-1/launcher.sh || pkill rofi"))
 hl.bind(secondMod .. " + Space", hl.dsp.exec_cmd("/home/rivindu02/.config/rofi/launchers/type-1/launcher2.sh  || pkill rofi"))
+hl.bind(mainMod .. " + Slash", hl.dsp.exec_cmd("rofi -show calc -modi calc -no-show-match -no-sort -theme ~/.config/rofi/launchers/type-1/style.rasi"))
 hl.bind(mainMod .. " + M",     hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/powermenu"))
-hl.bind(mainMod .. " + l",     hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mainMod .. " + L",     hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mainMod .. " + TAB", function() hl.plugin.hyprtasking.toggle("cursor") end)
 
 -- Clipboard
-hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -display-columns 2 -theme ~/.config/rofi/launchers/type-1/style.rasi | cliphist decode | bash -c 'touch /tmp/cliphist-silent && wl-copy'"))
-hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("bash -c 'touch /tmp/cliphist-silent && wl-paste -p --no-newline | wl-copy'"))
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -display-columns 2 -theme ~/.config/rofi/launchers/type-1/style.rasi | cliphist decode | bash -c 'touch ${XDG_RUNTIME_DIR:-/tmp}/cliphist-silent && wl-copy'"))
+hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("bash -c 'touch ${XDG_RUNTIME_DIR:-/tmp}/cliphist-silent && wl-paste -p --no-newline | wl-copy'"))
 
 -- Utilities
 hl.bind(mainMod .. " + N",          hl.dsp.exec_cmd("swaync-client -t -sw"))
 hl.bind(mainMod .. " + period",     hl.dsp.exec_cmd("/home/rivindu02/.local/bin/bemoji-rofi"))
-hl.bind(mainMod .. " + SHIFT + S",  hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/screenshot"))
-hl.bind(mainMod .. " + SHIFT + T",  hl.dsp.exec_cmd("OCR4Linux --lang eng"))
-hl.bind(mainMod .. " + D",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/define"))
+hl.bind(secondMod .. " + S",  hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/screenshot"))
+hl.bind(secondMod .. " + T",  hl.dsp.exec_cmd("OCR4Linux --lang eng"))
 hl.bind(mainMod .. " + W",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/writ"))
-hl.bind(mainMod .. " + U",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/bookmark"))
+hl.bind(secondMod .. " + B",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/bookmark"))
 hl.bind(mainMod .. " + I",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/psearch"))
 hl.bind(mainMod .. " + S",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/search"))
+hl.bind(secondMod .. " + R", hl.dsp.exec_cmd("voxtype record toggle"), { locked = true })
+hl.bind(secondMod .. " + I", hl.dsp.exec_cmd("~/.config/scripts/toggle-idle.sh"))
+hl.bind(secondMod .. " + N", hl.dsp.exec_cmd("~/.config/scripts/toggle-nightlight.sh"))
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.config/scripts/remind-prompt.sh"))
+hl.bind(mainMod .. " + CTRL + R", hl.dsp.exec_cmd("~/.config/scripts/remind-cancel.sh"))
 
 -- Focus
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left"  }))
@@ -354,3 +418,6 @@ hl.layer_rule({ match = { namespace = "swaync-notification-window" }, blur = tru
 
 -- Rofi
 hl.layer_rule({ match = { namespace = "rofi" }, blur = true, ignore_alpha = 0.5 })
+
+-- HyprMod managed settings
+require("hyprland-gui")

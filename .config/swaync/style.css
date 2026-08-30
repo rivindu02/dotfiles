@@ -44,7 +44,7 @@
 .notification.normal   { border-left: 3px solid #83a598; }
 .notification.critical {
   border-left: 3px solid #ea6962;
-  background: rgba(234, 105, 98, 0.08);
+  background: rgba(234, 105, 98, 0.55);
 }
 
 /* ── Notification default action ───────────────────────────── */
@@ -140,146 +140,106 @@
 
 /* ═══════════════════════════════════════════════════════════════
    CALENDAR WIDGETS
-   nth-child order (dynamic — only present widgets are counted):
-   1   title
-   2   label#gcal-header
-   3   label#gcal-today-header      ─┐
-   4   label#gcal-today-allday       │ today group
-   5   label#gcal-today-timed       ─┘
-   6   label#gcal-tomorrow-header   ─┐
-   7   label#gcal-tomorrow-allday    │ tomorrow group (if present)
-   8   label#gcal-tomorrow-timed    ─┘
-   9   label#gcal-day3-header       ─┐
-   10  label#gcal-day3-allday        │ day3 group (if present)
-   11  label#gcal-day3-timed        ─┘
+   nth-child order — matches config.json widgets list exactly.
+   Today HAS an allday row, Tomorrow/Day3 do NOT:
+   1  title
+   2  label#gcal-header
+   3  today-header    ─┐
+   4  today-allday      │ TODAY group    → blue   #7daea3
+   5  today-timed      ─┘
+   6  tomorrow-header  ─┐
+   7  tomorrow-timed    │ TOMORROW group → yellow #d8a657
+   8  day3-header      ─┐
+   9  day3-timed        │ DAY 3 group    → orange #e78a4e
+   10 mpris / 11 notifications / 12 dnd
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── "Upcoming Events" header ───────────────────────────────── */
-.widgets > .widget-label:nth-child(2) > label {
+/* ── "Upcoming Events" section header ─────────────────────────── */
+.gcal-header {
+  background: rgba(40, 40, 40, 0.60);
+  border-radius: 10px;
+  margin: 4px 2px 2px 2px;
+}
+.gcal-header > label {
   font-size: 11px;
   font-weight: bold;
-  color: #d8a657;
+  color: #a9b665;
   padding: 4px 4px 2px 4px;
   opacity: 0.90;
   letter-spacing: 0.08em;
 }
 
-/* ── Large outer box wrapping all calendar widgets ──────────── */
-.widgets > .widget-label:nth-child(2),
-.widgets > .widget-label:nth-child(3),
-.widgets > .widget-label:nth-child(4),
-.widgets > .widget-label:nth-child(5),
-.widgets > .widget-label:nth-child(6),
-.widgets > .widget-label:nth-child(7),
-.widgets > .widget-label:nth-child(8),
-.widgets > .widget-label:nth-child(9),
-.widgets > .widget-label:nth-child(10),
-.widgets > .widget-label:nth-child(11) {
+/* ── Shared base look for every calendar row ──────────────────── */
+.gcal-today-header,    .gcal-today-allday,    .gcal-today-timed,
+.gcal-tomorrow-header, .gcal-tomorrow-allday, .gcal-tomorrow-timed,
+.gcal-day3-header,     .gcal-day3-allday,     .gcal-day3-timed {
   background: rgba(40, 40, 40, 0.60);
-  border-left: 3px solid rgba(216, 166, 87, 0.50);
-  border-radius: 0;
-  margin: 0 2px;
+  border-radius: 8px;
+  margin: 1px 2px;
 }
 
-/* ── Round top of first calendar widget ─────────────────────── */
-.widgets > .widget-label:nth-child(2) {
-  border-top: 1px solid rgba(216, 166, 87, 0.25);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  margin-top: 4px;
-}
-
-/* ── Round bottom of last calendar widget ───────────────────── */
-.widgets > .widget-label:nth-child(11) {
-  border-bottom: 1px solid rgba(216, 166, 87, 0.25);
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  margin-bottom: 4px;
-}
-
-/* ── Day headers ────────────────────────────────────────────── */
-.widgets > .widget-label:nth-child(3) > label,
-.widgets > .widget-label:nth-child(6) > label,
-.widgets > .widget-label:nth-child(9) > label {
+/* ── Header rows (bold, no left border) ───────────────────────── */
+.gcal-today-header > label,
+.gcal-tomorrow-header > label,
+.gcal-day3-header > label {
   font-size: 12px;
   font-weight: bold;
-  color: #d8a657;
   padding: 6px 8px 2px 8px;
 }
 
-/* ── All-day blocks ─────────────────────────────────────────── */
-.widgets > .widget-label:nth-child(4),
-.widgets > .widget-label:nth-child(7),
-.widgets > .widget-label:nth-child(10) {
-  background: rgba(137, 180, 130, 0.08);
-  border-left: 3px solid #89b482;
-  border-top: 1px solid rgba(137, 180, 130, 0.20);
-  border-bottom: 1px solid rgba(137, 180, 130, 0.10);
-  border-radius: 0;
-  margin: 0 2px;
-}
-.widgets > .widget-label:nth-child(4) > label,
-.widgets > .widget-label:nth-child(7) > label,
-.widgets > .widget-label:nth-child(10) > label {
+/* ── Data rows (allday + timed) ────────────────────────────────── */
+.gcal-today-allday > label,    .gcal-today-timed > label,
+.gcal-tomorrow-allday > label, .gcal-tomorrow-timed > label,
+.gcal-day3-allday > label,     .gcal-day3-timed > label {
   font-size: 12px;
-  color: #89b482;
   padding: 4px 10px;
+  opacity: 0.85;
 }
 
-/* ── Timed blocks ───────────────────────────────────────────── */
-.widgets > .widget-label:nth-child(5),
-.widgets > .widget-label:nth-child(8),
-.widgets > .widget-label:nth-child(11) {
-  background: rgba(125, 174, 163, 0.06);
-  border-left: 3px solid rgba(125, 174, 163, 0.50);
-  border-top: 1px solid rgba(125, 174, 163, 0.12);
-  border-radius: 0;
-  margin: 0 2px;
+/* ── TODAY group (blue #7daea3) ────────────────────────────────── */
+.gcal-today-header, .gcal-today-allday, .gcal-today-timed {
+  background: rgba(125, 174, 163, 0.08);
+  border-left: 3px solid rgba(125, 174, 163, 0.60);
 }
-.widgets > .widget-label:nth-child(5) > label,
-.widgets > .widget-label:nth-child(8) > label,
-.widgets > .widget-label:nth-child(11) > label {
-  font-size: 12px;
-  color: #928374;
-  padding: 4px 10px;
+.gcal-today-header > label,
+.gcal-today-allday > label,
+.gcal-today-timed > label {
+  color: #7daea3;
 }
 
-/* ── Scrollbar ───────────────────────────────────────────────── */
-scrollbar { background: transparent; }
-scrollbar slider {
-  background: rgba(131, 165, 152, 0.20);
-  border-radius: 4px;
-  min-width: 4px;
-  min-height: 4px;
+/* ── TOMORROW group (yellow #d8a657) ─────────────────────────────── */
+.gcal-tomorrow-header, .gcal-tomorrow-allday, .gcal-tomorrow-timed {
+  background: rgba(216, 166, 87, 0.08);
+  border-left: 3px solid rgba(216, 166, 87, 0.60);
 }
-scrollbar slider:hover { background: rgba(131, 165, 152, 0.42); }
+.gcal-tomorrow-header > label,
+.gcal-tomorrow-allday > label,
+.gcal-tomorrow-timed > label {
+  color: #d8a657;
+}
 
-/* ── Floating notifications ─────────────────────────────────── */
-.floating-notifications { background: transparent; }
-.floating-notifications .notification {
+/* ── DAY 3 group (orange #e78a4e) ─────────────────────────────────── */
+.gcal-day3-header, .gcal-day3-allday, .gcal-day3-timed {
+  background: rgba(231, 138, 78, 0.08);
+  border-left: 3px solid rgba(231, 138, 78, 0.60);
+}
+.gcal-day3-header > label,
+.gcal-day3-allday > label,
+.gcal-day3-timed > label {
+  color: #e78a4e;
+}
+
+/* ── Weather widget ─────────────────────────────────────────── */
+.weather {
+  background: rgba(125, 174, 163, 0.08);
+  border: 1px solid rgba(125, 174, 163, 0.22);
+  border-left: 3px solid rgba(125, 174, 163, 0.70);
   border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.55);
+  margin: 0 2px 4px 2px;
 }
-
-/* ── Notification grouping ───────────────────────────────────── */
-.notification-group         { background: transparent; border: none; padding: 0; margin: 0; }
-.notification-group-header  { background: transparent; border: none; padding: 0; margin: 0; font-size: 0; }
-.notification-group-icon    { background: transparent; }
-.notification-group-buttons { background: transparent; border: none; }
-
-/* ── Kill GTK4 focus indicator ───────────────────────────────── */
-*:focus,
-*:focus-visible {
-  outline: none;
-  box-shadow: none;
-  -gtk-outline-radius: 0;
-}
-.notification:focus,
-.notification:focus-visible,
-.notification-default-action:focus,
-.notification-default-action:focus-visible {
-  outline: none;
-  box-shadow: none;
-  border-color: rgba(131, 165, 152, 0.38);
-  -gtk-outline-radius: 0;
+.weather > label {
+  font-size: 13px;
+  color: #83a598;
+  padding: 7px 12px;
+  letter-spacing: 0.04em;
 }
