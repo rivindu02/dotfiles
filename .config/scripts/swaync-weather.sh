@@ -27,7 +27,7 @@ def parse_weather(json_str, label_name):
         data = json.loads(json_str)
         current = data["current_condition"][0]
         
-        temp_c = current["temp_C"]
+        feels_like = current.get("FeelsLikeC", current["temp_C"])
         desc = current["weatherDesc"][0]["value"]
         
         # Map weather description to emoji
@@ -51,7 +51,7 @@ def parse_weather(json_str, label_name):
         else:
             icon = "🌡️"
             
-        return f"{icon}  {temp_c}°C  {label_name}"
+        return f"{icon}  {feels_like}°C  {label_name}"
     except Exception:
         return f"󰖑  {label_name} error"
 
