@@ -5,12 +5,10 @@
   "spacing": 4,
   "modules-left": [
     "hyprland/workspaces",
-    "hyprland/window",
-    "custom/voxtype"
+    "hyprland/window"
   ],
   "modules-center": [
-    "custom/idle",
-    "clock",
+    "group/clock_group",
     "custom/notification"
   ],
   "modules-right": [
@@ -19,10 +17,19 @@
     "memory",
     "battery",
     "network",
-    "custom/nightlight",
+    "custom/tailscale",
     "tray",
     "custom/power"
   ],
+  "group/clock_group": {
+    "orientation": "horizontal",
+    "modules": [
+      "custom/voxtype",
+      "custom/idle",
+      "custom/nightlight",
+      "clock"
+    ]
+  },
   "hyprland/workspaces": {
     "format": "{icon}",
     "tooltip": false,
@@ -120,6 +127,14 @@
   },
   "tray": {
     "spacing": 8
+  },
+  "custom/tailscale": {
+    "exec": "~/.config/scripts/tailscale-status.sh",
+    "return-type": "json",
+    "interval": 10,
+    "signal": 10,
+    "on-click": "~/.local/bin/tailscale-menu",
+    "tooltip": true
   },
   "custom/notification": {
     "tooltip": false,
