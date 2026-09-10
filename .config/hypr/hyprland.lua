@@ -81,6 +81,10 @@ hl.config({
         layout           = "dwindle",
     },
 
+	cursor = {
+		no_warps = false,  -- test this first
+	},
+
     decoration = {
         rounding       = 8,
         rounding_power = 2,
@@ -308,6 +312,7 @@ hl.bind(secondMod .. " + I", hl.dsp.exec_cmd("~/.config/scripts/toggle-idle.sh")
 hl.bind(secondMod .. " + N", hl.dsp.exec_cmd("~/.config/scripts/toggle-nightlight.sh"))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.config/scripts/remind-prompt.sh"))
 hl.bind(mainMod .. " + CTRL + R", hl.dsp.exec_cmd("~/.config/scripts/remind-cancel.sh"))
+hl.bind(mainMod .. " + U",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/tailscale-menu"))
 
 -- Focus
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left"  }))
@@ -421,3 +426,6 @@ hl.layer_rule({ match = { namespace = "rofi" }, blur = true, ignore_alpha = 0.5 
 
 -- HyprMod managed settings
 require("hyprland-gui")
+
+-- Added by hyprmoncfg: its generated monitor rules load last, so nothing before this can override the applied layout.
+do local path = os.getenv("HOME") .. "/.config/hypr/hyprmoncfg-monitors.lua"; local file = io.open(path, "r"); if file then file:close(); dofile(path) end end
