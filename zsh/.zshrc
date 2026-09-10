@@ -23,24 +23,24 @@ export LANG=en_US.UTF-8
 export TERM_PROGRAM=ghostty
 export TERM=xterm-256color
 
-# Defensive PATH additions
-[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
-[[ -d "$HOME/.npm-global/bin" ]] && export PATH="$HOME/.npm-global/bin:$PATH"
+typeset -U path PATH
 
-# Guarded JAVA_HOME (Only sets if the path actually exists)
+[[ -d "$HOME/.local/bin" ]] && path=("$HOME/.local/bin" $path)
+[[ -d "$HOME/.npm-global/bin" ]] && path=("$HOME/.npm-global/bin" $path)
+
 if [[ -d /usr/lib/jvm/java-17-openjdk ]]; then
     export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
-    export PATH="$JAVA_HOME/bin:$PATH"
+    path=("$JAVA_HOME/bin" $path)
+fi
+
+if command -v tmux >/dev/null 2>&1; then
+    path=("$HOME/.tmuxifier/bin" $path)
+    eval "$(tmuxifier init -)"
 fi
 
 # Load P10k config if present
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
-# tmuxifier — only if tmux actually exists
-if command -v tmux >/dev/null; then
-    export PATH="$HOME/.tmuxifier/bin:$PATH"
-    eval "$(tmuxifier init -)"
-fi
 
 # for lazydocker to maintain podman containers and images
 export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
@@ -228,7 +228,6 @@ alias gz="env -u WAYLAND_DISPLAY QT_QPA_PLATFORM=xcb gz"
 [ -f /usr/share/colcon_argcomplete/hook/colcon-argcomplete.zsh ] && source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.zsh
 
 alias cubeide="ghostty -e zsh -c \"distrobox enter devbox -- /opt/st/stm32cubeide_2.1.0/stm32cubeide\""
-export PATH=~/.npm-global/bin:$PATH
 alias aider="~/.venvs/aider/bin/aider"
 export GROQ_API_KEY="$(cat ~/.secrets/groq 2>/dev/null)"
 alias ai-main="gemini"
