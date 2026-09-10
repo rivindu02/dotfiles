@@ -1,7 +1,6 @@
 antigravity-ide
 appimagelauncher
 arduino-ide-bin
-asusctl
 aws-session-manager-plugin
 bemoji
 bibata-cursor-theme
@@ -37,6 +36,8 @@ python312-debug
 qdirstat
 qdirstat-debug
 rofi-power-menu
+rustdesk
+rustdesk-debug
 sddm-sugar-candy-git
 slack-desktop-wayland
 todoist-appimage
