@@ -2,7 +2,7 @@
 image/png=swayimg.desktop;/home/rivindu02/.local/share/applications/imv-3.desktop;
 video/mp4=/home/rivindu02/.local/share/applications/vlc-3.desktop;vlc.desktop;
 application/vnd.ms-publisher=code-oss.desktop;
-application/pdf=brave-browser.desktop;org.pwmt.zathura.desktop;
+application/pdf=masterpdfeditor4.desktop;brave-browser.desktop;org.pwmt.zathura.desktop;
 image/jpeg=swayimg.desktop;
 video/x-matroska=vlc.desktop;
 
@@ -24,3 +24,6 @@ x-scheme-handler/unknown=brave-browser.desktop
 x-scheme-handler/slack=slack.desktop
 x-scheme-handler/com.todoist=todoist.desktop
 x-scheme-handler/todoist=todoist.desktop
+x-scheme-handler/mailto=brave-browser.desktop
+application/pdf=brave-browser.desktop
+x-scheme-handler/antigravity=antigravity.desktop
