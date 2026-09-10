@@ -171,6 +171,33 @@ window#waybar {
   border-radius: 4px;
 }
 
+/* ── Tailscale ─────────────────────────────────────────────── */
+#custom-tailscale {
+  color: #ffffff;
+  padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+  transition: all 0.2s;
+}
+
+#custom-tailscale.exit-node {
+  color: #7daea3;
+}
+
+#custom-tailscale.disconnected {
+  color: #928374;
+}
+
+#custom-tailscale:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+#custom-tailscale.exit-node:hover {
+  background: rgba(125, 174, 163, 0.12);
+  color: #7daea3;
+}
+
 /* ── Notification bell ──────────────────────────────────────── */
 #custom-notification {
   color: #83a598;
@@ -309,4 +336,17 @@ tooltip label {
 #custom-nightlight.on:hover {
   background: rgba(216, 166, 87, 0.12);
   color: #d8a657;
+}
+
+/* ── Group Hover Visibility ─────────────────────────────────── */
+#clock_group:not(:hover) #custom-voxtype.idle,
+#clock_group:not(:hover) #custom-voxtype.stopped,
+#clock_group:not(:hover) #custom-idle.idle,
+#clock_group:not(:hover) #custom-nightlight.off {
+  min-width: 0px;
+  padding: 0px;
+  margin: 0px;
+  border: none;
+  font-size: 0px;
+  color: transparent;
 }
