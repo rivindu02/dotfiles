@@ -7,13 +7,15 @@
   "keyboard-shortcuts": true,
   "timeout": 5,
   "timeout-low": 2,
-  "timeout-critical": 0,
+  "timeout-critical": 5,
   "widgets": [
     "title",
     "label#weather",
     "label#gcal-header",
     "label#gcal-today-header",
     "label#gcal-today-timed",
+    "label#gcal-tomorrow-header",
+    "label#gcal-tomorrow-timed",
     "mpris",
     "notifications",
     "dnd"
