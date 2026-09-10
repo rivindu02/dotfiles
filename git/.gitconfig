@@ -1,6 +1,6 @@
 [user]
-	name = rivindu-yl
-	email = kumarage.rivindu@yaalalabs.com
+	name = rivindu02
+	email = kumaragerivindu@gmail.com
 [credential "https://github.com"]
 	helper = 
 	helper = !/usr/bin/gh auth git-credential
@@ -9,8 +9,14 @@
 	helper = !/usr/bin/gh auth git-credential
 [core]
 	pager = delta
+[interactive]
+    diffFilter = delta --color-only
 [delta]
-	side-by-side = true
-	line-numbers = true
+    navigate = true      # Jump between changes with n/N
+    dark = true          # Or light = true, or omit for auto-detection
+    line-numbers = true  # Display line numbers
+    side-by-side = true  # Optional: side-by-side diffs
+[merge]
+    conflictStyle = zdiff3  # Improved merge conflict display
 [push]
 	autoSetupRemote = true
