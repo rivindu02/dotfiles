@@ -34,6 +34,11 @@ secure-perms
 
 # Pre-commit secret scanner
 git config core.hooksPath .githooks
+
+# Keep generated calendar/weather text out of commits (swaync config.json)
+git config filter.swaync-strip.clean "python3 .githooks/swaync-strip.py"
+git config filter.swaync-strip.smudge cat
+git config filter.swaync-strip.required true
 ```
 
 ## System files (need sudo)
