@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# apikey: API keys stored in gnome-keyring (Secret Service) instead of plaintext files.
+# The keyring stays locked under SDDM autologin; the first lookup per boot shows an unlock prompt.
+#
+#   apikey get <name>       print the key (no trailing newline)
+#   apikey set <name>       store a key (hidden prompt, or pipe it on stdin)
+#   apikey list             list stored key names
+#   apikey rm <name>        delete a key
+#   apikey import           copy ~/.secrets/* into the keyring (files are left in place)
+set -euo pipefail
+
+ATTR=(service dotfiles-apikey)
+
+usage() { sed -n '4,9p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2; }
+
+store() {  # store <name> <value>
+    printf '%s' "$2" | secret-tool store --label="API key: $1" "${ATTR[@]}" name "$1"
+}
+
+case "${1:-}" in
+    get)
+        [[ -n "${2:-}" ]] || usage
+        secret-tool lookup "${ATTR[@]}" name "$2" \
+            || { echo "apikey: no key named '$2' (add it with: apikey set $2)" >&2; exit 1; }
+        ;;
+    set)
+        [[ -n "${2:-}" ]] || usage
+        if [[ -t 0 ]]; then read -rsp "Key for $2: " key; echo >&2; else key=$(cat); fi
+        [[ -n "$key" ]] || { echo "apikey: empty key, nothing stored" >&2; exit 1; }
+        store "$2" "$key" && echo "stored $2" >&2
+        ;;
+    list)
+        secret-tool search --all "${ATTR[@]}" 2>&1 | sed -n 's/^attribute\.name = //p' | sort
+        ;;
+    rm)
+        [[ -n "${2:-}" ]] || usage
+        secret-tool clear "${ATTR[@]}" name "$2"
+        ;;
+    import)
+        shopt -s nullglob
+        for f in "$HOME"/.secrets/*; do
+            [[ -f "$f" ]] || continue
+            store "$(basename "$f")" "$(tr -d '\r\n' < "$f")" && echo "imported $(basename "$f")  (from ~/.secrets)"
+        done
+        echo "Plaintext files were left in place; delete them once 'apikey list' shows everything."
+        ;;
+    *) usage ;;
+esac

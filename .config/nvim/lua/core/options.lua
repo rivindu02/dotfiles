@@ -26,8 +26,22 @@ opt.ignorecase = true
 opt.smartcase = true
 
 -- Persistent undo mechanics
+-- Kept outside ~/.config/nvim: that path is a symlink into the dotfiles repo
 opt.undofile = true
-opt.undodir = vim.fn.expand("~/.config/nvim/undo")
+opt.undodir = vim.fn.stdpath("state") .. "/undo"
+
+-- Never persist undo/swap copies of secret files
+vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
+	desc = "No undo/swap for secret files",
+	pattern = {
+		"*/.secrets/*", "*/.ssh/*", "*.pem", "*.key", "*/.env", "*/.env.*",
+		"*/gh/hosts.yml", "*/aider/*.yml", "*/gcalcli/*",
+	},
+	callback = function()
+		vim.opt_local.undofile = false
+		vim.opt_local.swapfile = false
+	end,
+})
 
 -- Help lookup fallback targeting system manual entries
 opt.keywordprg = ":Man"

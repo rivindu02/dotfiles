@@ -20,3 +20,5 @@
     conflictStyle = zdiff3  # Improved merge conflict display
 [push]
 	autoSetupRemote = true
+[transfer]
+	fsckObjects = true  # reject corrupt/malformed objects on fetch and push

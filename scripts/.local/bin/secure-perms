@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# secure-perms: re-apply owner-only permissions to secret files (idempotent).
+# Run after a fresh clone or restow; git doesn't track permission bits beyond +x.
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+
+dirs=(
+    "$HOME/.secrets"
+    "$HOME/.ssh"
+    "$HOME/.local/state/nvim/undo"
+    "$HOME/.local/share/tmux/resurrect"   # saved pane contents = anything printed in a terminal
+    "$HOME/.config/restic"
+    "$HOME/.config/rclone"
+)
+
+files=(
+    "$DOTFILES/.config/gh/hosts.yml"
+    "$DOTFILES/ssh/.ssh/config"
+)
+
+for d in "${dirs[@]}"; do
+    [[ -d "$d" ]] && chmod 700 "$d" && echo "700  $d"
+done
+
+shopt -s nullglob
+files+=("$HOME"/.secrets/* "$DOTFILES"/.config/gcalcli/*/* "$DOTFILES"/.config/gcalcli/*)
+files+=("$HOME"/.ssh/id_* "$HOME"/.ssh/*.pem "$HOME/.config/restic/password" "$HOME/.config/rclone/rclone.conf")
+
+for f in "${files[@]}"; do
+    [[ -f "$f" && ! -L "$f" ]] || continue
+    case "$f" in *.pub) continue ;; esac
+    chmod 600 "$f" && echo "600  $f"
+done

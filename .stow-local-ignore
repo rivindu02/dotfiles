@@ -2,6 +2,8 @@
 aurlist.txt
 pkglist.txt
 README.md
+AUDIT.md
+\.githooks
 LICENSE
 .git
 .gitignore

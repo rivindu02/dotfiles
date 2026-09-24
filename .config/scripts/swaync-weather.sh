@@ -10,15 +10,15 @@ export PATH="/home/rivindu02/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 SWAYNC_CONFIG="$HOME/.config/swaync/config.json"
 
 # ── Fetch weather for Home and University ─────────────────────────
-WEATHER_HOME_JSON=$(curl -sf --max-time 8 "wttr.in/Veyangoda?format=j1" 2>/dev/null)
-WEATHER_UNI_JSON=$(curl -sf --max-time 8 "wttr.in/Katubedda?format=j1" 2>/dev/null)
+WEATHER_HOME_JSON=$(curl -sf --proto '=https' --max-time 8 "https://wttr.in/Veyangoda?format=j1" 2>/dev/null)
+WEATHER_UNI_JSON=$(curl -sf --proto '=https' --max-time 8 "https://wttr.in/Katubedda?format=j1" 2>/dev/null)
 
 if [[ -z "$WEATHER_HOME_JSON" ]] && [[ -z "$WEATHER_UNI_JSON" ]]; then
     WEATHER_TEXT="󰖑  Weather unavailable"
 else
-    # Parse with python3 (already installed)
-    WEATHER_TEXT=$(python3 - <<PYEOF
-import json, sys
+    # Network data goes in via env vars, never spliced into the Python source
+    WEATHER_TEXT=$(WEATHER_HOME_JSON="$WEATHER_HOME_JSON" WEATHER_UNI_JSON="$WEATHER_UNI_JSON" python3 - <<'PYEOF'
+import json, os, sys
 
 def parse_weather(json_str, label_name):
     if not json_str.strip():
@@ -55,8 +55,8 @@ def parse_weather(json_str, label_name):
     except Exception:
         return f"󰖑  {label_name} error"
 
-home_json = """$WEATHER_HOME_JSON"""
-uni_json = """$WEATHER_UNI_JSON"""
+home_json = os.environ.get("WEATHER_HOME_JSON", "")
+uni_json = os.environ.get("WEATHER_UNI_JSON", "")
 
 home_text = parse_weather(home_json, "Home")
 uni_text = parse_weather(uni_json, "University")

@@ -1,7 +1,5 @@
 # openclaude profile
 .openclaude-profile.json
-.config/aider/aider.groq.yml
-.config/aider/aider.kimi.yml
 .config/gh/hosts.yml
 .config/gcalcli
 
@@ -18,10 +16,22 @@
 .local/share/nvim/
 
 # SSH keys (safety net)
+# Patterns containing "/" are anchored to the repo root, so the stow
+# package path ssh/.ssh/ must be listed explicitly
 .ssh/*.pem
 .ssh/id_*
 .ssh/known_hosts
 .ssh/config
+ssh/.ssh/config
+ssh/.ssh/*.pem
+ssh/.ssh/id_*
+ssh/.ssh/known_hosts*
+
+# aider session history (can capture pasted secrets/code)
+.aider*
+
+# Local security audit (lists where secrets live)
+AUDIT.md
 
 # Secrets
 .secrets/

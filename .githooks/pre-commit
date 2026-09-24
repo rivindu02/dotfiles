@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Blocks commits that stage secrets or sensitive files.
+# Enable once per clone:  git config core.hooksPath .githooks
+# Bypass (deliberately):  git commit --no-verify
+
+set -u
+fail=0
+
+# 1) Sensitive paths must never be committed, regardless of content
+blocked_paths='(^|/)(\.ssh/config|id_[a-z0-9]+|[^/]*\.pem|[^/]*\.key|hosts\.yml|\.env(\..*)?|aider\.[a-z]+\.yml|\.openclaude-profile\.json)$|(^|/)gcalcli/|(^|/)\.secrets/'
+while IFS= read -r -d '' path; do
+    case "$path" in *.pub) continue ;; esac
+    if [[ "$path" =~ $blocked_paths ]]; then
+        echo "✖ pre-commit: sensitive file staged: $path" >&2
+        fail=1
+    fi
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+
+# 2) Secret patterns in the staged content
+if command -v gitleaks >/dev/null 2>&1; then
+    gitleaks protect --staged --redact --no-banner || fail=1
+else
+    patterns=(
+        'gh[pousr]_[A-Za-z0-9]{36}'              # GitHub token
+        'github_pat_[A-Za-z0-9_]{50,}'           # GitHub fine-grained PAT
+        'gsk_[A-Za-z0-9]{40,}'                   # Groq
+        'sk-or-v1-[0-9a-f]{40,}'                 # OpenRouter
+        'sk-(proj-)?[A-Za-z0-9_-]{32,}'          # OpenAI / Moonshot style
+        'sk-ant-[A-Za-z0-9_-]{32,}'              # Anthropic
+        'AIza[0-9A-Za-z_-]{35}'                  # Google API key
+        'GOCSPX-[A-Za-z0-9_-]{20,}'              # Google OAuth client secret
+        '(AKIA|ASIA)[0-9A-Z]{16}'                # AWS access key id
+        'xox[abprs]-[0-9A-Za-z-]{10,}'           # Slack
+        'hf_[A-Za-z0-9]{30,}'                    # Hugging Face
+        '-----BEGIN [A-Z ]*PRIVATE KEY-----'     # PEM private key
+    )
+    regex=$(IFS='|'; echo "${patterns[*]}")
+    # Only added lines; show file:line with the match redacted
+    hits=$(git diff --cached -U0 --no-color | awk -v re="$regex" '
+        /^\+\+\+ b\// { file = substr($0, 7); next }
+        /^@@/ { split($3, a, /[+,]/); line = a[2] - 1; next }
+        /^\+/ { line++; if ($0 ~ re) print file ":" line; next }
+        /^ / { line++ }
+    ')
+    if [[ -n "$hits" ]]; then
+        echo "✖ pre-commit: possible secret(s) in staged changes:" >&2
+        sed 's/^/    /' <<< "$hits" >&2
+        fail=1
+    fi
+fi
+
+if (( fail )); then
+    echo "Commit blocked. Unstage with: git restore --staged <file>" >&2
+    exit 1
+fi

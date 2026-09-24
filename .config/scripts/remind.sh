@@ -2,6 +2,12 @@
 # usage: remind.sh 10m "check the laundry"
 DURATION=$1; shift; MSG="$*"
 
+# Validate before arithmetic: $(( )) evaluates subscripts like a[$(cmd)]
+if [[ ! "$DURATION" =~ ^[0-9]+[hms]?$ ]]; then
+  notify-send -u low "⏳ Reminder" "Invalid duration: use e.g. 45m, 2h, 30s"
+  exit 1
+fi
+
 case "$DURATION" in
   *h) TOTAL=$(( ${DURATION%h} * 3600 )) ;;
   *m) TOTAL=$(( ${DURATION%m} * 60 )) ;;
