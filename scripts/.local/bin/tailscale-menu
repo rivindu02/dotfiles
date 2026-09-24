@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+# tailscale-menu — Rofi-based Tailscale control panel
+# Waybar click / SUPER+U keybind entry point.
+#
+# • Shows device status in -mesg header
+# • Online peers: select → yazi file picker → taildrop send
+# • Offline peers: select → copy IP
+# • Exit node entry: select → sub-menu to pick/clear exit node
+
+ROFI_THEME="$HOME/.config/rofi/menus/tailscale.rasi"
+
+# ── Helpers ────────────────────────────────────────────────────
+os_icon() {
+    case "$1" in
+        linux)   echo "" ;;
+        windows) echo "" ;;
+        macOS|darwin) echo "" ;;
+        android) echo "" ;;
+        iOS)     echo "" ;;
+        *)       echo "󰟀" ;;
+    esac
+}
+
+notify() { notify-send -a "Tailscale" "$@"; }
+
+# ── Gather Tailscale state ─────────────────────────────────────
+status_json=$(tailscale status --json 2>/dev/null)
+
+if [[ -z "$status_json" ]] || ! echo "$status_json" | jq -e '.Self' &>/dev/null; then
+    notify --icon=dialog-warning "󰖂 Tailscale" "Tailscale is not running"
+    exit 1
+fi
+
+self_hostname=$(echo "$status_json" | jq -r '.Self.DNSName | split(".")[0]')
+self_ip=$(echo "$status_json" | jq -r '.Self.TailscaleIPs[0]')
+online_count=$(echo "$status_json" | jq '[.Peer[] | select(.Online == true)] | length')
+total_count=$(echo "$status_json" | jq '[.Peer[]] | length')
+
+
+
+# ── Build -mesg header ────────────────────────────────────────
+mesg="󰖂  $self_hostname  $self_ip  $online_count/$total_count"
+
+# ── Build peer list ────────────────────────────────────────────
+online_lines=()
+offline_lines=()
+
+while IFS=$'\t' read -r hostname ip os online; do
+    icon=$(os_icon "$os")
+    if [[ "$online" == "true" ]]; then
+        online_lines+=("$icon  $hostname")
+    else
+        offline_lines+=("󰒎  $hostname")
+    fi
+done < <(echo "$status_json" | jq -r \
+    '.Peer[] | [(.DNSName | split(".")[0]), .TailscaleIPs[0], .OS, (.Online | tostring)] | @tsv')
+
+
+entries=()
+entries+=("${online_lines[@]}")
+entries+=("${offline_lines[@]}")
+
+# ── Show rofi main menu ───────────────────────────────────────
+selected=$(printf '%s\n' "${entries[@]}" | rofi \
+    -dmenu \
+    -p "Tailscale" \
+    -mesg "$mesg" \
+    -theme "$ROFI_THEME" \
+    -no-auto-select)
+
+[[ -z "$selected" ]] && exit 0
+
+
+
+# ── Handle: Offline peer → copy IP ────────────────────────────
+if [[ "$selected" == 󰒎* ]]; then
+    peer_name=$(echo "$selected" | awk '{print $NF}')
+    peer_ip=$(echo "$status_json" | jq -r \
+        --arg h "$peer_name" '.Peer[] | select((.DNSName | split(".")[0]) == $h) | .TailscaleIPs[0]')
+    echo -n "$peer_ip" | wl-copy
+    notify "󰖂 Tailscale" "Copied $peer_name IP: $peer_ip"
+    exit 0
+fi
+
+# ── Handle: Online peer → action sub-menu ──────────────────
+peer_name=$(echo "$selected" | awk '{print $NF}')
+
+action_selected=$(printf "󰈔  Send File\n󰅍  Send Clipboard" | rofi \
+    -dmenu -p "Action" -mesg "Send to $peer_name" -theme "$ROFI_THEME" -no-auto-select)
+
+[[ -z "$action_selected" ]] && exit 0
+
+if [[ "$action_selected" == "󰈔  Send File" ]]; then
+    chooser_file=$(mktemp "${XDG_RUNTIME_DIR:-/tmp}/tailscale-yazi-XXXXXX")
+    trap 'rm -f "$chooser_file"' EXIT
+
+    # Open yazi in ghostty as a file picker
+    ghostty --class=yazi-picker -e yazi --chooser-file="$chooser_file"
+
+    if [[ -s "$chooser_file" ]]; then
+        file_path=$(head -1 "$chooser_file")
+
+        if [[ -e "$file_path" ]]; then
+            if tailscale file cp "$file_path" "${peer_name}:"; then
+                (
+                    action=$(notify-send -a "Tailscale" -h boolean:transient:true -A "default=Open Folder" "󰒋 Taildrop" "✓ Sent $(basename "$file_path") to $peer_name")
+                    if [[ "$action" == "default" ]]; then
+                        ghostty -e yazi "$(dirname "$file_path")" &
+                    fi
+                ) &
+            else
+                notify --icon=dialog-warning "󰒋 Taildrop" "Failed to send to $peer_name"
+            fi
+        else
+            notify --icon=dialog-warning "󰒋 Taildrop" "File not found: $file_path"   
+        fi
+    fi
+elif [[ "$action_selected" == "󰅍  Send Clipboard" ]]; then
+    timestamp=$(date +%Y%m%d-%H%M%S)
+
+    # Private dir (0700) instead of a guessable name in world-writable /tmp
+    temp_dir=$(mktemp -d "${XDG_RUNTIME_DIR:-/tmp}/tailscale-clip-XXXXXX")
+    trap 'rm -rf "$temp_dir"' EXIT
+
+    # Try to grab an image first, then fallback to text
+    if wl-paste -t image/png >/dev/null 2>&1; then
+        temp_file="$temp_dir/Clipboard-${timestamp}.png"
+        wl-paste -t image/png > "$temp_file"
+    else
+        temp_file="$temp_dir/Clipboard-${timestamp}.txt"
+        wl-paste -t text/plain > "$temp_file" 2>/dev/null
+    fi
+
+    if [[ ! -s "$temp_file" ]]; then
+        notify --icon=dialog-warning " Taildrop" "Clipboard is empty or format not supported"
+        exit 1
+    fi
+
+    if tailscale file cp "$temp_file" "${peer_name}:"; then
+        notify-send -a "Tailscale" -h boolean:transient:true "󰒋 Taildrop" "✓ Sent clipboard to $peer_name"
+    else
+        notify --icon=dialog-warning " Taildrop" "Failed to send clipboard"
+    fi
+fi

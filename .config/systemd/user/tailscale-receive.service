@@ -1,0 +1,12 @@
+[Unit]
+Description=Tailscale Taildrop auto-receive daemon
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/.config/scripts/tailscale-receive.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
