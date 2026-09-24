@@ -1,0 +1,10 @@
+[Unit]
+Description=Update weather label in swaync
+After=network-online.target
+
+[Service]
+Type=oneshot
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1001/bus
+Environment=XDG_RUNTIME_DIR=/run/user/1001
+Environment=HOME=/home/rivindu02
+ExecStart=/home/rivindu02/.config/scripts/swaync-weather.sh

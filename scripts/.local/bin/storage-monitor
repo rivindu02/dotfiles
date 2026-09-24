@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+#
+# storage-monitor.sh
+# Quick overview of disk usage on a btrfs system: overall usage,
+# per-subvolume breakdown, and the biggest space consumers.
+#
+# Place in ~/.config/scripts/ alongside your other utility scripts.
+set -euo pipefail
+
+BOLD='\033[1m'
+DIM='\033[2m'
+YELLOW='\033[33m'
+RED='\033[31m'
+GREEN='\033[32m'
+RESET='\033[0m'
+
+ROOT_DEV=$(findmnt -no SOURCE /)
+
+section() {
+    echo -e "\n${BOLD}== $1 ==${RESET}"
+}
+
+# --- 1. Overall filesystem usage (plain df, easy to read at a glance) ---
+section "Overall usage"
+df -h --output=target,fstype,size,used,avail,pcent \
+    | awk 'NR==1 || $1 ~ /^\/($|home|var|.snapshots)/'
+
+# --- 2. Btrfs allocation (catches the "df lies on btrfs" problem) ---
+if command -v btrfs &>/dev/null && [[ $(findmnt -no FSTYPE /) == "btrfs" ]]; then
+    section "Btrfs filesystem usage ($ROOT_DEV)"
+    sudo btrfs filesystem usage -h / 2>/dev/null || btrfs filesystem usage -h / 2>/dev/null || \
+        echo -e "${DIM}(run with sudo for full btrfs allocation detail)${RESET}"
+
+    section "Subvolumes"
+    SUBVOL_OUT=$(sudo btrfs subvolume list -t / 2>/dev/null || btrfs subvolume list -t / 2>/dev/null || true)
+    if [[ -n "$SUBVOL_OUT" ]]; then
+        echo "$SUBVOL_OUT"
+    else
+        echo -e "${DIM}(no output — run with sudo for subvolume listing)${RESET}"
+    fi
+fi
+
+# --- 3. Snapshot space (btrfs-assistant territory — just report, don't manage) ---
+if mountpoint -q /.snapshots 2>/dev/null || [[ -d /.snapshots ]]; then
+    section "Snapshot usage (managed via Btrfs Assistant)"
+    SNAP_OUT=$(sudo du -sh /.snapshots 2>/dev/null || du -sh /.snapshots 2>/dev/null || true)
+    if [[ -n "$SNAP_OUT" ]]; then
+        echo "$SNAP_OUT"
+    else
+        echo -e "${DIM}(no /.snapshots or permission denied)${RESET}"
+    fi
+fi
+
+# --- 4. Biggest space consumers ---
+section "Top space consumers"
+if command -v dust &>/dev/null; then
+    sudo dust -n 15 "$HOME" 2>/dev/null || dust -n 15 "$HOME"
+elif command -v ncdu &>/dev/null; then
+    echo -e "${DIM}ncdu found — run 'ncdu $HOME' for an interactive browser${RESET}"
+    du -sh "$HOME"/* 2>/dev/null | sort -rh | head -n 15
+else
+    du -sh "$HOME"/* "$HOME"/.[!.]* 2>/dev/null | sort -rh | head -n 15
+fi
+
+# --- 5. Quick verdict ---
+section "Verdict"
+USE_PCT=$(df --output=pcent / | tail -1 | tr -dc '0-9')
+if (( USE_PCT >= 90 )); then
+    echo -e "${RED}Root is at ${USE_PCT}% — getting tight.${RESET}"
+elif (( USE_PCT >= 75 )); then
+    echo -e "${YELLOW}Root is at ${USE_PCT}% — worth keeping an eye on.${RESET}"
+else
+    echo -e "${GREEN}Root is at ${USE_PCT}% — plenty of headroom.${RESET}"
+fi

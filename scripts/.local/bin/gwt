@@ -7,8 +7,8 @@ if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
     exit 1
 fi
 
-REPO_NAME=$(basename $(git rev-parse --show-toplevel))
-BASE_DIR=$(dirname $(git rev-parse --show-toplevel))
+REPO_NAME=$(basename "$(git rev-parse --show-toplevel)")
+BASE_DIR=$(dirname "$(git rev-parse --show-toplevel)")
 MAIN_DOTENV="$(git rev-parse --show-toplevel)/.env"
 
 # Logic to handle subcommands

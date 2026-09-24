@@ -1,6 +1,10 @@
 #!/bin/bash
 
-evtest /dev/input/event8 | while read line; do
+# eventN numbering depends on probe order; by-path is stable across boots
+DEVICE=/dev/input/by-path/platform-asus-nb-wmi-event
+[ -e "$DEVICE" ] || DEVICE=/dev/input/event8
+
+evtest "$DEVICE" | while read -r line; do
     if echo "$line" | grep -q "KEY_CAMERA.*value 1"; then
         if lsmod | grep -q uvcvideo; then
             echo -n "3-8" > /sys/bus/usb/drivers/usb/unbind 2>/dev/null

@@ -91,11 +91,19 @@ shutil.copy2(bm_file, bm_file + ".bak")
 with open(bm_file, "r", encoding="utf-8") as f:
     data = json.load(f)
 
+def max_id(node):
+    ids = [int(node.get("id", 0) or 0)]
+    for child in node.get("children", []):
+        ids.append(max_id(child))
+    return max(ids)
+
+next_id = max(max_id(root) for root in data["roots"].values() if isinstance(root, dict)) + 1
+
 new_node = {
     "date_added":     str(int(time.time() * 1000000)),
     "date_last_used": "0",
     "guid":           str(uuid.uuid4()),
-    "id":             "99999",
+    "id":             str(next_id),
     "name":           name,
     "type":           "url",
     "url":            url,

@@ -249,6 +249,9 @@ else
 fi
 
 # ---------- 12. Old kernel cleanup ----------------------------------------
+announce "Installed kernels"
+INSTALLED_KERNELS=$(pacman -Qq | grep -E '^linux(-(lts|zen|hardened|rt))?[0-9]*$' || true)
+KERNEL_COUNT=$(grep -c . <<< "$INSTALLED_KERNELS" || true)
 echo "$INSTALLED_KERNELS"
 if (( KERNEL_COUNT > 1 )); then
   warn "$KERNEL_COUNT kernel(s) installed — consider removing old ones manually"
@@ -267,6 +270,21 @@ if [[ -n "$FAILED" ]]; then
   echo "$FAILED"
 else
   success "No failed systemd units"
+fi
+
+# ---------- 13b. Security advisories --------------------------------------
+announce "Security advisories (arch-audit)"
+if command -v arch-audit &>/dev/null; then
+  VULN=$(arch-audit -u 2>/dev/null || true)
+  if [[ -n "$VULN" ]]; then
+    warn "Packages with known CVEs that have a fixed version available:"
+    echo "$VULN"
+    warn "Run with --upgrade (or $AUR -Syu) to pull the fixes"
+  else
+    success "No fixable CVEs in installed packages"
+  fi
+else
+  warn "arch-audit not installed (sudo pacman -S arch-audit)"
 fi
 
 # ---------- 14. Container prune (REMOVED) ---------------------------------

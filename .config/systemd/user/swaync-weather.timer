@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh weather in swaync every 30 minutes
+
+[Timer]
+OnBootSec=30
+OnCalendar=*:0/30
+Persistent=true
+
+[Install]
+WantedBy=timers.target

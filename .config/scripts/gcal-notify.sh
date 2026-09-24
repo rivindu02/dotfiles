@@ -4,8 +4,7 @@
 NOTIFIED_FILE="${XDG_RUNTIME_DIR:-/tmp}/gcal-notified"
 touch "$NOTIFIED_FILE"
 
-GCAL_PERSONAL="gcalcli --config-folder ~/.config/gcalcli/gcalcli-personal"
-GCAL_WORK="gcalcli --config-folder ~/.config/gcalcli/gcalcli-work"
+GCAL_PERSONAL="gcalcli --config-folder $HOME/.config/gcalcli/gcalcli-personal"
 
 send_notification() {
   local title="$1"
@@ -24,7 +23,6 @@ fetch_events() {
   local to="$2"
 
   $GCAL_PERSONAL agenda --nocolor --nodeclined --tsv "$from" "$to" 2>/dev/null
-  $GCAL_WORK     agenda --nocolor --nodeclined --tsv "$from" "$to" 2>/dev/null
 }
 
 check_events() {
@@ -73,8 +71,6 @@ startup_summary() {
   local agenda
   agenda=$(
     $GCAL_PERSONAL agenda --nocolor --nodeclined \
-      "$(date '+%Y-%m-%d')" "$(date -d '+1 day' '+%Y-%m-%d')" 2>/dev/null
-    $GCAL_WORK agenda --nocolor --nodeclined \
       "$(date '+%Y-%m-%d')" "$(date -d '+1 day' '+%Y-%m-%d')" 2>/dev/null
   )
 

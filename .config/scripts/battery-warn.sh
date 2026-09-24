@@ -16,6 +16,22 @@ echo "false" > "$STATE_DIR/warn_15"
 echo "false" > "$STATE_DIR/warn_10"
 echo "false" > "$STATE_DIR/dimmed"
 
+NIGHTLIGHT_STATE="${XDG_RUNTIME_DIR:-/tmp}/nightlight-state"
+
+warm_screen() {
+    pgrep -x hyprsunset >/dev/null || { hyprsunset & sleep 1; }
+    hyprctl hyprsunset temperature 2500 >/dev/null 2>&1
+}
+
+# Return to whatever toggle-nightlight.sh last set
+restore_warmth() {
+    if [ -f "$NIGHTLIGHT_STATE" ]; then
+        hyprctl hyprsunset temperature 4000 >/dev/null 2>&1
+    else
+        hyprctl hyprsunset identity >/dev/null 2>&1
+    fi
+}
+
 play_sound() {
     if command -v paplay &>/dev/null; then
         paplay "$1" 2>/dev/null &
@@ -53,7 +69,7 @@ notify_critical() {
         brightnessctl -s 2>/dev/null   # save current level without changing it
     fi
 
-    wlsunset -t 2500 -T 2501 2>/dev/null &
+    warm_screen
     echo "true" > "$STATE_DIR/warn_15"
 }
 
@@ -65,18 +81,18 @@ notify_emergency() {
 
     if [ "$(cat "$STATE_DIR/dimmed")" = "true" ]; then
         brightnessctl -r 2>/dev/null
-        pkill wlsunset 2>/dev/null
         echo "false" > "$STATE_DIR/dimmed"
     fi
+    [ "$(cat "$STATE_DIR/warn_15")" = "true" ] && restore_warmth
     echo "true" > "$STATE_DIR/warn_10"
 }
 
 restore_screen() {
     if [ "$(cat "$STATE_DIR/dimmed")" = "true" ]; then
         brightnessctl -r 2>/dev/null
-        pkill wlsunset 2>/dev/null
         echo "false" > "$STATE_DIR/dimmed"
     fi
+    [ "$(cat "$STATE_DIR/warn_15")" = "true" ] && [ "$(cat "$STATE_DIR/warn_10")" = "false" ] && restore_warmth
     echo "false" > "$STATE_DIR/warn_30"
     echo "false" > "$STATE_DIR/warn_15"
     echo "false" > "$STATE_DIR/warn_10"
