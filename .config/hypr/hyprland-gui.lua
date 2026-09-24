@@ -18,12 +18,20 @@ hl.config({
     general = {
         allow_tearing = false,
         border_size = 2,
+        col = {
+            active_border = {
+                colors = {"rgba(33ccffee)", "rgba(00ff99ee)", "rgba(e01b24ff)"},
+                angle = 45,
+            },
+        },
         gaps_in = 4,
         gaps_out = 6,
+        layout = "dwindle",
     },
     misc = {
         animate_manual_resizes = false,
         disable_hyprland_logo = true,
+        vrr = 1,
     },
 })
 
@@ -38,7 +46,7 @@ hl.monitor({
     output = "eDP-1",
     disabled = false,
     mode = "2880x1800@120.00Hz",
-    position = "4951x1086",
+    position = "4900x1090",
     scale = 1.5,
     cm = "srgb",
 })

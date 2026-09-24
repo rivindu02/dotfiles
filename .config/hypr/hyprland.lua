@@ -5,6 +5,11 @@
 require("monitors")
 require("workspaces")
 
+-- Load plugins before hl.config() so their config keys are registered.
+-- hyprpm reload inside hl.on("hyprland.start") fires AFTER the full config is
+-- parsed, causing "unknown config key" errors for plugin.* keys on cold boot.
+-- os.execute("hyprctl plugin load /var/cache/hyprpm/rivindu02/hyprtasking/hyprtasking.so 2>/dev/null")
+
 
 ---------------------
 ---- MY PROGRAMS ----
@@ -20,22 +25,33 @@ local browser     = "brave"
 -------------------
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("awww-daemon && awww img /home/rivindu02/Pictures/Wallpapers/wallhaven-rqyp17.jpg --transition-type none")
+    -- awww-daemon runs in the foreground, so `daemon && img` would never set the image
+    hl.exec_cmd("awww-daemon & sleep 0.5; awww img \"$(~/.config/scripts/get-wallpaper.sh)\" --transition-type none")
     hl.exec_cmd("sleep 0.5 && hyprctl setcursor Bibata-Modern-Classic 24")
     hl.exec_cmd("waybar")
-    hl.exec_cmd("swaync")
+    hl.exec_cmd("systemctl --user start swaync")
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("mkdir -p ${XDG_RUNTIME_DIR:-/tmp}/cliphist-store")
     hl.exec_cmd("wl-paste --type text --watch ~/.config/scripts/cliphist-secure-store.sh")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("blueman-applet")
     hl.exec_cmd("~/.config/scripts/gcal-notify.sh")
-    hl.exec_cmd("sleep 5 && ~/.config/scripts/swaync-weather.sh && while sleep 1800; do ~/.config/scripts/swaync-weather.sh; done &")
+    -- Refresh once swaync is up; swaync-weather.timer handles the 30-min updates
+    hl.exec_cmd("sleep 5 && systemctl --user start swaync-weather.service")
     hl.exec_cmd("sleep 3 && hypridle")
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
     hl.exec_cmd("~/.config/scripts/battery-warn.sh")
-	hl.exec_cmd("hyprpm reload")
+    hl.exec_cmd("qs -c overview")
 
+end)
+
+-- Re-apply wallpaper and reload quickshell when a monitor is hotplugged
+hl.on("monitor.added", function(monitor)
+    -- awww-daemon doesn't detect hotplugged outputs; restart it so it
+    -- registers all currently connected monitors, then re-apply wallpaper.
+    hl.exec_cmd("awww kill 2>/dev/null; sleep 0.5; awww-daemon & sleep 1; awww img \"$(~/.config/scripts/get-wallpaper.sh)\" --transition-type none")
+    -- Reload quickshell so Variants picks up the new screen
+    hl.exec_cmd("sleep 1 && qs msg -c overview reload")
 end)
 
 
@@ -139,54 +155,54 @@ hl.config({
         },
     },
 
-	plugin = {
-		hyprtasking = {
-			layout = "grid",
-
-			gap_size = 10,
-			bg_color = 0xff26233a,
-			border_size = 2,
-			exit_on_hovered = false,
-			warp_on_move_window = 1,
-			close_overview_on_reload = false,
-
-			-- for other mouse buttons see <linux/input-event-codes.h>
-			drag_button = 0x110,   -- left mouse button
-			select_button = 0x111, -- right mouse button
-
-			jump = {
-				enabled = false,
-				label_color = 0xffffffff,
-				label_background = 0x000000cc,
-				label_size = 32,
-			},
-
-			gestures = {
-				enabled = false,
-				move_fingers = false,
-				move_distance = 300,
-				-- open_fingers = 4,
-				open_distance = 300,
-				open_positive = true,
-			},
-
-			grid = {
-				rows = 3,
-				cols = 3,
-				loop = false,
-				layers = 2,
-				loop_layers = true,
-				gaps_use_aspect_ratio = true,
-			},
-
-			linear = {
-				top = false,
-				height = 400,
-				scroll_speed = 1.0,
-				blur = false,
-			}
-		}
-	},
+	-- plugin = {
+	-- 	hyprtasking = {
+	-- 		layout = "grid",
+	--
+	-- 		gap_size = 10,
+	-- 		bg_color = 0xff26233a,
+	-- 		border_size = 2,
+	-- 		exit_on_hovered = false,
+	-- 		warp_on_move_window = 1,
+	-- 		close_overview_on_reload = false,
+	--
+	-- 		-- for other mouse buttons see <linux/input-event-codes.h>
+	-- 		drag_button = 0x110,   -- left mouse button
+	-- 		select_button = 0x111, -- right mouse button
+	--
+	-- 		jump = {
+	-- 			enabled = false,
+	-- 			label_color = 0xffffffff,
+	-- 			label_background = 0x000000cc,
+	-- 			label_size = 32,
+	-- 		},
+	--
+	-- 		gestures = {
+	-- 			enabled = false,
+	-- 			move_fingers = false,
+	-- 			move_distance = 300,
+	-- 			-- open_fingers = 4,
+	-- 			open_distance = 300,
+	-- 			open_positive = true,
+	-- 		},
+	--
+	-- 		grid = {
+	-- 			rows = 3,
+	-- 			cols = 3,
+	-- 			loop = false,
+	-- 			layers = 2,
+	-- 			loop_layers = true,
+	-- 			gaps_use_aspect_ratio = true,
+	-- 		},
+	--
+	-- 		linear = {
+	-- 			top = false,
+	-- 			height = 400,
+	-- 			scroll_speed = 1.0,
+	-- 			blur = false,
+	-- 		}
+	-- 	}
+	-- },
 	xwayland = {
         force_zero_scaling = true,
     }
@@ -292,7 +308,7 @@ hl.bind(secondMod .. " + Space", hl.dsp.exec_cmd("/home/rivindu02/.config/rofi/l
 hl.bind(mainMod .. " + Slash", hl.dsp.exec_cmd("rofi -show calc -modi calc -no-show-match -no-sort -theme ~/.config/rofi/launchers/type-1/style.rasi"))
 hl.bind(mainMod .. " + M",     hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/powermenu"))
 hl.bind(mainMod .. " + L",     hl.dsp.exec_cmd("hyprlock"))
-hl.bind(mainMod .. " + TAB", function() hl.plugin.hyprtasking.toggle("cursor") end)
+hl.bind(mainMod .. " + TAB", hl.dsp.exec_cmd("qs ipc -c overview call overview toggle"))
 
 -- Clipboard
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -display-columns 2 -theme ~/.config/rofi/launchers/type-1/style.rasi | cliphist decode | bash -c 'touch ${XDG_RUNTIME_DIR:-/tmp}/cliphist-silent && wl-copy'"))
@@ -307,7 +323,7 @@ hl.bind(mainMod .. " + W",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.loca
 hl.bind(secondMod .. " + B",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/bookmark"))
 hl.bind(mainMod .. " + I",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/psearch"))
 hl.bind(mainMod .. " + S",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/search"))
-hl.bind(secondMod .. " + R", hl.dsp.exec_cmd("voxtype record toggle"), { locked = true })
+hl.bind(secondMod .. " + R", hl.dsp.exec_cmd("voxtype record toggle"))
 hl.bind(secondMod .. " + I", hl.dsp.exec_cmd("~/.config/scripts/toggle-idle.sh"))
 hl.bind(secondMod .. " + N", hl.dsp.exec_cmd("~/.config/scripts/toggle-nightlight.sh"))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.config/scripts/remind-prompt.sh"))
@@ -423,6 +439,9 @@ hl.layer_rule({ match = { namespace = "swaync-notification-window" }, blur = tru
 
 -- Rofi
 hl.layer_rule({ match = { namespace = "rofi" }, blur = true, ignore_alpha = 0.5 })
+
+-- Quickshell Overview (namespace switches to "quickshell:overview-blur" when enableBlur=true)
+hl.layer_rule({ match = { namespace = "quickshell:overview-blur" }, blur = true, ignore_alpha = 0.2 })
 
 -- HyprMod managed settings
 require("hyprland-gui")

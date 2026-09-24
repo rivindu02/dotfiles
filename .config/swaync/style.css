@@ -18,7 +18,7 @@
 .control-center {
   background: rgba(24, 26, 28, 0.85);
   border: 1px solid rgba(131, 165, 152, 0.30);
-  border-radius: 14px;
+  border-radius: 0px;
   padding: 10px;
 }
 

@@ -27,3 +27,4 @@ x-scheme-handler/todoist=todoist.desktop
 x-scheme-handler/mailto=brave-browser.desktop
 application/pdf=brave-browser.desktop
 x-scheme-handler/antigravity=antigravity.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop

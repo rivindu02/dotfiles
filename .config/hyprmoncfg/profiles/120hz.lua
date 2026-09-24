@@ -3,7 +3,7 @@
 hl.monitor({
   output = "desc:Samsung Display Corp. 0x416D",
   mode = "2880x1800@120.00",
-  position = "3000x3000",
+  position = "4951x1086",
   scale = 1.5,
   vrr = 1,
   cm = "auto",
@@ -11,6 +11,21 @@ hl.monitor({
   sdr_max_luminance = 80,
 })
 
-hl.workspace_rule({ workspace = "1", monitor = "desc:Samsung Display Corp. 0x416D", default = true })
+hl.monitor({
+  output = "desc:ViewSonic Corporation VA240A Series XZ0252600635",
+  mode = "1920x1080@60.00",
+  position = "4951x0",
+  scale = 1,
+  sdr_min_luminance = 0.2,
+  sdr_max_luminance = 80,
+})
+
+hl.workspace_rule({ workspace = "1", monitor = "desc:Samsung Display Corp. 0x416D", default = true, persistent = true })
 hl.workspace_rule({ workspace = "2", monitor = "desc:Samsung Display Corp. 0x416D" })
 hl.workspace_rule({ workspace = "3", monitor = "desc:Samsung Display Corp. 0x416D" })
+hl.workspace_rule({ workspace = "4", monitor = "desc:ViewSonic Corporation VA240A Series XZ0252600635", default = true })
+hl.workspace_rule({ workspace = "5", monitor = "desc:ViewSonic Corporation VA240A Series XZ0252600635" })
+hl.workspace_rule({ workspace = "6", monitor = "desc:ViewSonic Corporation VA240A Series XZ0252600635" })
+hl.workspace_rule({ workspace = "7", monitor = "desc:ViewSonic Corporation VA240A Series XZ0252600635" })
+hl.workspace_rule({ workspace = "8", monitor = "desc:ViewSonic Corporation VA240A Series XZ0252600635" })
+hl.workspace_rule({ workspace = "9", monitor = "desc:ViewSonic Corporation VA240A Series XZ0252600635" })

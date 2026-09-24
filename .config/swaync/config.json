@@ -16,6 +16,8 @@
     "label#gcal-today-timed",
     "label#gcal-tomorrow-header",
     "label#gcal-tomorrow-timed",
+    "label#gcal-day3-header",
+    "label#gcal-day3-allday",
     "mpris",
     "notifications",
     "dnd"

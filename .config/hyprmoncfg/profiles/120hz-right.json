@@ -1,7 +1,7 @@
 {
-  "name": "120hz",
-  "created_at": "2026-06-17T18:11:16.921970845Z",
-  "updated_at": "2026-08-15T08:26:23.196981547Z",
+  "name": "120hz right",
+  "created_at": "2026-09-15T07:44:23.140413554Z",
+  "updated_at": "2026-09-15T07:45:06.637236798Z",
   "outputs": [
     {
       "key": "samsung display corp.|0x416d",
@@ -15,8 +15,8 @@
       "width": 2880,
       "height": 1800,
       "refresh": 120,
-      "x": 4951,
-      "y": 1086,
+      "x": 4931,
+      "y": 1100,
       "scale": 1.5,
       "vrr": 1,
       "transform": 0,
@@ -29,20 +29,20 @@
       "min_luminance": 0
     },
     {
-      "key": "viewsonic corporation|va240a series|xz0252600635",
-      "match_key": "viewsonic corporation|va240a series|xz0252600635",
+      "key": "viewsonic corporation|va240a series|xz0252600663",
+      "match_key": "viewsonic corporation|va240a series|xz0252600663",
       "name": "HDMI-A-1",
-      "description": "ViewSonic Corporation VA240A Series XZ0252600635",
+      "description": "ViewSonic Corporation VA240A Series XZ0252600663",
       "make": "ViewSonic Corporation",
       "model": "VA240A Series",
-      "serial": "XZ0252600635",
+      "serial": "XZ0252600663",
       "enabled": true,
-      "mode": "1920x1080@60.00Hz",
+      "mode": "1920x1080@120.00Hz",
       "width": 1920,
       "height": 1080,
-      "refresh": 60,
-      "x": 4951,
-      "y": 0,
+      "refresh": 120,
+      "x": 6851,
+      "y": 1100,
       "scale": 1,
       "transform": 0,
       "bitdepth": 8,
@@ -60,7 +60,7 @@
     "max_workspaces": 9,
     "group_size": 3,
     "monitor_order": [
-      "viewsonic corporation|va240a series|xz0252600635",
+      "viewsonic corporation|va240a series|xz0252600663",
       "samsung display corp.|0x416d"
     ],
     "rules": [
@@ -83,33 +83,33 @@
       },
       {
         "workspace": "4",
-        "output_key": "viewsonic corporation|va240a series|xz0252600635",
+        "output_key": "viewsonic corporation|va240a series|xz0252600663",
         "output_name": "HDMI-A-1",
         "default": true
       },
       {
         "workspace": "5",
-        "output_key": "viewsonic corporation|va240a series|xz0252600635",
+        "output_key": "viewsonic corporation|va240a series|xz0252600663",
         "output_name": "HDMI-A-1"
       },
       {
         "workspace": "6",
-        "output_key": "viewsonic corporation|va240a series|xz0252600635",
+        "output_key": "viewsonic corporation|va240a series|xz0252600663",
         "output_name": "HDMI-A-1"
       },
       {
         "workspace": "7",
-        "output_key": "viewsonic corporation|va240a series|xz0252600635",
+        "output_key": "viewsonic corporation|va240a series|xz0252600663",
         "output_name": "HDMI-A-1"
       },
       {
         "workspace": "8",
-        "output_key": "viewsonic corporation|va240a series|xz0252600635",
+        "output_key": "viewsonic corporation|va240a series|xz0252600663",
         "output_name": "HDMI-A-1"
       },
       {
         "workspace": "9",
-        "output_key": "viewsonic corporation|va240a series|xz0252600635",
+        "output_key": "viewsonic corporation|va240a series|xz0252600663",
         "output_name": "HDMI-A-1"
       }
     ]
