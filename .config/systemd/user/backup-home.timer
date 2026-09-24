@@ -1,0 +1,11 @@
+[Unit]
+Description=Try a home backup every 4h (the script itself runs at most once a day, on AC power)
+
+[Timer]
+OnBootSec=15min
+OnUnitActiveSec=4h
+Persistent=true
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=timers.target

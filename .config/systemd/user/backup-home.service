@@ -1,0 +1,10 @@
+[Unit]
+Description=Encrypted restic backup of $HOME to uni OneDrive
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/backup-home run
+Nice=19
+IOSchedulingClass=idle
+CPUSchedulingPolicy=idle

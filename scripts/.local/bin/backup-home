@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+# backup-home: encrypted restic backups of $HOME to the uni OneDrive (via rclone).
+#
+#   backup-home init        create the repo password and initialise the restic repository
+#   backup-home run         back up now (skips if a backup is < 20h old or on battery; --force overrides)
+#   backup-home dry-run     show what would be backed up and how big it is
+#   backup-home status      list snapshots and repository size
+#   backup-home check       verify repository integrity (reads 5% of the data)
+#   backup-home restic ...  run any restic command against the repo, e.g.
+#                           backup-home restic restore latest --target ~/restore --include ~/Documents
+set -euo pipefail
+
+export RESTIC_REPOSITORY="${RESTIC_REPOSITORY:-rclone:uomdrive:Backups/zenbook-restic}"
+export RESTIC_PASSWORD_FILE="${RESTIC_PASSWORD_FILE:-$HOME/.config/restic/password}"
+EXCLUDES="$HOME/.config/backup/excludes.txt"
+KEEP=(--keep-daily 7 --keep-weekly 4 --keep-monthly 6)
+
+notify() { command -v notify-send >/dev/null && notify-send -a "Backup" "$@" || true; }
+
+on_battery() {
+    local ac
+    for ac in /sys/class/power_supply/{AC,ADP,ACAD}*/online; do
+        [[ -r "$ac" ]] && { [[ "$(cat "$ac")" == 0 ]]; return; }
+    done
+    return 1
+}
+
+latest_age_hours() {
+    local t
+    t=$(restic snapshots --latest 1 --json 2>/dev/null | python3 -c '
+import json, re, sys, datetime
+s = json.load(sys.stdin) or []
+if not s: sys.exit(1)
+t = datetime.datetime.fromisoformat(re.sub(r"\.\d+", "", s[-1]["time"]).replace("Z", "+00:00"))
+print(int((datetime.datetime.now(datetime.timezone.utc) - t).total_seconds() // 3600))
+') || return 1
+    echo "$t"
+}
+
+backup_args=(
+    --one-file-system
+    --exclude-caches
+    --exclude-if-present .nobackup
+    --exclude-file "$EXCLUDES"
+    --tag auto
+    "$HOME"
+)
+
+case "${1:-}" in
+    init)
+        if [[ ! -s "$RESTIC_PASSWORD_FILE" ]]; then
+            install -d -m 700 "$(dirname "$RESTIC_PASSWORD_FILE")"
+            (umask 077; head -c 32 /dev/urandom | base64 > "$RESTIC_PASSWORD_FILE")
+            echo "Created repository password: $RESTIC_PASSWORD_FILE"
+            echo
+            echo "  !! Save this password somewhere OFF this laptop (phone, password manager, paper)."
+            echo "  !! Without it the backup cannot be restored if the laptop is lost."
+            echo
+            echo "  Password: $(cat "$RESTIC_PASSWORD_FILE")"
+            echo
+        fi
+        restic cat config >/dev/null 2>&1 && echo "Repository already initialised: $RESTIC_REPOSITORY" \
+            || restic init
+        ;;
+    run)
+        force=0; [[ "${2:-}" == "--force" ]] && force=1
+        if (( ! force )); then
+            if on_battery; then echo "On battery, skipping (use --force)."; exit 0; fi
+            if age=$(latest_age_hours) && (( age < 20 )); then
+                echo "Last backup is ${age}h old, skipping (use --force)."; exit 0
+            fi
+        fi
+        if ! restic backup "${backup_args[@]}"; then
+            notify -u critical "󰁯 Backup failed" "Run: journalctl --user -u backup-home -n 50"
+            exit 1
+        fi
+        # Pruning rewrites data on Drive, so only do it weekly (Sundays)
+        if [[ "$(date +%u)" == 7 || "${2:-}" == "--prune" ]]; then
+            restic forget "${KEEP[@]}" --tag auto --prune
+        else
+            restic forget "${KEEP[@]}" --tag auto
+        fi
+        notify -u low "󰁯 Backup complete" "$(restic snapshots --latest 1 --compact 2>/dev/null | sed -n 3p)"
+        ;;
+    dry-run)
+        restic backup --dry-run -v "${backup_args[@]}" | tail -n 15
+        ;;
+    status)
+        restic snapshots --compact
+        restic stats --mode raw-data
+        ;;
+    check)
+        restic check --read-data-subset=5%
+        ;;
+    restic)
+        shift; exec restic "$@"
+        ;;
+    *)
+        sed -n '3,10p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2
+        ;;
+esac
