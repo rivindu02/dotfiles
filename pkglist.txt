@@ -1,6 +1,7 @@
 7zip
 acpid
 adw-gtk-theme
+arch-audit
 asciinema
 asusctl
 aws-cli
@@ -35,12 +36,14 @@ fastfetch
 fd
 firefox
 fuse-overlayfs
+fwupd
 fzf
 gdu
 ghostty
 git
 git-delta
 github-cli
+gitleaks
 gnome-keyring
 go
 grim
@@ -57,9 +60,9 @@ inotify-tools
 intel-media-driver
 intel-ucode
 inxi
-iwd
 jdk17-openjdk
 jdk21-openjdk
+kernel-modules-hook
 lazydocker
 lazygit
 libinput-tools
@@ -87,7 +90,6 @@ nvm
 nwg-look
 obs-studio
 obsidian
-ollama
 openssh
 pacman-contrib
 pamixer
@@ -100,7 +102,6 @@ pipewire-jack
 pipewire-pulse
 plymouth
 podman
-polkit-gnome
 power-profiles-daemon
 procs
 python-build
@@ -110,6 +111,8 @@ python-pip
 python-pipx
 qt5-wayland
 qt6-wayland
+rclone
+restic
 rofi
 rofi-calc
 rsync
@@ -117,6 +120,7 @@ rust
 sbctl
 sddm
 seahorse
+shellcheck
 slurp
 smartmontools
 snap-pac
@@ -141,6 +145,7 @@ unzip
 usbutils
 vulkan-intel
 w3m
+waybar
 wev
 wget
 wine
@@ -154,6 +159,7 @@ xdg-utils
 xorg-server
 yazi
 ydotool
+zed
 zip
 zoxide
 zram-generator
