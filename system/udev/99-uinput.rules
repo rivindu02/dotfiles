@@ -1,0 +1,3 @@
+# /dev/uinput (virtual input, used by ydotool/voxtype typing) gets its own group,
+# so the user no longer needs the `input` group, which can read every keystroke.
+KERNEL=="uinput", MODE="0660", GROUP="uinput", OPTIONS+="static_node=uinput"

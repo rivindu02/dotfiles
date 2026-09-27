@@ -60,6 +60,10 @@ sudo install -Dm755 system/systemd/asus-sleep.sh /usr/lib/systemd/system-sleep/a
 sudo install -Dm644 system/systemd/camera-toggle.service -t /etc/systemd/system/
 sudo systemctl enable --now camera-toggle
 
+# Hardening + privacy (sysctl, no core dumps, LLMNR off, DNS-over-TLS, MAC randomization,
+# uinput group, reflector): see the script for details
+sudo bash system/apply-round4.sh
+
 # SDDM theme
 sudo install -Dm644 system/sddm/theme.conf /usr/share/sddm/themes/sugar-candy/theme.conf
 ```

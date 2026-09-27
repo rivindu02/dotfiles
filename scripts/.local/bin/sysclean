@@ -11,7 +11,7 @@
 #  Usage: ./sysmaintenance.sh [OPTIONS]
 #    -u | --upgrade      Full system upgrade before cleaning
 #    -m | --mirrors      Refresh mirrorlist via reflector
-#    -n | --node         Clean npm global cache
+#    -n | --node         Update global npm packages + clean npm cache
 #    -p | --python       Clean pip cache
 #    -v | --uv           Clean uv python package cache
 #    -a | --all          Enable all optional steps
@@ -292,6 +292,17 @@ fi
 
 # ---------- 15. npm/pip/uv clean (optional) -------------------------------
 if $DO_NODE && command -v npm &>/dev/null; then
+  announce "Global npm packages (not covered by pacman/yay)"
+  OUTDATED=$(npm outdated -g 2>/dev/null || true)
+  if [[ -n "$OUTDATED" ]]; then
+    echo "$OUTDATED"
+    # npm blocks install scripts by default; native modules (e.g. node-pty) need
+    # `npm install -g --allow-scripts=<pkg> <parent>` if they stop loading
+    confirm "Update global npm packages?" && npm update -g && success "Global npm packages updated"
+  else
+    success "All global npm packages up to date"
+  fi
+
   announce "npm cache clean"
   confirm "Clean npm cache?" && npm cache clean --force && success "npm cleaned"
 fi
