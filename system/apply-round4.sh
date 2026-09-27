@@ -47,7 +47,9 @@ ok "Random MAC while scanning; stable per-network random MAC from the next (re)c
 
 # ── 5. uinput gets its own group; leave the keystroke-reading `input` group ──
 step "uinput group (replaces membership in 'input')"
-groupadd -f uinput
+# udev only supports device ownership by *system* groups (GID < 1000)
+if getent group uinput >/dev/null && (( $(getent group uinput | cut -d: -f3) >= 1000 )); then groupdel uinput; fi
+groupadd -f -r uinput
 install -Dm644 "$REPO/system/udev/99-uinput.rules" /etc/udev/rules.d/99-uinput.rules
 udevadm control --reload
 udevadm trigger --sysname-match=uinput
