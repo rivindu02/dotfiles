@@ -2,7 +2,7 @@
 
 A reference for every tool on this machine (Arch Linux + Hyprland, ASUS Zenbook): what each one is for and how to use it for common tasks.
 
-**Scope:** all 169 explicitly installed official packages, 50 AUR packages, global npm / uv / pip / cargo / go tools, the custom scripts in this repo, keybindings, and the services that run in the background. Libraries pulled in automatically as dependencies are not listed.
+**Scope:** all 169 explicitly installed official packages, 49 AUR packages, global npm / uv / pip / cargo / go tools, the custom scripts in this repo, keybindings, and the services that run in the background. Libraries pulled in automatically as dependencies are not listed.
 
 **Finding help for anything:** `tldr <cmd>` (short examples), `man <cmd>` (full manual), `<cmd> --help`.
 
@@ -443,7 +443,6 @@ A new terminal auto-attaches to the tmux session `main`.
 | **onlyoffice-bin** (AUR) | Word / Excel / PowerPoint compatible office suite | `onlyoffice-desktopeditors file.docx` (or `desktopeditors`) |
 | **p3x-onenote** (AUR) | OneNote (web wrapper) | From rofi |
 | **todoist-appimage** (AUR) | Tasks | `SUPER+T` |
-| **slack-desktop-wayland** (AUR) | Slack; **no longer in the AUR, no updates** | Replace: `yay -S slack-desktop` |
 | **gcalcli** (script wrapper) | Google Calendar in the terminal | `gcalcli --config-folder ~/.config/gcalcli/gcalcli-personal agenda`, `... quick "Meeting tomorrow 3pm"` |
 | **localsend-bin**, **tailscale** | File sharing with phone/devices | See §6, §11 |
 
