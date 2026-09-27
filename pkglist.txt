@@ -9,6 +9,7 @@ awww
 base
 base-devel
 bat
+bitwarden
 blueman
 blueprint-compiler
 bluez
@@ -74,6 +75,7 @@ linux-headers
 lshw
 lua51
 luarocks
+lynis
 man-db
 maven
 mpv
@@ -112,6 +114,7 @@ python-pipx
 qt5-wayland
 qt6-wayland
 rclone
+reflector
 restic
 rofi
 rofi-calc
