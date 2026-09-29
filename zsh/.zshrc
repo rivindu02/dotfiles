@@ -153,7 +153,7 @@ function y() {
 # Browse the entc server in yazi over sshfs (mounts only when not mounted)
 entc() {
   mkdir -p ~/mnt/entc
-  mountpoint -q ~/mnt/entc || sshfs entc:/home/ravindu ~/mnt/entc -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 || return
+  mountpoint -q ~/mnt/entc || sshfs entc:/home/ravindu ~/mnt/entc -o idmap=user,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 || return
   yazi ~/mnt/entc
 }
 alias entc-umount='fusermount3 -u ~/mnt/entc'
