@@ -94,7 +94,7 @@ A reference for every tool on this machine (Arch Linux + Hyprland, ASUS Zenbook)
 | `SUPER + R` | New reminder ("remind me in 10 min to…") |
 | `SUPER + CTRL + R` | Cancel reminders |
 | `SUPER + U` | Tailscale menu (send files/clipboard to your devices) |
-| `SUPER + SHIFT + I` | Stay-awake toggle (blocks idle/sleep) |
+| `SUPER + SHIFT + I` | Stay-awake toggle (blocks idle/sleep; closing the lid then only locks and turns the screen off) |
 | `SUPER + SHIFT + N` | Night light toggle |
 
 ### Hardware keys & touchpad
@@ -137,6 +137,7 @@ A reference for every tool on this machine (Arch Linux + Hyprland, ASUS Zenbook)
 | `remind.sh`, `remind-prompt.sh`, `remind-cancel.sh`, `reminder-loop.sh` | Reminder system (`SUPER+R`). CLI: `~/.config/scripts/remind.sh 45m "take a break"` |
 | `tailscale-status.sh`, `tailscale-receive.sh` | Waybar Tailscale icon; auto-accept incoming Taildrop files into `~/tailscale` |
 | `toggle-idle.sh`, `toggle-nightlight.sh` | Stay-awake and night-light toggles |
+| `lid.sh` | Lid-switch handler: while stay-awake is on, closing the lid locks (hyprlock), turns off the keyboard backlight and the laptop screen, and keeps everything else running; opening turns them back on |
 | `get-wallpaper.sh`, `set-wallpaper.sh` | Current Waypaper wallpaper; syncs it to the lock screen |
 | `asus-sleep.sh` | Keyboard backlight / asusd handling around suspend |
 
@@ -648,7 +649,7 @@ resolvectl status | grep -i DNSOverTLS
 - Wipe everything: `cliphist wipe`.
 
 ### Keep the laptop awake (downloads, presentations)
-- `SUPER+SHIFT+I` toggles stay-awake. The Waybar icon shows the state.
+- `SUPER+SHIFT+I` toggles stay-awake. The Waybar icon shows the state. While it is on, you can close the lid: the laptop locks and the screen turns off, but downloads, Wi-Fi and running jobs continue (it still suspends at 5% battery). Keep the vents clear under heavy load.
 
 ### Something isn't working
 ```bash

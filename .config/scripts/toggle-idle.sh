@@ -5,7 +5,7 @@ if [ -f "$PIDFILE" ]; then
     kill "$(cat "$PIDFILE")" 2>/dev/null
     rm -f "$PIDFILE"
 else
-    systemd-inhibit --what=idle:sleep --who="stay-awake-toggle" --why="manual toggle" sleep infinity &
+    systemd-inhibit --what=idle:sleep:handle-lid-switch --who="stay-awake-toggle" --why="manual toggle" sleep infinity &
     echo $! > "$PIDFILE"
 fi
 pkill -RTMIN+8 waybar

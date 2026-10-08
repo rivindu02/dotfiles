@@ -180,7 +180,7 @@
     "interval": 3600,
     "signal": 8,
     "on-click": "~/.config/scripts/toggle-idle.sh",
-    "tooltip-format": "Click to toggle stay-awake"
+    "tooltip-format": "Stay-awake: no idle lock/suspend; closing the lid only locks and turns the screen off"
   },
   "custom/nightlight": {
     "exec": "test -f ${XDG_RUNTIME_DIR:-/tmp}/nightlight-state && echo '{\"text\":\"󰌵\",\"class\":\"on\"}' || echo '{\"text\":\"󰖨\",\"class\":\"off\"}'",

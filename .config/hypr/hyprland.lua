@@ -371,6 +371,10 @@ hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = tr
 -- Screenshot
 hl.bind("Print",          hl.dsp.exec_cmd("bash -c 'FILE=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png && grim $FILE && wl-copy < $FILE && notify-send \"Screenshot\" \"Saved & copied to clipboard\" -i $FILE -t 2000'"), { locked = true })
 
+-- Lid: only acts while stay-awake holds the lid inhibitor (see lid.sh); otherwise logind suspends
+hl.bind("switch:on:Lid Switch",  hl.dsp.exec_cmd("~/.config/scripts/lid.sh close"), { locked = true })
+hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd("~/.config/scripts/lid.sh open"),  { locked = true })
+
 -- Launcher
 hl.bind("XF86Launch1",    hl.dsp.exec_cmd("ghostty --class=btop_float -e btop"), { locked = true })
 

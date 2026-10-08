@@ -139,6 +139,7 @@ swaync
 syntax-highlighting
 tailscale
 thunar
+tigervnc
 tldr
 tmux
 tree
