@@ -49,9 +49,12 @@ end)
 hl.on("monitor.added", function(monitor)
     -- awww-daemon doesn't detect hotplugged outputs; restart it so it
     -- registers all currently connected monitors, then re-apply wallpaper.
-    hl.exec_cmd("awww kill 2>/dev/null; sleep 0.5; awww-daemon & sleep 1; awww img \"$(~/.config/scripts/get-wallpaper.sh)\" --transition-type none")
+    -- Wait 2 s first: a new output is often modeset twice while it settles.
+    hl.exec_cmd("sleep 2; awww kill 2>/dev/null; sleep 0.5; awww-daemon & sleep 1; awww img \"$(~/.config/scripts/get-wallpaper.sh)\" --transition-type none")
+    -- Waybar doesn't always add a bar for a hotplugged output; SIGUSR2 reloads it on all outputs
+    hl.exec_cmd("sleep 2 && pkill -SIGUSR2 waybar")
     -- Reload quickshell so Variants picks up the new screen
-    hl.exec_cmd("sleep 1 && qs msg -c overview reload")
+    hl.exec_cmd("sleep 2 && qs msg -c overview reload")
 end)
 
 
