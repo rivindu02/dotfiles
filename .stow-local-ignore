@@ -1,12 +1,22 @@
-# Files to ignore in the dotfiles root
+# Files to ignore in the dotfiles root.
+# Patterns with a "/" match the path from the repo root; others match any basename.
 aurlist.txt
 pkglist.txt
 README.md
 AUDIT.md
 TOOLS.md
-\.githooks
 LICENSE
-.git
-.gitignore
+\.git
+\.gitignore
+\.gitattributes
+\.githooks
+\.luarc\.json
+\.aider.*
 
-
+# Stow packages, stowed on their own (stow zsh git ssh scripts system_prefs)
+^/git$
+^/scripts$
+^/ssh$
+^/system$
+^/system_prefs$
+^/zsh$
