@@ -115,6 +115,7 @@ python-pip
 python-pipx
 qt5-wayland
 qt6-wayland
+qt6ct
 rclone
 reflector
 restic
@@ -139,7 +140,6 @@ swaync
 syntax-highlighting
 tailscale
 thunar
-tigervnc
 tldr
 tmux
 tree
@@ -153,6 +153,7 @@ usbutils
 vulkan-intel
 w3m
 waybar
+wayvnc
 wev
 wget
 wine
