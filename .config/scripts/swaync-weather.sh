@@ -6,7 +6,7 @@
 # Adds a "label#weather" widget to swaync showing:
 #   🌦️  27°C  Colombo  ·  Feels 31°C  💧 78%  💨 12 km/h
 
-export PATH="/home/rivindu02/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 SWAYNC_CONFIG="$HOME/.config/swaync/config.json"
 
 # ── Fetch weather for Home and University ─────────────────────────

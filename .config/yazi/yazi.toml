@@ -1,6 +1,19 @@
 [opener]
 edit = [
-  { run = 'nvim "%s"', block = true, for = "unix" },
+  { run = 'nvim %s', block = true, desc = "nvim", for = "unix" },
 ]
+browser = [
+  { run = 'brave %s', orphan = true, desc = "Brave", for = "unix" },
+]
+
+[open]
+# Web files open in Brave first; `o` (open interactively) still offers nvim.
+prepend_rules = [
+  { mime = "text/html", use = [ "browser", "edit", "reveal" ] },
+  { mime = "application/xhtml+xml", use = [ "browser", "edit", "reveal" ] },
+  { url = "*.{html,htm,xhtml,mhtml,mht,shtml}", use = [ "browser", "edit", "reveal" ] },
+  { url = "*.{url,webloc,desktop.url}", use = [ "browser", "edit" ] },
+]
+
 [mgr]
 linemode = "size"

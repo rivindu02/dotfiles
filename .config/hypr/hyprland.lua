@@ -63,7 +63,6 @@ hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("QT_QPA_PLATFORM", "wayland")
-hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 hl.env("GDK_BACKEND", "wayland,x11")
 hl.env("NIXOS_OZONE_WL", "1")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
@@ -263,7 +262,7 @@ hl.gesture({
     fingers   = 3,
     direction = "down",
     action    = function()
-        hl.exec_cmd("pkill rofi || /home/rivindu02/.config/rofi/launchers/type-1/launcher.sh")
+        hl.exec_cmd("pkill rofi || ~/.config/rofi/launchers/type-1/launcher.sh")
     end,
 })
 
@@ -303,8 +302,8 @@ hl.bind(secondMod .. " + F",     hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + F",   hl.dsp.window.fullscreen({ action = "toggle" }))
 hl.bind(mainMod .. " + P",     hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/presentation"))
 hl.bind(mainMod .. " + J",     hl.dsp.layout("togglesplit"))
-hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("/home/rivindu02/.config/rofi/launchers/type-1/launcher.sh || pkill rofi"))
-hl.bind(secondMod .. " + Space", hl.dsp.exec_cmd("/home/rivindu02/.config/rofi/launchers/type-1/launcher2.sh  || pkill rofi"))
+hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("~/.config/rofi/launchers/type-1/launcher.sh || pkill rofi"))
+hl.bind(secondMod .. " + Space", hl.dsp.exec_cmd("~/.config/rofi/launchers/type-1/launcher2.sh || pkill rofi"))
 hl.bind(mainMod .. " + Slash", hl.dsp.exec_cmd("rofi -show calc -modi calc -no-show-match -no-sort -theme ~/.config/rofi/launchers/type-1/style.rasi"))
 hl.bind(mainMod .. " + M",     hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/powermenu"))
 hl.bind(mainMod .. " + L",     hl.dsp.exec_cmd("hyprlock"))
@@ -316,7 +315,7 @@ hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("bash -c 'touch ${XDG_RUNTIME
 
 -- Utilities
 hl.bind(mainMod .. " + N",          hl.dsp.exec_cmd("swaync-client -t -sw"))
-hl.bind(mainMod .. " + period",     hl.dsp.exec_cmd("/home/rivindu02/.local/bin/bemoji-rofi"))
+hl.bind(mainMod .. " + period",     hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/bemoji-rofi"))
 hl.bind(secondMod .. " + S",  hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/screenshot"))
 hl.bind(secondMod .. " + T",  hl.dsp.exec_cmd("OCR4Linux --lang eng"))
 hl.bind(mainMod .. " + W",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/writ"))
@@ -358,8 +357,8 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 -- Volume & brightness
 hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
 hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),      { locked = true, repeating = true })
-hl.bind("XF86AudioMute",         hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true, repeating = true })
-hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
+hl.bind("XF86AudioMute",         hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true })
+hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true })
 hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                  { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                  { locked = true, repeating = true })
 
@@ -392,6 +391,14 @@ hl.window_rule({
     name  = "fix-xwayland-drags",
     match = { class = "^$", title = "^$", xwayland = true, float = true, fullscreen = false, pin = false },
     no_focus = true,
+})
+
+hl.window_rule({
+    name   = "float-btop",
+    match  = { class = "btop_float" },
+    float  = true,
+    size   = "900 600",
+    center = true,
 })
 
 hl.window_rule({

@@ -4,7 +4,7 @@ Description=Update gcal events in swaync
 [Service]
 Type=oneshot
 # This imports your Wayland env so the script can find the Notification Center
-Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1001/bus
-Environment=XDG_RUNTIME_DIR=/run/user/1001
-Environment=HOME=/home/rivindu02
-ExecStart=/home/rivindu02/.config/scripts/gcal-widget.sh
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus
+Environment=XDG_RUNTIME_DIR=%t
+Environment=HOME=%h
+ExecStart=%h/.config/scripts/gcal-widget.sh

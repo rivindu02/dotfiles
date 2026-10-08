@@ -1,8 +1,8 @@
 #!/bin/bash
 # ~/.config/scripts/gcal-widget.sh
 # ── Config ───────────────────────────────────────────────────
-export PATH="/home/rivindu02/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
-HOME=/home/rivindu02
+: "${HOME:=/home/$(id -un)}"
+export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 GCAL_PERSONAL="gcalcli --config-folder $HOME/.config/gcalcli/gcalcli-personal"
 SWAYNC_CONFIG="$HOME/.config/swaync/config.json"
 TODAY=$(date '+%Y-%m-%d')
