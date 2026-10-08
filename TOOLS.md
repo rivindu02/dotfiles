@@ -160,14 +160,17 @@ Defined in `zsh/.zshrc`.
 | `inv` | Fuzzy-pick files (with preview) and open them in nvim |
 | `python` | python3 |
 | `openclaude` | OpenClaude via OpenRouter (key fetched from keyring on demand) |
-| `oc-open`, `oc-open2` | Switch openclaude to OpenRouter key 1 / key 2 |
+| `oc-open`, `oc-open2` | Switch openclaude to OpenRouter key 1 / key 2 (the OpenRouter settings go to openclaude only, not to other programs) |
+| `entc`, `jetson` | Mount the entc server (`/home/ravindu`) or the Jetson (`/home/jetson`) at `~/mnt/<host>` over sshfs if not already mounted, then open yazi there. `idmap=user` makes git work inside the mount. Unmount: `entc-umount`, `jetson-umount` |
+| `sshmount <host> <dir>` | The helper behind `entc`/`jetson`; works with any host in `~/.ssh/config` |
 | `ai-main` | Google's gemini CLI |
 | `gz` | Gazebo forced onto XWayland (needed for rendering) |
 | `cubeide` | STM32CubeIDE inside the `devbox` distrobox |
-| `Ctrl+R` / `Ctrl+T` / `Alt+C` | fzf: history search / insert file path / cd into folder |
+| `Ctrl+R` | atuin history search |
+| `Ctrl+T` / `Alt+C` | fzf: insert file path / cd into folder |
 | `Tab` | fzf-tab completion menu (fuzzy) |
 
-A new terminal auto-attaches to the tmux session `main`.
+A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals such as VS Code or Neovide do not).
 
 ---
 
@@ -212,8 +215,10 @@ A new terminal auto-attaches to the tmux session `main`.
 | Tool | Use case | How to use |
 |---|---|---|
 | **ghostty** | Terminal emulator | `SUPER+Q`; splits: `Ctrl+A` then `\` (right) / `-` (down), `Ctrl+A h/j/k/l` move, `Ctrl+A z` zoom, `Ctrl+A c` new tab, `Ctrl+A r` reload config |
-| **zsh** + **oh-my-zsh-git** + **zsh-theme-powerlevel10k-git** (AUR) | Shell, plugin framework, prompt theme | Plugins: git, autosuggestions (→ accepts a suggestion), syntax highlighting, fzf-tab. Reconfigure the prompt: `p10k configure` |
+| **zsh** + **oh-my-zsh-git** + **zsh-theme-powerlevel10k-git** (AUR) | Shell, plugin framework, prompt theme | Loaded from `/usr/share`, so `yay` updates them. Plugins: git, autosuggestions (→ accepts a suggestion), syntax highlighting, fzf-tab; the last three are git clones in `~/.local/share/oh-my-zsh-custom/plugins` (update with `git -C <dir> pull`). Reconfigure the prompt: `p10k configure` |
 | **tmux** | Sessions that survive closing the terminal; panes & windows | Prefix `Ctrl+Space`. `\|` / `-` split, `c` new window, `d` detach, `g` lazygit window, `r` reload, `[` copy mode (`v` select, `y` copy). Sessions auto-save every 5 min and auto-restore (resurrect + continuum). `tmux ls`, `tmux attach -t main` |
+| **tmuxifier** (`~/.tmuxifier`) | Saved tmux layouts (windows, panes and commands per project) | `tmuxifier new-session name` to write a layout, `tmuxifier load-session name` to open it. No layouts saved yet |
+| **atuin** | Searchable shell history in a SQLite database (local only, no sync) | `Ctrl+R` opens it under the prompt. Type to fuzzy-search, `Ctrl+R` again switches between global, host, session and folder filters, `Enter` puts the command on the prompt to edit, `Tab` too. The Up arrow is still normal zsh history. `atuin stats` shows your top commands. Commands starting with a space, or that set `token=`/`password=` inline, are not recorded. Config: `.config/atuin/config.toml` |
 | **fzf** | Fuzzy finder for anything | `Ctrl+R` history, `Ctrl+T` files, `Alt+C` cd; `vim $(fzf)` |
 | **zoxide** | Smarter `cd` | `z proj`, `zi` (interactive) |
 | **bat** | `cat` with highlighting | `bat file.py`, `bat -A file` (show hidden chars) |
@@ -234,7 +239,7 @@ A new terminal auto-attaches to the tmux session `main`.
 
 | Tool | Use case | How to use |
 |---|---|---|
-| **yazi** | Terminal file manager with previews | `y` or `SUPER+E`. Keys: `h/j/k/l` move, `Enter` open, `Space` select, `y/x/p` copy/cut/paste, `d` trash, `a` new file (end with `/` for a folder), `r` rename, `/` search, `z` fzf jump. Plugins: bunny (quick jumps: `b` then a key, e.g. `b d` → dotfiles), bookmarks, mount |
+| **yazi** | Terminal file manager with previews | `y` or `SUPER+E`. Keys: `h/j/k/l` move, `Enter` open, `Space` select, `y/x/p` copy/cut/paste, `d` trash, `a` new file (end with `/` for a folder), `r` rename, `/` search, `z` fzf jump. HTML and other web files open in Brave (`o` still offers nvim). Plugins: bunny (quick jumps: `b` then a key, e.g. `b d` → dotfiles), bookmarks, mount |
 | **thunar** | GUI file manager | `thunar`; right-click "Open terminal here" |
 | **fd** | Fast `find` | `fd pdf ~/Documents`; `fd -e py`; `fd -H .env` (include hidden) |
 | **fzf** | Fuzzy find | See §5 |
@@ -330,6 +335,7 @@ A new terminal auto-attaches to the tmux session `main`.
 | **openssh** | SSH client (no server running) | `ssh entc`, `ssh p1` (aliases in `~/.ssh/config`); copy files `scp`/`rsync`; keys `ssh-keygen -t ed25519` |
 | **aws-cli** + **aws-session-manager-plugin** (AUR) | AWS from the terminal; SSM tunnels used by the `p*`/`dax*` SSH hosts | `aws sso login` / `aws configure`, `aws s3 ls`, `aws ssm start-session --target i-...` |
 | **rustdesk** (AUR) | Remote desktop (the unattended service is disabled) | Open the app when you need it; share the ID + one-time password |
+| **sshfs** | Mount a remote folder over SSH | `entc` / `jetson` (see §3), or `sshfs host:/dir ~/mnt/x -o idmap=user`; unmount `fusermount3 -u ~/mnt/x` |
 | **wget** | Download files | `wget -c URL` (`-c` resumes) |
 | **rclone** | Sync to cloud storage (Drive, B2, S3, OneDrive…) | `rclone config`, `rclone ls remote:`, `rclone copy dir remote:dir -P` |
 | **parabolic** (AUR) | GUI video/audio downloader (yt-dlp) | From rofi ("Parabolic"); binary `org.nickvision.tubeconverter` |

@@ -2,6 +2,8 @@
 
 Arch Linux + Hyprland setup, managed with GNU Stow.
 
+Every installed tool, keybinding and script is explained in [TOOLS.md](TOOLS.md).
+
 ## Layout
 
 | Path | Stowed to | Notes |
