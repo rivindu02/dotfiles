@@ -37,7 +37,6 @@ quickshell-overview-git
 rofi-power-menu
 rustdesk
 sddm-sugar-candy-git
-slack-desktop-wayland
 spotify
 todoist-appimage
 v4l2loopback-dc-dkms

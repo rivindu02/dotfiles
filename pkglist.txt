@@ -4,6 +4,7 @@ adw-gtk-theme
 arch-audit
 asciinema
 asusctl
+atuin
 aws-cli
 awww
 base
@@ -19,6 +20,7 @@ brightnessctl
 btop
 btrfs-assistant
 btrfs-progs
+bun
 clang
 cliphist
 cmake
@@ -129,6 +131,7 @@ smartmontools
 snap-pac
 snapper
 sof-firmware
+sshfs
 stow
 sudo
 swayimg
