@@ -1,0 +1,16 @@
+# atuin config: only settings that differ from the defaults.
+# Full reference: `atuin default-config`.
+
+update_check = false      # pacman updates it
+auto_sync = false         # local only; no atuin account
+style = "compact"
+inline_height = 20        # open under the prompt instead of full screen
+show_preview = true
+enter_accept = false      # Enter puts the command on the prompt to edit; it does not run it
+secrets_filter = true     # drop lines that look like API keys or tokens
+
+# Never record commands that start with a space, or that set a key inline
+history_filter = [
+  "^ ",
+  "(?i)(api[_-]?key|token|secret|password)=",
+]

@@ -9,6 +9,7 @@ dirs=(
     "$HOME/.ssh"
     "$HOME/.local/state/nvim/undo"
     "$HOME/.local/share/tmux/resurrect"   # saved pane contents = anything printed in a terminal
+    "$HOME/.local/share/atuin"            # full shell history database
     "$HOME/.config/restic"
     "$HOME/.config/rclone"
 )

@@ -4,9 +4,6 @@
 [[ $- != *i* ]] && return 
 
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
 
 
 
@@ -16,7 +13,6 @@ fi
 # ===========================================================
 
 export TERMINAL=ghostty
-export TERM_PROGRAM=ghostty
 export EDITOR=nvim
 export VISUAL=nvim
 export LANG=en_US.UTF-8
@@ -36,9 +32,6 @@ if command -v tmux >/dev/null 2>&1; then
     eval "$(tmuxifier init -)"
 fi
 
-# Load P10k config if present
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-
 
 # for lazydocker to maintain podman containers and images
 export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
@@ -49,12 +42,20 @@ export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
 # ===========================================================
 
 
-export ZSH="$HOME/.oh-my-zsh"
+# oh-my-zsh and powerlevel10k come from the AUR (oh-my-zsh-git, zsh-theme-powerlevel10k-git),
+# so yay updates them. Third-party plugins are git clones in $ZSH_CUSTOM/plugins.
+export ZSH=/usr/share/oh-my-zsh
+ZSH_CUSTOM="$HOME/.local/share/oh-my-zsh-custom"
+DISABLE_AUTO_UPDATE=true        # root-owned install; updated by yay instead
 if [[ -d "$ZSH" ]]; then
-    ZSH_THEME="powerlevel10k/powerlevel10k"
+    ZSH_THEME=""                # p10k is sourced below from the AUR package
     plugins=(git zsh-autosuggestions zsh-syntax-highlighting fzf-tab)
     source "$ZSH/oh-my-zsh.sh"
 fi
+
+P10K_THEME=/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+[[ -r $P10K_THEME ]] && source $P10K_THEME
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
 # ------------- fzf-tab ------------------------
 # Ctrl+Space : select multiple results, can be configured by `fzf-bindings` tag
@@ -67,33 +68,25 @@ ZSH_HIGHLIGHT_STYLES[comment]='fg=#a89984' # for comments
 # ===========================================================
 # 4) AI Tooling & API Config (OpenClaude via OpenRouter)
 # ===========================================================
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
-export OPENAI_MODEL="openrouter/auto"
 # Keys live in gnome-keyring (see `apikey`) and are fetched only when a tool runs,
 # so normal shells never trigger the keyring unlock prompt.
-export OC_KEY=openroute
+# The OpenAI-compatible settings are passed to openclaude only, so other
+# OpenAI SDK programs are not redirected to OpenRouter.
+OC_KEY=openroute
+OC_BASE_URL="https://openrouter.ai/api/v1"
+OC_MODEL="openrouter/auto"
 
 # openclaude: uses OPENAI_API_KEY if already set, else the OC_KEY keyring entry
 openclaude() {
 	local key="${OPENAI_API_KEY:-}"
 	[[ -n "$key" ]] || key="$(apikey get "$OC_KEY")" || return
-	OPENAI_API_KEY="$key" command openclaude "$@"
+	CLAUDE_CODE_USE_OPENAI=1 OPENAI_BASE_URL="$OC_BASE_URL" OPENAI_MODEL="$OC_MODEL" \
+		OPENAI_API_KEY="$key" command openclaude "$@"
 }
 
-# ── OpenRouter: Llama 4 Maverick (free, fast) ─────────
-oc-open() {
-  export OC_KEY=openroute
-  export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
-  export OPENAI_MODEL="openrouter/auto"
-  echo "OpenClaude → OpenRouter Auto (free)"
-}
-oc-open2() {
-  export OC_KEY=openroute2
-  export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
-  export OPENAI_MODEL="openrouter/auto"
-  echo "OpenClaude → OpenRouter Auto (free)"
-}
+# ── OpenRouter Auto (free): pick which keyring key openclaude uses ─────────
+oc-open()  { OC_KEY=openroute;  echo "OpenClaude → OpenRouter Auto (key: openroute)"; }
+oc-open2() { OC_KEY=openroute2; echo "OpenClaude → OpenRouter Auto (key: openroute2)"; }
 
 
 
@@ -112,13 +105,11 @@ if command -v fzf >/dev/null; then
 	[[ -f /usr/share/fzf/key-bindings.zsh ]] && source /usr/share/fzf/key-bindings.zsh
 	[[ -f /usr/share/fzf/completion.zsh ]] && source /usr/share/fzf/completion.zsh
 
-  # Improve Ctrl+R
-  export FZF_CTRL_R_OPTS="
-  --preview 'echo {}'
-  --preview-window down:3:hidden
-  --bind '?:toggle-preview'
-  "
 fi
+
+# atuin: searchable history database. Loaded after fzf so it takes over Ctrl+R;
+# the Up arrow keeps normal zsh history.
+command -v atuin >/dev/null && eval "$(atuin init zsh --disable-up-arrow)"
 
 show_file_or_dir_preview='
 if [ -d {} ]; then
@@ -150,20 +141,17 @@ function y() {
   rm -f -- "$tmp"
 }
 
-# Browse the entc server in yazi over sshfs (mounts only when not mounted)
-entc() {
-  mkdir -p ~/mnt/entc
-  mountpoint -q ~/mnt/entc || sshfs entc:/home/ravindu ~/mnt/entc -o idmap=user,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 || return
-  yazi ~/mnt/entc
+# Mount <host>:<remote-dir> at ~/mnt/<host> over sshfs (only when not mounted), then open yazi.
+# idmap=user maps remote file ownership to the local user, so git works inside the mount.
+sshmount() {
+  local host=$1 dir=$2 mnt=~/mnt/$1
+  mkdir -p "$mnt"
+  mountpoint -q "$mnt" || sshfs "$host:$dir" "$mnt" -o idmap=user,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 || return
+  yazi "$mnt"
 }
+entc()   { sshmount entc /home/ravindu; }
+jetson() { sshmount jetson /home/jetson; }
 alias entc-umount='fusermount3 -u ~/mnt/entc'
-
-# Browse the Jetson over sshfs (mounts only when not mounted)
-jetson() {
-  mkdir -p ~/mnt/jetson
-  mountpoint -q ~/mnt/jetson || sshfs jetson:/home/jetson ~/mnt/jetson -o idmap=user,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 || return
-  yazi ~/mnt/jetson
-}
 alias jetson-umount='fusermount3 -u ~/mnt/jetson'
 
 
@@ -173,7 +161,6 @@ setopt INTERACTIVE_COMMENTS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_SAVE_NO_DUPS
 setopt SHARE_HISTORY
-setopt INC_APPEND_HISTORY
 
 # ===========================================================
 # 6) Modern CLI replacements (cross-distro safe)
@@ -203,7 +190,7 @@ alias gl="git log --oneline --graph --decorate"
 
 
 # ===========================================================
-# 9) Language/tooling defaults
+# 8) Language/tooling defaults
 # ===========================================================
 #
 alias python="python3"
@@ -215,11 +202,11 @@ export NVM_DIR="$HOME/.nvm"
 
 # nvim opeanings
 alias nv="nvim"
-alias inv='nvim $(fzf -m --preview="bat --color=always {}")'
+inv() { fzf -m --print0 --preview="bat --color=always {}" | xargs -0 -r -o nvim; }
 
 
 # ===========================================================
-# 10) source ros2
+# 9) source ros2
 # ===========================================================
 #
 [ -f /opt/ros/jazzy/setup.zsh ] && source /opt/ros/jazzy/setup.zsh
@@ -243,4 +230,5 @@ alias cubeide="ghostty -e zsh -c \"distrobox enter devbox -- /opt/st/stm32cubeid
 alias ai-main="gemini"
 
 
-[[ -z "$TMUX" ]] && tmux new-session -A -s main
+# Auto-attach tmux only in Ghostty, not in IDE or other terminals
+[[ -z "$TMUX" && -n "$GHOSTTY_RESOURCES_DIR" ]] && tmux new-session -A -s main
