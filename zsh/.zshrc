@@ -158,6 +158,14 @@ entc() {
 }
 alias entc-umount='fusermount3 -u ~/mnt/entc'
 
+# Browse the Jetson over sshfs (mounts only when not mounted)
+jetson() {
+  mkdir -p ~/mnt/jetson
+  mountpoint -q ~/mnt/jetson || sshfs jetson:/home/jetson ~/mnt/jetson -o idmap=user,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 || return
+  yazi ~/mnt/jetson
+}
+alias jetson-umount='fusermount3 -u ~/mnt/jetson'
+
 
 # Safer shell behavior
 setopt AUTO_CD
