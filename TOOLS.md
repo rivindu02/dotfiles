@@ -137,7 +137,7 @@ A reference for every tool on this machine (Arch Linux + Hyprland, ASUS Zenbook)
 | `remind.sh`, `remind-prompt.sh`, `remind-cancel.sh`, `reminder-loop.sh` | Reminder system (`SUPER+R`). CLI: `~/.config/scripts/remind.sh 45m "take a break"` |
 | `tailscale-status.sh`, `tailscale-receive.sh` | Waybar Tailscale icon; auto-accept incoming Taildrop files into `~/tailscale` |
 | `toggle-idle.sh`, `toggle-nightlight.sh` | Stay-awake and night-light toggles |
-| `lid.sh` | Lid-switch handler: while stay-awake is on, closing the lid locks (hyprlock), turns off the keyboard backlight and the laptop screen, and keeps everything else running; opening turns them back on |
+| `lid.sh` | Lid-switch handler. Stay-awake **on**: closing the lid locks (hyprlock) and turns the laptop screen off, and everything keeps running. Stay-awake **off**: the laptop suspends, even with an external monitor connected (logind ignores the lid when docked, so the script suspends instead). Opening the lid turns the screen back on to the lock screen. Ignores libinput's fake "lid open" events by checking `/proc/acpi/button/lid`. Log: `$XDG_RUNTIME_DIR/lid.log` |
 | `get-wallpaper.sh`, `set-wallpaper.sh` | Current Waypaper wallpaper; syncs it to the lock screen |
 | `asus-sleep.sh` | Keyboard backlight / asusd handling around suspend |
 
@@ -649,7 +649,7 @@ resolvectl status | grep -i DNSOverTLS
 - Wipe everything: `cliphist wipe`.
 
 ### Keep the laptop awake (downloads, presentations)
-- `SUPER+SHIFT+I` toggles stay-awake. The Waybar icon shows the state. While it is on, you can close the lid: the laptop locks and the screen turns off, but downloads, Wi-Fi and running jobs continue (it still suspends at 5% battery). Keep the vents clear under heavy load.
+- `SUPER+SHIFT+I` toggles stay-awake. The Waybar icon shows the state. While it is on, you can close the lid: the laptop locks and the screen turns off, but downloads, Wi-Fi and running jobs continue (it still suspends at 5% battery). With it off, closing the lid always suspends, even with an external monitor plugged in. Keep the vents clear under heavy load.
 
 ### Something isn't working
 ```bash
