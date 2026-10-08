@@ -4,7 +4,7 @@
   "height": 34,
   "spacing": 4,
   "modules-left": [
-    "hyprland/workspaces",
+    "ext/workspaces",
     "hyprland/window"
   ],
   "modules-center": [
@@ -30,9 +30,13 @@
       "clock"
     ]
   },
-  "hyprland/workspaces": {
+  "ext/workspaces": {
+    // ext-workspace-v1: hyprland/workspaces clicks send legacy `dispatch workspace N`,
+    // which the Lua config rejects. Persistence comes from Hyprland workspace rules.
     "format": "{icon}",
     "tooltip": false,
+    "on-click": "activate",
+    "sort-by-id": true,
     "format-icons": {
       "1": "1",
       "2": "2",
@@ -41,9 +45,6 @@
       "5": "5",
       "active": "●",
       "default": "○"
-    },
-    "persistent-workspaces": {
-      "*": 5
     }
   },
   "hyprland/window": {
@@ -180,7 +181,7 @@
     "interval": 3600,
     "signal": 8,
     "on-click": "~/.config/scripts/toggle-idle.sh",
-    "tooltip-format": "Stay-awake: no idle lock/suspend; closing the lid only locks and turns the screen off"
+    "tooltip-format": "toggle Stay-awake"
   },
   "custom/nightlight": {
     "exec": "test -f ${XDG_RUNTIME_DIR:-/tmp}/nightlight-state && echo '{\"text\":\"󰌵\",\"class\":\"on\"}' || echo '{\"text\":\"󰖨\",\"class\":\"off\"}'",

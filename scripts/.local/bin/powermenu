@@ -32,9 +32,10 @@ rofi_cmd() {
 # Stay-awake state (see ~/.config/scripts/toggle-idle.sh)
 stay_awake_pid="${XDG_RUNTIME_DIR:-/tmp}/stay-awake.pid"
 
-# Confirmation CMD: $1 = message, $2 = window width
+# Confirmation CMD: $1 = message, $2 = window width, $3 = highlight colour
 confirm_cmd() {
     rofi -theme-str "window {location: center; anchor: center; fullscreen: false; width: ${2:-250px};}" \
+        -theme-str "element selected.normal {background-color: var(${3:-selected});}" \
         -theme-str 'mainbox {children: [ "message", "listview" ];}' \
         -theme-str 'listview {columns: 2; lines: 1;}' \
         -theme-str 'element-text {horizontal-align: 0.5;}' \
@@ -49,7 +50,7 @@ confirm_cmd() {
 # Ask for confirmation. While stay-awake is on, say so: Yes turns it off first.
 confirm_exit() {
     if [[ -f "$stay_awake_pid" ]]; then
-        echo -e "$yes\n$no" | confirm_cmd '󰛊 Stay-awake is on (will turn off). Are you Sure?' 450px
+        echo -e "$yes\n$no" | confirm_cmd '󰛊 Stay-awake is on. Sure?' 300px urgent
     else
         echo -e "$yes\n$no" | confirm_cmd
     fi

@@ -5,6 +5,11 @@
 require("monitors")
 require("workspaces")
 
+-- Keep 1-5 around so waybar's ext/workspaces always shows them
+for i = 1, 5 do
+    hl.workspace_rule({ workspace = tostring(i), persistent = true })
+end
+
 -- Load plugins before hl.config() so their config keys are registered.
 -- hyprpm reload inside hl.on("hyprland.start") fires AFTER the full config is
 -- parsed, causing "unknown config key" errors for plugin.* keys on cold boot.
