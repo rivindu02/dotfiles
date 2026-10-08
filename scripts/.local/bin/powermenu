@@ -29,23 +29,30 @@ rofi_cmd() {
         -no-auto-select
 }
 
-# Confirmation CMD
+# Stay-awake state (see ~/.config/scripts/toggle-idle.sh)
+stay_awake_pid="${XDG_RUNTIME_DIR:-/tmp}/stay-awake.pid"
+
+# Confirmation CMD: $1 = message, $2 = window width
 confirm_cmd() {
-    rofi -theme-str 'window {location: center; anchor: center; fullscreen: false; width: 250px;}' \
+    rofi -theme-str "window {location: center; anchor: center; fullscreen: false; width: ${2:-250px};}" \
         -theme-str 'mainbox {children: [ "message", "listview" ];}' \
         -theme-str 'listview {columns: 2; lines: 1;}' \
         -theme-str 'element-text {horizontal-align: 0.5;}' \
         -theme-str 'textbox {horizontal-align: 0.5;}' \
         -dmenu \
         -p 'Confirmation' \
-        -mesg 'Are you Sure?' \
+        -mesg "${1:-Are you Sure?}" \
         -no-auto-select \
         -theme ${dir}/${theme}.rasi
 }
 
-# Ask for confirmation
+# Ask for confirmation. While stay-awake is on, say so: Yes turns it off first.
 confirm_exit() {
-    echo -e "$yes\n$no" | confirm_cmd
+    if [[ -f "$stay_awake_pid" ]]; then
+        echo -e "$yes\n$no" | confirm_cmd '󰛊 Stay-awake is on (will turn off). Are you Sure?' 450px
+    else
+        echo -e "$yes\n$no" | confirm_cmd
+    fi
 }
 
 # Pass variables to rofi dmenu
@@ -56,18 +63,17 @@ run_rofi() {
 # Execute Command
 run_cmd() {
     selected="$(confirm_exit)"
-    if [[ "$selected" == "$yes" ]]; then
-        if [[ $1 == '--shutdown' ]]; then
-            systemctl poweroff
-        elif [[ $1 == '--reboot' ]]; then
-            systemctl reboot
-        elif [[ $1 == '--suspend' ]]; then
-            systemctl suspend
-        elif [[ $1 == '--logout' ]]; then
-            hyprctl dispatch 'hl.dsp.exit()'
-        fi
-    else
-        exit 0
+    [[ "$selected" == "$yes" ]] || exit 0
+    # Release the idle/sleep inhibitor, or suspend is refused
+    [[ -f "$stay_awake_pid" ]] && "$HOME/.config/scripts/toggle-idle.sh"
+    if [[ $1 == '--shutdown' ]]; then
+        systemctl poweroff
+    elif [[ $1 == '--reboot' ]]; then
+        systemctl reboot
+    elif [[ $1 == '--suspend' ]]; then
+        systemctl suspend
+    elif [[ $1 == '--logout' ]]; then
+        hyprctl dispatch 'hl.dsp.exit()'
     fi
 }
 

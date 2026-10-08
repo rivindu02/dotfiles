@@ -24,6 +24,9 @@ local browser     = "brave"
 ---- AUTOSTART ----
 -------------------
 
+-- monitor.added also fires for outputs present at startup; autostart already covers those
+local config_loaded_at = os.time()
+
 hl.on("hyprland.start", function()
     -- awww-daemon runs in the foreground, so `daemon && img` would never set the image
     hl.exec_cmd("awww-daemon & sleep 0.5; awww img \"$(~/.config/scripts/get-wallpaper.sh)\" --transition-type none")
@@ -47,6 +50,7 @@ end)
 
 -- Re-apply wallpaper and reload quickshell when a monitor is hotplugged
 hl.on("monitor.added", function(monitor)
+    if os.time() - config_loaded_at < 10 then return end
     -- awww-daemon doesn't detect hotplugged outputs; restart it so it
     -- registers all currently connected monitors, then re-apply wallpaper.
     -- Wait 2 s first: a new output is often modeset twice while it settles.
