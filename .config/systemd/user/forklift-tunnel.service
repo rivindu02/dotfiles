@@ -1,0 +1,14 @@
+# Laptop: reverse SSH tunnel so the forklift Pi reaches the web app at its own localhost:3000.
+# The Pi is shared into this tailnet from another account, so it cannot connect to the laptop directly.
+# Install: see deploy/README.md
+[Unit]
+Description=Reverse SSH tunnel from the forklift Pi to the web app
+After=network-online.target forklift-web.service
+
+[Service]
+ExecStart=/usr/bin/ssh -N -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -R 3000:localhost:3000 ravindurashmika@100.77.100.60
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
