@@ -85,6 +85,7 @@ hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_SESSION_DESKTOP", "Hyprland")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "wayland")
 hl.env("CLIPHIST_MAX_ITEMS", "50")
+hl.env("DOCKER_HOST", "unix:///run/user/1001/podman/podman.sock") -- Docker clients (lazydocker) talk to Podman
 
 
 -----------------------
@@ -401,6 +402,13 @@ hl.window_rule({
 	match = { class = ".*" },
 
 	suppress_event = "maximize",
+})
+
+hl.window_rule({
+	-- Brave web apps: tell the app it is fullscreen (hides its top bar) but keep it tiled.
+	name  = "brave-webapp-fake-fullscreen",
+	match = { class = "^brave-.*-Default$" },
+	fullscreen_state = "0 2",
 })
 
 hl.window_rule({
