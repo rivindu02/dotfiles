@@ -4,7 +4,7 @@
   "height": 34,
   "spacing": 4,
   "modules-left": [
-    "ext/workspaces",
+    "hyprland/workspaces",
     "hyprland/window"
   ],
   "modules-center": [
@@ -30,13 +30,11 @@
       "clock"
     ]
   },
-  "ext/workspaces": {
-    // ext-workspace-v1: hyprland/workspaces clicks send legacy `dispatch workspace N`,
-    // which the Lua config rejects. Persistence comes from Hyprland workspace rules.
+  "hyprland/workspaces": {
+    // Clicks need Waybar > 0.15.0 under the Lua config (fixed in Waybar PR #5013).
+    // Not ext/workspaces: Hyprland never sends urgent state over ext-workspace-v1.
     "format": "{icon}",
     "tooltip": false,
-    "on-click": "activate",
-    "sort-by-id": true,
     "format-icons": {
       "1": "1",
       "2": "2",
@@ -45,6 +43,9 @@
       "5": "5",
       "active": "●",
       "default": "○"
+    },
+    "persistent-workspaces": {
+      "*": 5
     }
   },
   "hyprland/window": {
