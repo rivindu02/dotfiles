@@ -53,8 +53,8 @@ sudo install -Dm644 system/pacman/hooks/pkglist.hook /etc/pacman.d/hooks/pkglist
 sudo install -Dm644 system/nftables/nftables.conf /etc/nftables.conf
 sudo systemctl enable --now nftables
 
-# udev: battery charge limit 80%, suspend at 5%
-sudo install -Dm644 system/udev/99-battery-threshold.rules system/udev/99-lowbat.rules -t /etc/udev/rules.d/
+# udev: suspend at 5% (charge limit is asusd's job: asusctl battery limit 80)
+sudo install -Dm644 system/udev/99-lowbat.rules -t /etc/udev/rules.d/
 
 # ASUS camera key daemon, sleep hook
 sudo install -Dm755 system/systemd/camera-toggle-daemon.sh /usr/local/bin/camera-toggle-daemon.sh
