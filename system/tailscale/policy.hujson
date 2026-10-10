@@ -1,0 +1,74 @@
+// Tailnet policy for kumaragerivindu@gmail.com.
+// Apply: admin console -> Access controls -> JSON editor, paste, Save.
+// The live policy is the source of truth; keep this copy in sync by hand.
+//
+// Goal: devices shared out to other people (elgin, home) are untrusted.
+//   - My own devices can reach everything, shared devices included.
+//   - A tag:shared device cannot open connections to anything in the tailnet,
+//     not even another tag:shared device.
+//   - People a device is shared with can reach that device only (sharing
+//     controls which devices they see; the grant only opens ports on them).
+//
+// Grants only allow, they never deny. A user-owned shared device would match
+// autogroup:member and get full access, so each one carries tag:shared instead.
+// Tagged devices are not members, so the first grant does not apply to them.
+// Replies to connections my devices open still flow (connections are stateful).
+{
+	"tagOwners": {
+		"tag:shared": ["autogroup:admin"],
+	},
+
+	"hosts": {
+		"zenbook": "100.78.123.84",
+		"ipad":    "100.89.46.110",
+		"elgin":   "100.110.199.98",
+		"home":    "100.120.109.70",
+	},
+
+	"grants": [
+		// My devices -> everything, including exit nodes and subnet routes.
+		{"src": ["autogroup:member"], "dst": ["*"], "ip": ["*"]},
+
+		// People a device is shared with -> that device.
+		{"src": ["autogroup:shared"], "dst": ["tag:shared"], "ip": ["*"]},
+
+		// No grant has tag:shared as src: shared devices initiate nothing.
+	],
+
+	"ssh": [
+		{
+			"action": "check",
+			"src":    ["autogroup:member"],
+			"dst":    ["autogroup:self"],
+			"users":  ["autogroup:nonroot", "root"],
+		},
+		// autogroup:self does not cover tagged devices.
+		{
+			"action": "check",
+			"src":    ["autogroup:member"],
+			"dst":    ["tag:shared"],
+			"users":  ["autogroup:nonroot", "root"],
+		},
+	],
+
+	// Kept from the default policy: members may use Funnel on their own devices.
+	// Tagged devices are not members, so they cannot use Funnel.
+	"nodeAttrs": [
+		{
+			"target": ["autogroup:member"],
+			"attr":   ["funnel"],
+		},
+	],
+
+	// The policy editor runs these on Save and rejects the policy if one fails.
+	"tests": [
+		{
+			"src":    "kumaragerivindu@gmail.com",
+			"accept": ["elgin:22", "home:22", "zenbook:443", "ipad:80"],
+		},
+		{
+			"src":  "tag:shared",
+			"deny": ["zenbook:443", "zenbook:5984", "zenbook:21118", "ipad:80", "elgin:22", "home:22"],
+		},
+	],
+}
