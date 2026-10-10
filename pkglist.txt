@@ -49,6 +49,8 @@ github-cli
 gitleaks
 gnome-keyring
 go
+greetd
+greetd-tuigreet
 grim
 grub
 grub-btrfs
@@ -124,7 +126,6 @@ rofi-calc
 rsync
 rust
 sbctl
-sddm
 seahorse
 shellcheck
 slurp

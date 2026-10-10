@@ -36,7 +36,6 @@ qdirstat
 quickshell-overview-git
 rofi-power-menu
 rustdesk
-sddm-sugar-candy-git
 spotify
 todoist-appimage
 v4l2loopback-dc-dkms
