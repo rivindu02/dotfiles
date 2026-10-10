@@ -94,13 +94,13 @@ hl.env("DOCKER_HOST", "unix:///run/user/1001/podman/podman.sock") -- Docker clie
 
 hl.config({
     general = {
-        gaps_in  = 5,
-        gaps_out = 8,
+        gaps_in  = 4,
+        gaps_out = 6,
 
-        border_size = 3,
+        border_size = 2,
 
         col = {
-            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
+            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)", "rgba(e01b24ff)"}, angle = 45 },
             inactive_border = "rgba(595959aa)",
         },
 
@@ -111,14 +111,20 @@ hl.config({
 
 	cursor = {
 		no_warps = false,  -- test this first
+		enable_hyprcursor = true,
 	},
 
     decoration = {
-        rounding       = 8,
+        rounding       = 2,
         rounding_power = 2,
 
         active_opacity   = 1.0,
         inactive_opacity = 1.0,
+
+        dim_inactive = true,
+        dim_strength = 0.2,
+        dim_special  = 0.15,
+        dim_around   = 0.25,
 
         shadow = {
             enabled      = true,
@@ -151,6 +157,13 @@ hl.config({
         disable_hyprland_logo    = true,
         disable_splash_rendering = true,
         background_color         = 0x000000,
+        animate_manual_resizes   = false,
+        vrr                      = 1,
+    },
+
+    gestures = {
+        workspace_swipe_touch   = true,
+        workspace_swipe_forever = false,
     },
 
     input = {
@@ -249,6 +262,7 @@ hl.animation({ leaf = "workspaces",    enabled = true, speed = 1.94, bezier = "a
 hl.animation({ leaf = "workspacesIn",  enabled = true, speed = 1.21, bezier = "almostLinear", style = "fade" })
 hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
 hl.animation({ leaf = "zoomFactor",    enabled = true, speed = 7,    bezier = "quick"         })
+hl.animation({ leaf = "borderangle",   enabled = false })
 
 
 --------------------
