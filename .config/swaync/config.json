@@ -8,6 +8,13 @@
   "timeout": 5,
   "timeout-low": 2,
   "timeout-critical": 5,
+  "scripts": {
+    "open-clicked-file": {
+      "exec": "/home/rivindu02/.config/scripts/notify-open.sh",
+      "app-name": "^(Screenshot|Taildrop)$",
+      "run-on": "action"
+    }
+  },
   "widgets": [
     "title",
     "label#weather",

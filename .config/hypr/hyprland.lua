@@ -396,7 +396,7 @@ hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = tr
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
 -- Screenshot
-hl.bind("Print",          hl.dsp.exec_cmd("bash -c 'FILE=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png && grim $FILE && wl-copy < $FILE && notify-send \"Screenshot\" \"Saved & copied to clipboard\" -i $FILE -t 2000'"), { locked = true })
+hl.bind("Print",          hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/screenshot full"), { locked = true })
 
 -- Lid: only acts while stay-awake holds the lid inhibitor (see lid.sh); otherwise logind suspends
 hl.bind("switch:on:Lid Switch",  hl.dsp.exec_cmd("~/.config/scripts/lid.sh close"), { locked = true })

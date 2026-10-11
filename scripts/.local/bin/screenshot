@@ -1,11 +1,24 @@
 #!/bin/bash
+# screenshot [full] — area (default) or full-screen capture, saved and copied.
+# Clicking the notification (popup or panel) previews the image in swayimg:
+# swaync runs ~/.config/scripts/notify-open.sh with the filepath hint.
 
 FILE=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
 
-if grim -g "$(slurp)" "$FILE"; then
-    wl-copy < "$FILE"
-    notify-send "Screenshot" "Selected area saved & copied to clipboard" -i "$FILE" -t 2000
+if [[ "$1" == "full" ]]; then
+    grim "$FILE" || exit 0
+    body="Saved & copied to clipboard"
 else
-    rm -f "$FILE"
-    exit 0
+    if ! grim -g "$(slurp)" "$FILE"; then
+        rm -f "$FILE"
+        exit 0
+    fi
+    body="Selected area saved & copied to clipboard"
 fi
+
+wl-copy < "$FILE"
+
+# -A makes the notification clickable; notify-send blocks on it, so background it
+notify-send -a "Screenshot" "Screenshot" "$body" -i "$FILE" -t 2000 \
+    -h "string:filepath:$FILE" -A "default=Preview" >/dev/null 2>&1 &
+disown

@@ -22,19 +22,12 @@ while true; do
         count=${#new_files[@]}
 
         if [[ $count -eq 1 ]]; then
-            (
-                action=$(notify-send -a "Taildrop" -h boolean:transient:true -A "default=Open File" "󰒋 Taildrop" "Received: ${new_files[0]}")
-                if [[ "$action" == "default" ]]; then
-                    ghostty -e yazi "$DOWNLOAD_DIR" &
-                fi
-            ) &
+            # Click opens yazi with the file selected (swaync runs notify-open.sh)
+            notify-send -a "Taildrop" -h "string:filepath:$DOWNLOAD_DIR/${new_files[0]}" \
+                -A "default=Show in yazi" "󰒋 Taildrop" "Received: ${new_files[0]}" >/dev/null 2>&1 &
         elif [[ $count -gt 1 ]]; then
-            (
-                action=$(notify-send -a "Taildrop" -h boolean:transient:true -A "default=Open Folder" "󰒋 Taildrop" "Received $count files")
-                if [[ "$action" == "default" ]]; then
-                    ghostty -e yazi "$DOWNLOAD_DIR" &
-                fi
-            ) &
+            notify-send -a "Taildrop" -h "string:filepath:$DOWNLOAD_DIR" \
+                -A "default=Open folder" "󰒋 Taildrop" "Received $count files" >/dev/null 2>&1 &
         fi
     fi
 done
