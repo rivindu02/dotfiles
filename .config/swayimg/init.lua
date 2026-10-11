@@ -12,10 +12,11 @@
 --   y                            copy image to clipboard
 --   Shift+y                      copy file path to clipboard
 --   o                            open yazi with this file selected
+--   e                            edit in satty (arrows, boxes, text, blur, crop)
 --   r                            reload image from disk
 --   Delete                       move file to trash (~/.local/share/Trash, restorable)
 --   q                            quit
--- Added keys (gallery): h j k l move, g / G first / last, y, Shift+y, o, Delete, q
+-- Added keys (gallery): h j k l move, g / G first / last, y, Shift+y, o, e, Delete, q
 --
 -- Mouse: left-drag an image into a browser/chat/file manager to drop the file there.
 --        Pan a zoomed image with scroll, arrow keys or middle-drag.
@@ -80,6 +81,11 @@ local function open_yazi(img)
   os.execute("ghostty -e yazi " .. q(img.path) .. " >/dev/null 2>&1 &")
 end
 
+local function edit(img)
+  if not img then return end
+  os.execute("~/.local/bin/img-edit " .. q(img.path) .. " >/dev/null 2>&1 &")
+end
+
 local function trash(img)
   if not img then return end
   if os.execute("gio trash " .. q(img.path)) then
@@ -111,6 +117,7 @@ end)
 v.on_key("y",            function() copy_image(v.get_image()) end)
 v.on_key("Shift+y",      function() copy_path(v.get_image()) end)
 v.on_key("o",            function() open_yazi(v.get_image()) end)
+v.on_key("e",            function() edit(v.get_image()) end)
 v.on_key("r",            function() v.reload() end)
 v.on_key("Delete",       function() trash(v.get_image()) end)
 v.on_key("q",            function() swayimg.exit() end)
@@ -129,6 +136,7 @@ gl.on_key("Shift+g",      function() gl.select("last") end)
 gl.on_key("y",            function() copy_image(gl.get_image()) end)
 gl.on_key("Shift+y",      function() copy_path(gl.get_image()) end)
 gl.on_key("o",            function() open_yazi(gl.get_image()) end)
+gl.on_key("e",            function() edit(gl.get_image()) end)
 gl.on_key("Delete",       function() trash(gl.get_image()) end)
 gl.on_key("q",            function() swayimg.exit() end)
 

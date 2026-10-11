@@ -2,6 +2,7 @@
 # screenshot [full] — area (default) or full-screen capture, saved and copied.
 # Clicking the notification (popup or panel) previews the image in swayimg:
 # swaync runs ~/.config/scripts/notify-open.sh with the filepath hint.
+# The "Edit" button opens satty (img-edit) while the popup is showing.
 
 FILE=~/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png
 
@@ -18,7 +19,15 @@ fi
 
 wl-copy < "$FILE"
 
-# -A makes the notification clickable; notify-send blocks on it, so background it
-notify-send -a "Screenshot" "Screenshot" "$body" -i "$FILE" -t 2000 \
-    -h "string:filepath:$FILE" -A "default=Preview" >/dev/null 2>&1 &
+# swaync can't tell which action was clicked, so only this listener sees "edit".
+# It leaves a marker so notify-open.sh skips the preview. notify-send stops
+# listening when the popup times out; after that, clicks only preview.
+(
+    action=$(notify-send -a "Screenshot" "Screenshot" "$body" -i "$FILE" -t 5000 \
+        -h "string:filepath:$FILE" -A "default=Preview" -A "edit=Edit")
+    if [[ "$action" == "edit" ]]; then
+        touch "$XDG_RUNTIME_DIR/notify-edit-${FILE##*/}"
+        ~/.local/bin/img-edit "$FILE"
+    fi
+) >/dev/null 2>&1 &
 disown

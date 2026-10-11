@@ -125,6 +125,7 @@ rofi
 rofi-calc
 rsync
 rust
+satty
 sbctl
 seahorse
 shellcheck

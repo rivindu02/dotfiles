@@ -1,0 +1,13 @@
+#!/bin/bash
+# img-edit FILE — annotate an image in satty (arrows, boxes, text, blur, crop).
+# Saving writes back to the same file; the copy button puts it on the clipboard.
+
+file=$1
+[[ -f "$file" ]] || exit 1
+
+if ! command -v satty >/dev/null; then
+    notify-send -a "img-edit" "satty not installed" "Run: sudo pacman -S satty" -t 5000
+    exit 1
+fi
+
+exec satty --filename "$file" --output-filename "$file"
