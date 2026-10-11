@@ -27,3 +27,9 @@ run = [ 'shell -- for path in %s; do echo "file://$path"; done | wl-copy -t text
 on = "Y"
 run = 'shell -- wl-copy -t "$(file --mime-type -b "$1")" < "$1"'
 desc = "Copy file content to clipboard"
+
+# e = edit: images open in satty (img-edit, saves back to the file), anything else in nvim
+[[mgr.prepend_keymap]]
+on = "e"
+run = 'shell --block -- case "$(file --mime-type -b %h)" in image/*) setsid -f ~/.local/bin/img-edit %h >/dev/null 2>&1 ;; *) nvim %h ;; esac'
+desc = "Edit (satty for images, nvim otherwise)"

@@ -429,7 +429,7 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 | Tool | Use case | How to use |
 |---|---|---|
 | **mpv** (+ uosc UI) | Video/audio player | `mpv file.mkv`; `space` pause, `←/→` seek, `f` fullscreen, `j` subtitles; resumes where you left off |
-| **swayimg** | Image viewer; config `.config/swayimg/init.lua` (key list at top) | `swayimg pic.jpg`, `swayimg -g .` (gallery); `h`/`l` prev/next, `y` copy, `o` yazi, `e` edit (satty), `Del` trash, left-drag = drop file into other apps |
+| **swayimg** | Image viewer; config `.config/swayimg/init.lua` (key list at top) | `swayimg pic.jpg`, `swayimg -g .` (gallery); `h`/`l` prev/next, `y` copy, `o` yazi, `e` edit (satty; `e` in yazi too), `Del` trash, left-drag = drop file into other apps |
 | **satty** | Annotate screenshots: arrows, boxes, text, blur, crop | `img-edit file.png` (saves back to the same file); `e` in swayimg; **Edit** on a screenshot notification |
 | **grim** + **slurp** + **grimblast-git** (AUR) | Screenshots | `SUPER+SHIFT+S` / `Print`; click the notification to preview, its **Edit** button opens satty; `grimblast copy area`; `grim -g "$(slurp)" out.png` |
 | **ocr4linux-git** (AUR) | Copy text out of any part of the screen | `SUPER+SHIFT+T` |
