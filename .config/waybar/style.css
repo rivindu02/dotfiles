@@ -213,19 +213,19 @@ window#waybar {
 }
 
 /* ── Power button ───────────────────────────────────────────── */
-#custom-power {
-  color: #ea6962;
-  padding: 0 12px;
-  font-size: 15px;
-  border-radius: 6px;
-  margin: 4px 2px;
-  transition: all 0.2s;
-}
-
-#custom-power:hover {
-  color: #d4be98;
-  background: rgba(234, 105, 98, 0.18);
-}
+/* #custom-power { */
+/*   color: #ea6962; */
+/*   padding: 0 12px; */
+/*   font-size: 15px; */
+/*   border-radius: 6px; */
+/*   margin: 4px 2px; */
+/*   transition: all 0.2s; */
+/* } */
+/**/
+/* #custom-power:hover { */
+/*   color: #d4be98; */
+/*   background: rgba(234, 105, 98, 0.18); */
+/* } */
 
 /* ── Window title ───────────────────────────────────────────── */
 #window {

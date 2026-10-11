@@ -18,8 +18,8 @@
     "battery",
     "network",
     "custom/tailscale",
-    "tray",
-    "custom/power"
+    "tray"
+    //"custom/power"
   ],
   "group/clock_group": {
     "orientation": "horizontal",
@@ -158,11 +158,11 @@
     "on-click-right": "swaync-client -d -sw",
     "escape": true
   },
-  "custom/power": {
-    "format": "⏻",
-    "tooltip": false,
-    "on-click": "$HOME/.local/bin/powermenu"
-  },
+  // "custom/power": {
+  //   "format": "⏻",
+  //   "tooltip": false,
+  //   "on-click": "$HOME/.local/bin/powermenu"
+  // },
   "custom/voxtype": {
     "exec": "voxtype status --follow --format json",
     "return-type": "json",
