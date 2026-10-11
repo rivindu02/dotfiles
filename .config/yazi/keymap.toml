@@ -25,7 +25,7 @@ run = [ 'shell -- for path in %s; do echo "file://$path"; done | wl-copy -t text
 
 [[mgr.prepend_keymap]]
 on = "Y"
-run = 'shell -- wl-copy -t "$(file --mime-type -b "$1")" < "$1"'
+run = 'shell -- wl-copy -t "$(file --mime-type -b %h)" < %h'
 desc = "Copy file content to clipboard"
 
 # e = edit: images open in satty (img-edit, saves back to the file), anything else in nvim
