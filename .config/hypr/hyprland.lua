@@ -319,7 +319,11 @@ hl.gesture({
 local mainMod = "SUPER"
 local secondMod = "SUPER + SHIFT"
 
-hl.bind(mainMod .. " + Q",     hl.dsp.exec_cmd(terminal))
+-- Ghostty runs as one process, so "[workspace 2]" exec rules miss new windows; switch first instead.
+hl.bind(mainMod .. " + Q", function()
+    hl.dispatch(hl.dsp.focus({ workspace = 2 }))
+    hl.exec_cmd(terminal)
+end)
 hl.bind(mainMod .. " + B",     hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + C",     hl.dsp.window.close())
 hl.bind(mainMod .. " + E",     hl.dsp.exec_cmd(fileManager))
@@ -419,12 +423,29 @@ hl.window_rule({
 })
 
 hl.window_rule({
-	-- Red border on a maximized window (SUPER+F) that hides other windows on its workspace.
+	-- Purple border on a maximized window (SUPER+F) that hides other windows on its workspace.
+	-- Open-ended ranges like "w[2-]" never match, so the upper bound is needed.
 	name  = "maximized-hiding-others",
 	match = { fullscreen_state_internal = 1, workspace = "w[2-99]" },
 
-	border_color = "rgb(e01b24)",
+	border_color = "rgb(ff00ff)",
 })
+
+-- Rules re-run on fullscreen change and window close, but not on window open.
+-- Re-apply maximize on the hidden-behind window so the rule above sees the new count.
+hl.on("window.open", function(win)
+	local ws = win and win.workspace
+	local max = ws and ws.fullscreen_window
+	if not max or ws.fullscreen_mode ~= 1 or max.address == win.address then return end
+	local target = "address:" .. max.address
+	hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized", action = "unset", window = target }))
+	hl.dispatch(hl.dsp.window.fullscreen({ mode = "maximized", action = "set",   window = target }))
+end)
+
+-- Starting workspaces. Only applied when the window opens, so it can be moved freely after.
+hl.window_rule({ name = "browser-on-1",  match = { initial_class = "^brave-browser$" },        workspace = "1" })
+hl.window_rule({ name = "spotify-on-10", match = { class = "^[Ss]potify$" },                 workspace = "10" }) -- SUPER+0
+hl.window_rule({ name = "obsidian-on-3", match = { initial_class = "^md\\.obsidian\\.Obsidian$" }, workspace = "3" })
 
 hl.window_rule({
 	-- Brave web apps: tell the app it is fullscreen (hides its top bar) but keep it tiled.
