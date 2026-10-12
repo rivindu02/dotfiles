@@ -9,46 +9,46 @@ copy-on-select = clipboard
 
 window-decoration = false
 
-# ── Leader key (ctrl+space, same as your tmux prefix) ─────────────────────
-keybind = ctrl+a>shift+backslash=new_split:right     
-keybind = ctrl+a>minus=new_split:down
+# ── Leader key (ctrl+shift+a: frees ctrl+a for apps, ctrl+space for tmux) ──
+keybind = ctrl+shift+a>shift+backslash=new_split:right     
+keybind = ctrl+shift+a>minus=new_split:down
 
 # ── Pane navigation ───────────────────────────────────────────────────────
-keybind = ctrl+a>h=goto_split:left
-keybind = ctrl+a>l=goto_split:right
-keybind = ctrl+a>k=goto_split:up
-keybind = ctrl+a>j=goto_split:down
+keybind = ctrl+shift+a>h=goto_split:left
+keybind = ctrl+shift+a>l=goto_split:right
+keybind = ctrl+shift+a>k=goto_split:up
+keybind = ctrl+shift+a>j=goto_split:down
 
 # ── Pane resize ───────────────────────────────────────────────────────────
-keybind = ctrl+a>left=resize_split:left,10
-keybind = ctrl+a>right=resize_split:right,10
-keybind = ctrl+a>up=resize_split:up,10
-keybind = ctrl+a>down=resize_split:down,10
+keybind = ctrl+shift+a>left=resize_split:left,10
+keybind = ctrl+shift+a>right=resize_split:right,10
+keybind = ctrl+shift+a>up=resize_split:up,10
+keybind = ctrl+shift+a>down=resize_split:down,10
 
 # ── Zoom pane (prefix z) ─────────────────────────────────────────────────
-keybind = ctrl+a>z=toggle_split_zoom
-keybind = ctrl+a>x=close_surface
+keybind = ctrl+shift+a>z=toggle_split_zoom
+keybind = ctrl+shift+a>x=close_surface
 
 # ── Tabs ──────────────────────────────────────────────────────────────────
-keybind = ctrl+a>c=new_tab
-keybind = ctrl+a>n=next_tab
-keybind = ctrl+a>p=previous_tab
-keybind = ctrl+a>1=goto_tab:1
-keybind = ctrl+a>2=goto_tab:2
-keybind = ctrl+a>3=goto_tab:3
-keybind = ctrl+a>4=goto_tab:4
-keybind = ctrl+a>5=goto_tab:5
-keybind = ctrl+a>6=goto_tab:6
-keybind = ctrl+a>7=goto_tab:7
-keybind = ctrl+a>8=goto_tab:8
+keybind = ctrl+shift+a>c=new_tab
+keybind = ctrl+shift+a>n=next_tab
+keybind = ctrl+shift+a>p=previous_tab
+keybind = ctrl+shift+a>1=goto_tab:1
+keybind = ctrl+shift+a>2=goto_tab:2
+keybind = ctrl+shift+a>3=goto_tab:3
+keybind = ctrl+shift+a>4=goto_tab:4
+keybind = ctrl+shift+a>5=goto_tab:5
+keybind = ctrl+shift+a>6=goto_tab:6
+keybind = ctrl+shift+a>7=goto_tab:7
+keybind = ctrl+shift+a>8=goto_tab:8
 
 # ── New window ────────────────────────────────────────────────────────────
-keybind = ctrl+a>w=new_window
+keybind = ctrl+shift+a>w=new_window
 
 # ── Reload config (prefix r) ─────────────────────────────────────────────
-keybind = ctrl+a>r=reload_config
+keybind = ctrl+shift+a>r=reload_config
 
-keybind = ctrl+a>slash=start_search
+keybind = ctrl+shift+a>slash=start_search
 
 # ── Search (prefix /) ────────────────────────────────────────────────────
 # keybind = ctrl+skeybindhift+D=new_split:down
