@@ -4,11 +4,6 @@ rev = "9ef1254"
 hash = "92fbb5483657fa7976cdf4e0104e18e0"
 
 [[plugin.deps]]
-use = "stelcodes/bunny"
-rev = "71b14a3"
-hash = "18a2829738214fe9bca99a2fef19113d"
-
-[[plugin.deps]]
 use = "yazi-rs/plugins:mount"
 rev = "1db18bb"
 hash = "e3260d0b1feded8c8e3ae3afa1169e30"
@@ -17,7 +12,3 @@ hash = "e3260d0b1feded8c8e3ae3afa1169e30"
 use = "yazi-rs/flavors:gruvbox-material"
 rev = "0f9204b"
 hash = "99aa06d3014798d86001c324468d497f"
-
-[flavor]
-dark  = "gruvbox-material"
-light = "gruvbox-material"

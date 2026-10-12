@@ -240,7 +240,7 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 
 | Tool | Use case | How to use |
 |---|---|---|
-| **yazi** | Terminal file manager with previews | `y` or `SUPER+E`. Keys: `h/j/k/l` move, `Enter` open, `Space` select, `y/x/p` copy/cut/paste, `d` trash, `a` new file (end with `/` for a folder), `r` rename, `/` search, `z` fzf jump. HTML and other web files open in Brave (`o` still offers nvim). Plugins: bunny (quick jumps: `b` then a key, e.g. `b d` → dotfiles), bookmarks, mount |
+| **yazi** | Terminal file manager with previews | `y` or `SUPER+E`. Keys: `h/j/k/l` move, `Enter` open, `Space` select, `y/x/p` copy/cut/paste, `d` trash, `a` new file (end with `/` for a folder), `r` rename, `/` search, `z` fzf jump. HTML and other web files open in Brave (`o` still offers nvim). Jumps: `g` then a key (`g.` dotfiles, `gD` Documents, `gt` /tmp, `gT` Trash, `gr` /, `gm` mounts, `gls`/`glb`/`glt` ~/.local share/bin/state, built-in `gh` `gc` `gd`); `gE` empties trash (asks first). Plugins: bookmarks, mount |
 | **thunar** | GUI file manager | `thunar`; right-click "Open terminal here" |
 | **fd** | Fast `find` | `fd pdf ~/Documents`; `fd -e py`; `fd -H .env` (include hidden) |
 | **fzf** | Fuzzy find | See §5 |
