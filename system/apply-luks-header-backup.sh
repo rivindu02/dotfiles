@@ -15,11 +15,13 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-mnt=$(findmnt -rno TARGET "$(blkid -L "$LABEL")" | head -1)
-mnt=$(printf '%b' "$mnt")
-[[ -n "$mnt" ]] || { echo "HDD \"$LABEL\" is not mounted." >&2; exit 1; }
+# Check each step: findmnt with an empty argument prints "/"
+dev=$(blkid -L "$LABEL" || true)
+[[ -n "$dev" ]] || { echo "HDD \"$LABEL\" is not plugged in." >&2; exit 1; }
+mnt=$(printf '%b' "$(findmnt -rno TARGET "$dev" | head -1)")
+[[ -n "$mnt" && "$mnt" != / ]] || { echo "HDD \"$LABEL\" is not mounted (udisksctl mount -b $dev)." >&2; exit 1; }
 
-out="$mnt/luks-header-$(hostname)-$(date +%Y-%m-%d).img"
+out="$mnt/luks-header-$(cat /etc/hostname)-$(date +%Y-%m-%d).img"
 cryptsetup luksHeaderBackup "$DEV" --header-backup-file "$out"
 chown "${SUDO_UID:-0}:${SUDO_GID:-0}" "$out"
 chmod 600 "$out"
