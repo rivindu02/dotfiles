@@ -3,7 +3,8 @@ on = ["R"]
 run = "rename --empty=all"
 desc = "Bulk rename"
 
-# g = goto. Built-in: gg top, gh ~, gc ~/.config, gd ~/Downloads, g<Space> type a path
+# g = goto. Built-in: gg top, gh ~, gc ~/.config, gd ~/Downloads, g<Space> type a path,
+# gt trash bin (O on an item: restore or empty, with a confirm dialog)
 [[mgr.prepend_keymap]]
 on = ["g", "."]
 run = "cd ~/dotfiles"
@@ -15,14 +16,9 @@ run = "cd ~/Documents"
 desc = "Go to Documents"
 
 [[mgr.prepend_keymap]]
-on = ["g", "t"]
+on = ["g", "T"]
 run = "cd /tmp"
 desc = "Go to /tmp"
-
-[[mgr.prepend_keymap]]
-on = ["g", "T"]
-run = "cd ~/.local/share/Trash/files"
-desc = "Go to Trash"
 
 [[mgr.prepend_keymap]]
 on = ["g", "r"]
@@ -51,7 +47,7 @@ desc = "Go to ~/.local/state"
 
 [[mgr.prepend_keymap]]
 on = ["g", "E"]
-run = 'shell --block -- printf "Empty trash permanently? [y/N] "; read a; [ "$a" = y ] && gio trash --empty && echo Emptied.'
+run = "plugin empty-trash"
 desc = "Empty trash (asks first)"
 
 [[mgr.prepend_keymap]]
