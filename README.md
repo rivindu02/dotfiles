@@ -68,6 +68,12 @@ sudo bash system/apply-round4.sh
 
 # SDDM theme
 sudo install -Dm644 system/sddm/theme.conf /usr/share/sddm/themes/sugar-candy/theme.conf
+
+# Seagate backup HDD: use usb-storage instead of UAS (UAS drops it mid-write)
+sudo bash system/apply-hdd-no-uas.sh
+
+# LUKS header copy onto the backup HDD (HDD mounted)
+sudo bash system/apply-luks-header-backup.sh
 ```
 
 ## Backups
