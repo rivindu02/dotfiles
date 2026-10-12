@@ -1,0 +1,15 @@
+[Unit]
+Description=Encrypted restic backup of $HOME to the USB HDD, run when it is plugged in
+After=dev-disk-by\x2duuid-5e865e55\x2de321\x2d465c\x2d8824\x2d91db90d282b4.device
+
+[Service]
+Type=oneshot
+# Mount it if nothing else has (udisks allows this from the user session)
+ExecStartPre=/bin/sh -c 'findmnt -rn -S UUID=5e865e55-e321-465c-8824-91db90d282b4 >/dev/null || udisksctl mount -b /dev/disk/by-uuid/5e865e55-e321-465c-8824-91db90d282b4'
+ExecStartPre=-/usr/bin/notify-send -a Backup "󰁯 HDD backup started" "Keep the HDD plugged in until it finishes"
+# backup-home itself notifies on success and on failure
+ExecStart=/usr/bin/systemd-inhibit --what=sleep:idle --who=backup-home --why="HDD backup" %h/.local/bin/backup-home hdd run
+Nice=10
+
+[Install]
+WantedBy=dev-disk-by\x2duuid-5e865e55\x2de321\x2d465c\x2d8824\x2d91db90d282b4.device
