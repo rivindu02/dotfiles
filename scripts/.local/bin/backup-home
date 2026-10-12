@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# backup-home: encrypted restic backups of $HOME to the uni OneDrive (via rclone).
+# backup-home: encrypted restic backups of $HOME to the uni OneDrive (via rclone),
+# or to the USB HDD (label "Rivindu's HDD") when the first argument is "hdd".
 #
 #   backup-home init        create the repo password and initialise the restic repository
 #   backup-home run         back up now (skips if a backup is < 20h old or on battery; --force overrides)
@@ -8,7 +9,23 @@
 #   backup-home check       verify repository integrity (reads 5% of the data)
 #   backup-home restic ...  run any restic command against the repo, e.g.
 #                           backup-home restic restore latest --target ~/restore --include ~/Documents
+#   backup-home hdd <cmd>   same commands against the HDD repo; "hdd run" always runs and prunes
+#                           browse files: backup-home hdd restic mount ~/mnt/backup
 set -euo pipefail
+
+HDD_LABEL="Rivindu's HDD"
+target=onedrive
+if [[ "${1:-}" == "hdd" ]]; then
+    target=hdd; shift
+    mnt=$(findmnt -rno TARGET "$(blkid -L "$HDD_LABEL" 2>/dev/null || echo none)" 2>/dev/null | head -1)
+    # findmnt escapes spaces as \x20
+    mnt=$(printf '%b' "$mnt")
+    if [[ -z "$mnt" ]]; then
+        echo "HDD \"$HDD_LABEL\" is not mounted. Plug it in (or: udisksctl mount -b /dev/sdX1)." >&2
+        exit 1
+    fi
+    export RESTIC_REPOSITORY="$mnt/restic-zenbook"
+fi
 
 export RESTIC_REPOSITORY="${RESTIC_REPOSITORY:-rclone:uomdrive:Backups/zenbook-restic}"
 export RESTIC_PASSWORD_FILE="${RESTIC_PASSWORD_FILE:-$HOME/.config/restic/password}"
@@ -63,7 +80,7 @@ case "${1:-}" in
             || restic init
         ;;
     run)
-        force=0; [[ "${2:-}" == "--force" ]] && force=1
+        force=0; [[ "${2:-}" == "--force" || $target == hdd ]] && force=1
         if (( ! force )); then
             if on_battery; then echo "On battery, skipping (use --force)."; exit 0; fi
             if age=$(latest_age_hours) && (( age < 20 )); then
@@ -75,7 +92,7 @@ case "${1:-}" in
             exit 1
         fi
         # Pruning rewrites data on Drive, so only do it weekly (Sundays)
-        if [[ "$(date +%u)" == 7 || "${2:-}" == "--prune" ]]; then
+        if [[ "$(date +%u)" == 7 || "${2:-}" == "--prune" || $target == hdd ]]; then
             restic forget "${KEEP[@]}" --tag auto --prune
         else
             restic forget "${KEEP[@]}" --tag auto
@@ -96,6 +113,6 @@ case "${1:-}" in
         shift; exec restic "$@"
         ;;
     *)
-        sed -n '3,10p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2
+        sed -n '4,13p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2
         ;;
 esac

@@ -367,7 +367,7 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 | **btrfs-assistant** | GUI for snapshots/subvolumes (browse, restore, delete) | `btrfs-assistant` (asks for your password) |
 | **grub-btrfs** | Boot directly into a snapshot from the GRUB menu | GRUB → "Arch Linux snapshots" |
 | **btrfs-progs** | btrfs admin | `sudo btrfs filesystem usage /`, `sudo btrfs scrub start /` (integrity check), `sudo btrfs subvolume list /` |
-| **restic** + **rclone** + `backup-home` | Off-machine encrypted backups (destination still to be chosen) | See §2 and §24 |
+| **restic** + **rclone** + `backup-home` | Encrypted backups of `$HOME` (Downloads, caches, toolchains and `node_modules`/`.venv` excluded) to the USB HDD; OneDrive target still to be set up | Plug in the HDD, then `backup-home hdd run`; `backup-home hdd status`; browse: `mkdir -p ~/mnt/backup && backup-home hdd restic mount ~/mnt/backup`; restore: `backup-home hdd restic restore latest --target ~/restore --include ~/Documents`. Password: `~/.config/restic/password` (copy kept off-laptop). LUKS header: `sudo ~/dotfiles/system/apply-luks-header-backup.sh` |
 | **rsync** | Manual copies to a USB drive | `rsync -avh --progress ~/Documents /run/media/$USER/USB/` |
 | **smartmontools** | SSD health | `sudo smartctl -a /dev/nvme0n1` (watch "Percentage Used", "Media and Data Integrity Errors") |
 
