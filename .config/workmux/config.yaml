@@ -1,0 +1,48 @@
+# workmux global config: defaults for every repo.
+# A repo's .workmux.yaml overrides these. Full option list: `workmux config reference`
+
+nerdfont: true
+agent: claude
+
+# Branch new worktrees from main/master, not from whatever is checked out.
+base_branch: auto
+
+# tmux.conf draws @workmux_status itself, inside the Gruvbox window tabs.
+# Left on, workmux would rewrite window-status-format and break the theme.
+status_format: false
+
+# Dashboard colors: Gruvbox Material, same hexes as tmux.conf.
+# custom overrides every slot, so T (cycle scheme) changes almost nothing.
+theme:
+  mode: dark
+  custom:
+    current_row_bg: "#45403d"
+    highlight_row_bg: "#32302f"
+    current_worktree_fg: "#d8a657"
+    text: "#dfd0b8"
+    dimmed: "#928374"
+    border: "#504945"
+    help_border: "#7daea3"
+    help_muted: "#928374"
+    header: "#ea6962"
+    keycap: "#d8a657"
+    info: "#7daea3"
+    accent: "#7daea3"
+    success: "#a9b665"
+    warning: "#d8a657"
+    danger: "#ea6962"
+
+# Agent on top, a small shell below it for running tests / git.
+panes:
+  - command: <agent>
+    focus: true
+  - split: vertical
+    percentage: 25
+
+dashboard:
+  preview_size: 60
+
+sidebar:
+  position: left
+  layout: tiles
+  group_by: project

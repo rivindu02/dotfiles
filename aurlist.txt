@@ -43,6 +43,7 @@ visual-studio-code-bin
 vm-curator
 voxtype-bin
 waypaper
+workmux-bin
 xdg-desktop-portal-termfilechooser
 yay
 zsh-theme-powerlevel10k-git
