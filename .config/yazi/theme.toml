@@ -1,3 +1,36 @@
 [flavor]
 dark  = "gruvbox-material"
 light = "gruvbox-material"
+
+# Overrides on top of the flavor: flat "Brutalist" slabs matching the tmux status bar.
+
+[mgr]
+border_symbol = "│"
+border_style  = { fg = "#504945" }
+
+# Hovered row: solid yellow slab (tmux current window); parent dir in grey
+[indicator]
+parent  = { fg = "#dfd0b8", bg = "#504945", bold = true }
+current = { fg = "#282828", bg = "#d8a657", bold = true }
+preview = { underline = true }
+padding = { open = "█", close = "█" }
+
+# Tabs: active yellow, inactive dark grey, no rounded edges
+[tabs]
+active    = { fg = "#282828", bg = "#d8a657", bold = true }
+inactive  = { fg = "#dfd0b8", bg = "#3c3836" }
+sep_inner = { open = " ", close = " " }
+sep_outer = { open = "", close = "" }
+
+# Mode slab: NORMAL coral (tmux session), SELECT green (tmux prefix), UNSET purple
+[mode]
+normal_main = { fg = "#282828", bg = "#ea6962", bold = true }
+normal_alt  = { fg = "#dfd0b8", bg = "#3c3836" }
+select_main = { fg = "#282828", bg = "#a9b665", bold = true }
+select_alt  = { fg = "#dfd0b8", bg = "#3c3836" }
+unset_main  = { fg = "#282828", bg = "#d3869b", bold = true }
+unset_alt   = { fg = "#dfd0b8", bg = "#3c3836" }
+
+[status]
+sep_left  = { open = "", close = "" }
+sep_right = { open = "", close = "" }
