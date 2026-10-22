@@ -1,12 +1,14 @@
 7zip
 acpid
 adw-gtk-theme
+apparmor
 arch-audit
 asciinema
 asusctl
 atuin
 aws-cli
 awww
+bandwhich
 base
 base-devel
 bat
@@ -25,6 +27,8 @@ clang
 cliphist
 cmake
 couchdb
+cups
+cups-pk-helper
 distrobox
 docker
 docker-compose
@@ -42,6 +46,7 @@ fuse-overlayfs
 fwupd
 fzf
 gdu
+gendesk
 ghostty
 git
 git-delta
@@ -55,6 +60,7 @@ grim
 grub
 grub-btrfs
 gst-plugin-pipewire
+hplip
 hypridle
 hyprland
 hyprlock
@@ -116,6 +122,7 @@ python-installer
 python-pip
 python-pipx
 qt5-wayland
+qt5ct
 qt6-wayland
 qt6ct
 rclone
@@ -140,6 +147,7 @@ sudo
 swayimg
 swaync
 syntax-highlighting
+system-config-printer
 tailscale
 thunar
 tldr
@@ -151,6 +159,7 @@ ttf-dejavu
 ttf-jetbrains-mono-nerd
 unp
 unzip
+usb_modeswitch
 usbutils
 vulkan-intel
 w3m

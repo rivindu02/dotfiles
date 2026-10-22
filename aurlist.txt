@@ -1,4 +1,7 @@
 antigravity-ide
+apparmor.d
+apparmor.d-base
+apparmor.d-tools
 appimagelauncher
 arduino-ide-bin
 aws-session-manager-plugin
@@ -6,6 +9,7 @@ bemoji
 bibata-cursor-theme
 brave-bin
 breezex-cursor-theme
+claude-desktop
 debtap
 droidcam
 fabric-ai
@@ -34,6 +38,7 @@ python-imageio-ffmpeg
 python-screeninfo
 qdirstat
 quickshell-overview-git
+recordly
 rofi-power-menu
 rustdesk
 spotify
