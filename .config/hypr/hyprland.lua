@@ -33,6 +33,7 @@ local browser     = "brave"
 local config_loaded_at = os.time()
 
 hl.on("hyprland.start", function()
+    hl.exec_cmd("sh ~/.config/scripts/apply-desktop-theme.sh")
     -- awww-daemon runs in the foreground, so `daemon && img` would never set the image
     hl.exec_cmd("awww-daemon & sleep 0.5; awww img \"$(~/.config/scripts/get-wallpaper.sh)\" --transition-type none")
     hl.exec_cmd("sleep 0.5 && hyprctl setcursor Bibata-Modern-Classic 24")
@@ -75,6 +76,10 @@ hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("QT_QPA_PLATFORM", "wayland")
+-- Qt 5 and Qt 6 both have GTK integration installed; share GTK colors/fonts/icons.
+hl.env("QT_QPA_PLATFORMTHEME", "gtk3")
+hl.env("QT_SCALE_FACTOR_ROUNDING_POLICY", "PassThrough")
+hl.env("GTK_THEME", "Gruvbox-Material-Dark")
 hl.env("GDK_BACKEND", "wayland,x11")
 hl.env("NIXOS_OZONE_WL", "1")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
