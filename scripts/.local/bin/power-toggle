@@ -5,11 +5,13 @@
 dot() { [ "$current" = "$1" ] && echo "●" || echo "○"; }
 
 is_asus() {
-    local vendor=$(cat /sys/class/dmi/id/sys_vendor 2>/dev/null | tr '[:upper:]' '[:lower:]')
-    [[ "$vendor" == *"asus"* ]] && which asusctl &>/dev/null
+    local vendor
+    vendor=$(tr '[:upper:]' '[:lower:]' < /sys/class/dmi/id/sys_vendor 2>/dev/null)
+    [[ "$vendor" == *"asus"* ]] && command -v asusctl &>/dev/null
 }
 
 # ── Logic ────────────────────────────────────────────────────
+menu_lines=3
 if is_asus; then
     current=$(asusctl profile get | grep "Active profile" | awk '{print tolower($NF)}')
 
@@ -17,7 +19,19 @@ if is_asus; then
     balanced="󰾅  Balanced      $(dot balanced)"
     performance="󰾇  Performance   $(dot performance)"
 
-    options=$(printf '%s\n' "$quiet" "$balanced" "$performance")
+    charge_limit=$(asusctl battery info 2>/dev/null | sed -n 's/^Current battery charge limit: \([0-9][0-9]*\)%.*/\1/p')
+    if [[ "$charge_limit" == 80 ]]; then
+        next_charge_limit=100
+        charge_status="On"
+    else
+        next_charge_limit=80
+        charge_status="Off"
+    fi
+    [[ -z "$charge_limit" ]] && charge_status="Unknown"
+    charge_toggle="󰂄  Limit to 80%: ${charge_status}"
+
+    options=$(printf '%s\n' "$quiet" "$balanced" "$performance" "$charge_toggle")
+    menu_lines=4
 else
     # Check governor without sudo
     current=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null)
@@ -40,7 +54,7 @@ fi
 # ── UI ───────────────────────────────────────────────────────
 chosen=$(echo -e "$options" | rofi -dmenu -p "Power" -no-custom -no-fixed-num-lines \
             -theme ~/.config/rofi/powermenu/type-1/style-1.rasi \
-            -theme-str 'listview { lines: 3; } inputbar { enabled: false; }' \
+            -theme-str "listview { lines: ${menu_lines}; } inputbar { enabled: false; }" \
             -no-auto-select)
 
 [[ -z "$chosen" ]] && exit 0
@@ -48,6 +62,15 @@ chosen=$(echo -e "$options" | rofi -dmenu -p "Power" -no-custom -no-fixed-num-li
 # ── Action ───────────────────────────────────────────────────
 if is_asus; then
     case "$chosen" in
+        *Limit\ to\ 80%:*)
+            if asusctl battery limit "$next_charge_limit"; then
+                notify-send "Battery Charge Limit" "Set to ${next_charge_limit}%" -t 2000
+            else
+                notify-send -u critical "Battery Charge Limit" "Failed to set charge limit to ${next_charge_limit}%" -t 4000
+                exit 1
+            fi
+            exit 0
+            ;;
         *Quiet*)       asusctl profile set Quiet ;;
         *Balanced*)    asusctl profile set Balanced ;;
         *Performance*) asusctl profile set Performance ;;
