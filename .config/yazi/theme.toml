@@ -7,6 +7,9 @@ light = "gruvbox-material"
 [mgr]
 border_symbol = "│"
 border_style  = { fg = "#504945" }
+# Keep find matches readable on both the dark list and yellow hovered row.
+find_keyword = { fg = "#ea6962", bold = true, italic = true, underline = true }
+find_position = { fg = "#ea6962", bg = "reset", bold = true, italic = true }
 
 # Hovered row: solid yellow slab (tmux current window); parent dir in grey
 [indicator]

@@ -1,1 +1,4 @@
 -- Plugin setup goes here. Folder jumps live in keymap.toml under g.
+require("zoxide"):setup {
+    update_db = true,
+}
