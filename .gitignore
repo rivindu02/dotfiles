@@ -39,6 +39,9 @@ AUDIT.md
 # Thumbnails / cache
 .cache/
 
+# Local mpv configuration snapshots
+.config/mpv/backups/
+
 # OS junk
 .DS_Store
 Thumbs.db

@@ -49,7 +49,7 @@ built-in selector and supports typing to filter.
 | `Ctrl+Left` / `Ctrl+Right` | Backward / forward 1 minute |
 | `Ctrl+Alt+Left` / `Ctrl+Alt+Right` | Backward / forward 5 minutes |
 | `Ctrl+u` / `Ctrl+d` | Backward / forward 30 seconds |
-| `gg`, `0` | Jump to the start (`gg` means press `g` twice) |
+| `gg` | Jump to the start (press `g` twice) |
 | `G` (`Shift+g`) | Jump to the end |
 | `u`, `Shift+Backspace` | Undo the previous seek |
 | `PageUp` / `PageDown` | Next / previous chapter |
