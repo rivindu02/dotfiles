@@ -271,5 +271,7 @@ for _zsh_plugin in zsh-autosuggestions fzf-tab zsh-syntax-highlighting; do
 done
 unset _zsh_plugin _zsh_plugin_file
 
+[[ -r "$HOME/.config/tmux/context.zsh" ]] && source "$HOME/.config/tmux/context.zsh"
+
 # Auto-attach tmux only in Ghostty, not in IDE or other terminals
 [[ -z "$TMUX" && -n "$GHOSTTY_RESOURCES_DIR" ]] && tmux new-session -A -s main
