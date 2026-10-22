@@ -67,10 +67,10 @@ A reference for every tool on this machine (Arch Linux + Hyprland, ASUS Zenbook)
 | `SUPER + ←/→/↑/↓` | Move focus |
 | `SUPER + 1…0` | Go to workspace 1–10 |
 | `SUPER + SHIFT + 1…0` | Move window to workspace 1–10 |
-| `SUPER + CTRL + S` | Scratchpad ("magic" special workspace) |
+| `SUPER + CTRL + S` | Scratchpad (`special:1`, the first special workspace in `SUPER+TAB`) |
 | `SUPER + scroll` | Next / previous workspace |
 | `SUPER + left-drag` / `right-drag` | Move / resize window |
-| `SUPER + P` | Presentation / display mode menu (mirror, extend, single screen) |
+| `SUPER + P` | Display mode menu (extend desktop / mirror) |
 
 ### Clipboard, text & capture
 | Keys | Action |
@@ -117,7 +117,7 @@ A reference for every tool on this machine (Arch Linux + Hyprland, ASUS Zenbook)
 | `storage-monitor` | Disk usage overview (btrfs-aware, snapshots, biggest folders) | `storage-monitor` |
 | `gwt` | Git worktrees next to the repo (copies `.env`, opens Ghostty) | `gwt new feature-x` · `gwt add existing-branch` · `gwt ls` · `gwt rm feature-x` |
 | `tailscale-menu` | Rofi menu for Tailscale (`SUPER+U`) | Send a file or the clipboard to a device; copy an offline device's IP |
-| `presentation` | Monitor layout menu (`SUPER+P`) | Mirror / extend / laptop only / external only |
+| `presentation` | Monitor layout menu (`SUPER+P`) | Extend desktop / mirror; temporary overrides using hyprmoncfg settings |
 | `power-toggle` | Power profile menu (Waybar) | Quiet / Balanced / Performance via asusctl |
 | `powermenu` | Lock / suspend / logout / reboot / shutdown (`SUPER+M`) | |
 | `screenshot` | Region screenshot to `~/Pictures/Screenshots` + clipboard | `SUPER+SHIFT+S` |
@@ -243,6 +243,7 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 |---|---|---|
 | **yazi** | Terminal file manager with previews | `y` or `SUPER+E`. Keys: `h/j/k/l` move, `Enter` open, `Space` select, `y/x/p` copy/cut/paste, `d` trash, `a` new file (end with `/` for a folder), `r` rename, `/` search, `z` fzf jump. HTML and other web files open in Brave (`o` still offers nvim). Jumps: `g` then a key (`g.` dotfiles, `gD` Documents, `gt` trash bin (built-in; `O` on an item to restore or empty), `gT` /tmp, `gr` /, `gm` mounts, `gls`/`glb`/`glt` ~/.local share/bin/state, built-in `gh` `gc` `gd`); `gE` empties trash (confirm dialog). Plugins: bookmarks, mount (`M`: `m` mount, `u` unmount, `e` eject = unmount + power off, use before unplugging a drive) |
 | **thunar** | GUI file manager | `thunar`; right-click "Open terminal here" |
+| **system-config-printer** + **cups-pk-helper** | Native CUPS printer settings and print queues, as used by Omarchy; follows the GTK theme | `SUPER+Space` → "Print Settings", or `system-config-printer`; add printers, set the default, view jobs, and enable/disable queues |
 | **fd** | Fast `find` | `fd pdf ~/Documents`; `fd -e py`; `fd -H .env` (include hidden) |
 | **fzf** | Fuzzy find | See §5 |
 | **dust** | Visual `du` (what's using space) | `dust ~`, `dust -d 2 /` |
@@ -601,7 +602,7 @@ podman system prune        # unused container images
 - Received Taildrop files land in `~/tailscale`.
 
 ### Connect an external monitor / present
-- `SUPER+P`: mirror / extend / single screen.
+- `SUPER+P`: toggle the Extend desktop / Mirror menu. Reads the current hyprmoncfg-generated layout without rewriting profiles; changes last until a monitor configuration reload. Lid behavior is unchanged.
 - Saved layouts: `hyprmoncfg`; GUI settings: HyprMod.
 
 ### Add or rotate an API key
