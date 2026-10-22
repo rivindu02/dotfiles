@@ -1,0 +1,34 @@
+[Desktop Entry]
+Name=Todoist
+Exec=/usr/bin/todoist --enable-features=UseOzonePlatform --ozone-platform=wayland %u
+Terminal=false
+Type=Application
+Icon=todoist
+StartupWMClass=Todoist
+X-AppImage-Version=9.28.0
+Comment=The Best To-Do List App and Task Manager
+MimeType=x-scheme-handler/todoist;x-scheme-handler/com.todoist;image/png;image/jpeg;image/webp;application/pdf;
+Categories=Office;
+Actions=new-window;
+
+[Desktop Action new-window]
+Name=New Home Window
+Name[cs]=Nové domovské okno
+Name[da]=Nyt startvindue
+Name[de]=Neues Home-Fenster
+Name[es]=Nueva ventana de inicio
+Name[fi]=Uusi koti-ikkuna
+Name[fr]=Nouveau fenêtre d'accueil
+Name[it]=Nuova finestra Home
+Name[ja]=新しいホーム ウインドウ
+Name[ko]=새 홈 창
+Name[nb]=Nytt Home-vindu
+Name[nl]=Nieuw thuisvenster
+Name[pl]=Nowe okno widoku głównego
+Name[pt_BR]=Nova janela de início
+Name[ru]=Новое домашнее окно
+Name[sv]=Nytt hemfönster
+Name[tr]=Yeni Ana Sayfa Penceresi
+Name[zh_CN]=全新主页窗口
+Name[zh_TW]=全新主頁窗口
+Exec=/usr/bin/todoist --ozone-platform=wayland --new-window
