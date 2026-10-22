@@ -18,7 +18,7 @@
     "includeInactiveMonitorPreviews": true,
     "previewRecaptureDelayMs": 60,
     "showSpecialWorkspaces": true,
-    "specialWorkspaces": [],
+    "specialWorkspaces": ["1"],
     "specialWorkspaceColumns": 5,
     "emptyWorkspaceWallpaper": "",
     "specialEmptyWorkspaceWallpaper": "",
