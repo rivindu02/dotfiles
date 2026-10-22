@@ -1,191 +1,86 @@
-/**
- * Rofi Theme — Tailscale Menu
- * Peer list with inline device status. Gruvbox aqua accent.
- */
-
-/*****----- Configuration -----*****/
 configuration {
-    show-icons:                 false;
-}
-
-/*****----- Global Properties -----*****/
-@import                          "~/.config/rofi/colors/gruvbox.rasi"
-* {
-    font:                        "Caskaydia Mono Nerd Font Propo 15";
+    show-icons: false;
+    matching: "fuzzy";
+    scroll-method: 0;
 }
 
 * {
-    border-colour:               #89b482;
-    handle-colour:               var(selected);
-    background-colour:           rgba(24, 26, 28, 0.85);
-    foreground-colour:           var(foreground);
-    alternate-background:        var(background-alt);
-    normal-background:           var(background);
-    normal-foreground:           var(foreground);
-    urgent-background:           var(urgent);
-    urgent-foreground:           var(background);
-    active-background:           var(active);
-    active-foreground:           var(background);
-    selected-normal-background:  var(selected);
-    selected-normal-foreground:  var(background);
-    selected-urgent-background:  var(active);
-    selected-urgent-foreground:  var(background);
-    selected-active-background:  var(urgent);
-    selected-active-foreground:  var(background);
-    alternate-normal-background: var(background);
-    alternate-normal-foreground: var(foreground);
-    alternate-urgent-background: var(urgent);
-    alternate-urgent-foreground: var(background);
-    alternate-active-background: var(active);
-    alternate-active-foreground: var(background);
+    font: "Caskaydia Mono Nerd Font Propo 13";
+    background-color: transparent;
+    text-color: #d4be98;
+    border-color: #504945;
 }
 
-/*****----- Main Window -----*****/
 window {
-    transparency:                "real";
-    background-color:            @background-colour;
-    location:                    center;
-    anchor:                      center;
-    fullscreen:                  false;
-    width:                       280px;
-    x-offset:                    0px;
-    y-offset:                    0px;
-
-    enabled:                     true;
-    margin:                      0px;
-    padding:                     0px;
-    border:                      1px solid;
-    border-radius:               10px;
-    border-color:                @border-colour;
-    cursor:                      "default";
+    width: 660px;
+    location: center;
+    anchor: center;
+    background-color: #282828f5;
+    border: 1px solid;
+    border-color: #89b482;
+    border-radius: 10px;
 }
 
-/*****----- Main Box -----*****/
 mainbox {
-    enabled:                     true;
-    spacing:                     10px;
-    margin:                      0px;
-    padding:                     15px;
-    border:                      0px solid;
-    border-radius:               0px;
-    border-color:                @border-colour;
-    background-color:            transparent;
-    children:                    [ "message", "listview" ];
+    padding: 24px;
+    spacing: 18px;
+    children: [ inputbar, message, listview ];
 }
 
-/*****----- Listview -----*****/
+inputbar {
+    spacing: 16px;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    font: "Caskaydia Mono Nerd Font Propo Bold 19";
+    text-color: #89b482;
+}
+
+entry {
+    placeholder: "Filter devices…";
+    placeholder-color: #928374;
+    vertical-align: 0.5;
+}
+
+message { padding: 0 0 6px 0; }
+textbox { text-color: #928374; markup: true; }
+
 listview {
-    enabled:                     true;
-    columns:                     1;
-    lines:                       8;
-    cycle:                       true;
-    dynamic:                     true;
-    scrollbar:                   false;
-    layout:                      vertical;
-    reverse:                     false;
-    fixed-height:                false;
-    fixed-columns:               true;
-
-    spacing:                     5px;
-    margin:                      0px;
-    padding:                     0px;
-    border:                      0px solid;
-    border-radius:               0px;
-    border-color:                @border-colour;
-    background-color:            transparent;
-    text-color:                  @foreground-colour;
-    cursor:                      "default";
+    lines: 9;
+    fixed-height: false;
+    dynamic: true;
+    scrollbar: true;
+    spacing: 6px;
 }
 
-/*****----- Elements -----*****/
 element {
-    enabled:                     true;
-    spacing:                     10px;
-    margin:                      0px;
-    padding:                     5px 10px;
-    border:                      0px solid;
-    border-radius:               10px;
-    background-color:            transparent;
-    text-color:                  @foreground-colour;
-    cursor:                      pointer;
-}
-element normal.normal {
-    text-color:                  var(normal-foreground);
-}
-element normal.urgent {
-    text-color:                  var(urgent-foreground);
-}
-element normal.active {
-    text-color:                  var(active-foreground);
-}
-element selected.normal {
-    background-color:            var(selected-normal-background);
-    text-color:                  var(selected-normal-foreground);
-}
-element selected.urgent {
-    background-color:            var(selected-urgent-background);
-    text-color:                  var(selected-urgent-foreground);
-}
-element selected.active {
-    background-color:            var(selected-active-background);
-    text-color:                  var(selected-active-foreground);
-}
-element alternate.normal {
-    text-color:                  var(alternate-normal-foreground);
-}
-element alternate.urgent {
-    background-color:            var(alternate-urgent-background);
-    text-color:                  var(alternate-urgent-foreground);
-}
-element alternate.active {
-    background-color:            var(alternate-active-background);
-    text-color:                  var(alternate-active-foreground);
-}
-element-icon {
-    background-color:            transparent;
-    text-color:                  inherit;
-    size:                        24px;
-    cursor:                      inherit;
-}
-element-text {
-    background-color:            transparent;
-    text-color:                  inherit;
-    highlight:                   inherit;
-    cursor:                      inherit;
-    vertical-align:              0.5;
-    horizontal-align:            0.0;
+    padding: 13px 14px;
+    border-radius: 10px;
+    children: [ element-text ];
 }
 
-/*****----- Message -----*****/
-message {
-    enabled:                     true;
-    margin:                      0px;
-    padding:                     0px;
-    border:                      0px solid;
-    border-radius:               0px;
-    border-color:                @border-colour;
-    background-color:            transparent;
-    text-color:                  @foreground-colour;
+element selected.normal {
+    background-color: #3c4540;
+    text-color: #ebdbb2;
 }
-textbox {
-    padding:                     8px 10px;
-    border:                      0px solid;
-    border-radius:               10px;
-    border-color:                @border-colour;
-    background-color:            @alternate-background;
-    text-color:                  @foreground-colour;
-    vertical-align:              0.5;
-    horizontal-align:            0.0;
-    highlight:                   none;
-    placeholder-color:           @foreground-colour;
-    blink:                       true;
-    markup:                      true;
+
+element normal.urgent, element selected.urgent {
+    padding: 7px 14px;
+    background-color: transparent;
 }
-error-message {
-    padding:                     10px;
-    border:                      2px solid;
-    border-radius:               10px;
-    border-color:                @border-colour;
-    background-color:            @background-colour;
-    text-color:                  @foreground-colour;
+
+scrollbar {
+    width: 3px;
+    handle-width: 3px;
+    handle-color: #89b482;
+    background-color: #32302f;
+    border-radius: 3px;
 }
+
+element-text {
+    vertical-align: 0.5;
+    highlight: bold;
+}
+
+error-message { padding: 20px; }

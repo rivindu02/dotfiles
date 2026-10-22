@@ -131,7 +131,7 @@
     "spacing": 8
   },
   "custom/tailscale": {
-    "exec": "~/.config/scripts/tailscale-status.sh",
+    "exec": "python3 ~/.config/scripts/tailscale-menu.py status",
     "return-type": "json",
     "interval": 10,
     "signal": 10,

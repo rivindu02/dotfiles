@@ -171,17 +171,13 @@ window#waybar {
   border-radius: 4px;
 }
 
-/* ── Tailscale ─────────────────────────────────────────────── */
+/* ── Tailscale ───────────────────────────── */
 #custom-tailscale {
-  color: #ffffff;
+  color: #d4be98;
   padding: 0 8px;
   border-radius: 6px;
   margin: 4px 2px;
   transition: all 0.2s;
-}
-
-#custom-tailscale.exit-node {
-  color: #7daea3;
 }
 
 #custom-tailscale.disconnected {
@@ -189,13 +185,8 @@ window#waybar {
 }
 
 #custom-tailscale:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-}
-
-#custom-tailscale.exit-node:hover {
-  background: rgba(125, 174, 163, 0.12);
-  color: #7daea3;
+  background: rgba(137, 180, 130, 0.16);
+  color: #89b482;
 }
 
 /* ── Notification bell ──────────────────────────────────────── */
