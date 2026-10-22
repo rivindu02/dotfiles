@@ -29,7 +29,7 @@ fi
 
 if command -v tmux >/dev/null 2>&1; then
     path=("$HOME/.tmuxifier/bin" $path)
-    eval "$(tmuxifier init -)"
+    command -v tmuxifier >/dev/null 2>&1 && eval "$(tmuxifier init -)"
 fi
 
 
@@ -42,26 +42,44 @@ export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
 # ===========================================================
 
 
-# oh-my-zsh and powerlevel10k come from the AUR (oh-my-zsh-git, zsh-theme-powerlevel10k-git),
-# so yay updates them. Third-party plugins are git clones in $ZSH_CUSTOM/plugins.
+# Arch keeps Oh My Zsh and Powerlevel10k updated through the AUR.
+# Distroboxes share the plugins in HOME and can read the host's prompt scripts.
 export ZSH=/usr/share/oh-my-zsh
 ZSH_CUSTOM="$HOME/.local/share/oh-my-zsh-custom"
 DISABLE_AUTO_UPDATE=true        # root-owned install; updated by yay instead
-if [[ -d "$ZSH" ]]; then
+if [[ -r "$ZSH/oh-my-zsh.sh" ]]; then
     ZSH_THEME=""                # p10k is sourced below from the AUR package
-    plugins=(git zsh-autosuggestions zsh-syntax-highlighting fzf-tab)
+    plugins=(git)               # Shared third-party plugins load after other integrations.
     source "$ZSH/oh-my-zsh.sh"
+else
+    # Containers without Oh My Zsh still get completion and the shared plugins.
+    # Keep completion dumps separate: installed commands differ per container.
+    _zsh_cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/${CONTAINER_ID:-host}"
+    mkdir -p "$_zsh_cache_dir"
+    autoload -Uz compinit
+    ZSH_COMPDUMP="$_zsh_cache_dir/zcompdump-$ZSH_VERSION"
+    compinit -d "$ZSH_COMPDUMP"
+    unset _zsh_cache_dir
 fi
 
-P10K_THEME=/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-[[ -r $P10K_THEME ]] && source $P10K_THEME
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+for P10K_THEME in \
+    /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme \
+    /run/host/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme \
+    "$HOME/.local/share/powerlevel10k/powerlevel10k.zsh-theme"; do
+    if [[ -r $P10K_THEME ]]; then
+        source "$P10K_THEME"
+        [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+        break
+    fi
+done
 
 # ------------- fzf-tab ------------------------
 # Ctrl+Space : select multiple results, can be configured by `fzf-bindings` tag
 # F1/F2		 : switch between groups, can be configured by `switch-group` tag
 # /			 : trigger continuous completion (useful when completing a deep path), can be configured by `continuous-trigger` tag
 
+# Distrobox may not have the plugin that normally declares this array.
+typeset -gA ZSH_HIGHLIGHT_STYLES
 ZSH_HIGHLIGHT_STYLES[comment]='fg=#a89984' # for comments
 
 
@@ -99,12 +117,19 @@ command -v zoxide >/dev/null && {
   alias cd="z"
 }
 
-# fzf (cross-distro path handling)
+# Use the local fzf binary's integration rather than distro-specific paths.
 if command -v fzf >/dev/null; then
-	
-	[[ -f /usr/share/fzf/key-bindings.zsh ]] && source /usr/share/fzf/key-bindings.zsh
-	[[ -f /usr/share/fzf/completion.zsh ]] && source /usr/share/fzf/completion.zsh
-
+    if _fzf_init="$(fzf --zsh 2>/dev/null)"; then
+        eval "$_fzf_init"
+    else
+        # Older fzf packages predate --zsh; Arch and Debian ship different paths.
+        for _fzf_dir in /usr/share/fzf /usr/share/doc/fzf/examples; do
+            [[ -r $_fzf_dir/key-bindings.zsh ]] && source "$_fzf_dir/key-bindings.zsh"
+            [[ -r $_fzf_dir/completion.zsh ]] && source "$_fzf_dir/completion.zsh"
+        done
+        unset _fzf_dir
+    fi
+    unset _fzf_init
 fi
 
 # atuin: searchable history database. Loaded after fzf so it takes over Ctrl+R;
@@ -223,12 +248,28 @@ inv() { fzf -m --print0 --preview="bat --color=always {}" | xargs -0 -r -o nvim;
 alias gz="env -u WAYLAND_DISPLAY QT_QPA_PLATFORM=xcb gz"
 
 
-# Colcon autocomplete
-[ -f /usr/share/colcon_argcomplete/hook/colcon-argcomplete.zsh ] && source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.zsh
+# Register colcon without its hook rerunning compinit with a shared cache path.
+if [[ -r /usr/share/colcon_argcomplete/hook/colcon-argcomplete.zsh ]]; then
+    autoload -Uz bashcompinit
+    bashcompinit
+    if command -v register-python-argcomplete3 >/dev/null 2>&1; then
+        eval "$(register-python-argcomplete3 colcon)"
+    elif command -v register-python-argcomplete >/dev/null 2>&1; then
+        eval "$(register-python-argcomplete colcon)"
+    fi
+fi
 
 alias cubeide="ghostty -e zsh -c \"distrobox enter devbox -- /opt/st/stm32cubeide_2.1.0/stm32cubeide\""
 alias ai-main="gemini"
 
+
+# Load after fzf/Atuin/ROS so their widgets cannot replace fzf-tab or highlighting.
+for _zsh_plugin in zsh-autosuggestions fzf-tab zsh-syntax-highlighting; do
+    [[ $_zsh_plugin == fzf-tab ]] && ! command -v fzf >/dev/null 2>&1 && continue
+    _zsh_plugin_file="$ZSH_CUSTOM/plugins/$_zsh_plugin/$_zsh_plugin.plugin.zsh"
+    [[ -r $_zsh_plugin_file ]] && source "$_zsh_plugin_file"
+done
+unset _zsh_plugin _zsh_plugin_file
 
 # Auto-attach tmux only in Ghostty, not in IDE or other terminals
 [[ -z "$TMUX" && -n "$GHOSTTY_RESOURCES_DIR" ]] && tmux new-session -A -s main
