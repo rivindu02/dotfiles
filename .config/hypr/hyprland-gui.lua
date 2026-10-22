@@ -28,12 +28,6 @@ hl.config({
     general = {
         allow_tearing = false,
         border_size = 2,
-        col = {
-            active_border = {
-                colors = {"rgba(33ccffee)", "rgba(00ff99ee)", "rgba(e01b24ff)"},
-                angle = 45,
-            },
-        },
         gaps_in = 4,
         gaps_out = 6,
         layout = "dwindle",
@@ -64,3 +58,13 @@ hl.monitor({
     scale = 1.5,
     cm = "srgb",
 })
+
+-- Keybinds
+hl.unbind("SUPER + left")
+hl.bind("SUPER + CTRL + H", hl.dsp.focus({ direction = "left" }))
+hl.unbind("SUPER + right")
+hl.bind("SUPER + CTRL + L", hl.dsp.focus({ direction = "right" }))
+hl.unbind("SUPER + up")
+hl.bind("SUPER + CTRL + J", hl.dsp.focus({ direction = "up" }))
+hl.unbind("SUPER + down")
+hl.bind("SUPER + CTRL + K", hl.dsp.focus({ direction = "down" }))
