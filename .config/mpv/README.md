@@ -67,9 +67,8 @@ Jumping to the end leaves the final frame visible because `keep-open=yes`.
 | `Ctrl+l` | Mark A, then B to loop a section; press again to clear |
 | `b` | Cycle audio tracks |
 | `v` | Cycle subtitles |
-| `Alt+h` / `Alt+g` | Delay / advance subtitles by 0.05 seconds |
 | `Alt+k` / `Alt+j` | Delay / advance audio by 0.05 seconds |
-| `(` / `)` | Show subtitles 0.1 seconds earlier / later to sync with audio |
+| `(` / `)` | Show subtitles 0.05 seconds earlier / later to sync with audio |
 | `s` | Screenshot with subtitles |
 | `Ctrl+s` | Screenshot of the window, including the interface |
 | `i` / `Shift+i` | Show / toggle playback statistics |
@@ -97,6 +96,9 @@ uosc menus.
 The Vim, arrow-key, and VLC aliases documented above remain intentional.
 Mouse-wheel volume, double-click fullscreen, media play/pause, next/previous,
 volume/mute, and closing the window are explicitly retained in `input.conf`.
+Dedicated Play and Pause media keys explicitly play and pause; the combined
+Play/Pause key toggles playback. The old `Alt+g`/`Alt+h` subtitle-sync aliases are
+disabled; use `(`/`)` instead.
 
 ## Configuration files and backups
 
