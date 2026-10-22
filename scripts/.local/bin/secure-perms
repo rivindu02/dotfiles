@@ -12,6 +12,7 @@ dirs=(
     "$HOME/.local/share/atuin"            # full shell history database
     "$HOME/.config/restic"
     "$HOME/.config/rclone"
+    "$HOME/.aws"
 )
 
 files=(
@@ -25,7 +26,7 @@ done
 
 shopt -s nullglob
 files+=("$HOME"/.secrets/* "$DOTFILES"/.config/gcalcli/*/* "$DOTFILES"/.config/gcalcli/*)
-files+=("$HOME"/.ssh/id_* "$HOME"/.ssh/*.pem "$HOME/.config/restic/password" "$HOME/.config/rclone/rclone.conf")
+files+=("$HOME"/.ssh/id_* "$HOME"/.ssh/*.pem "$HOME/.config/restic/password" "$HOME/.config/rclone/rclone.conf" "$HOME"/.aws/*)
 
 for f in "${files[@]}"; do
     [[ -f "$f" && ! -L "$f" ]] || continue
