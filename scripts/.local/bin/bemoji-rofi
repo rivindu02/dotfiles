@@ -1,3 +1,11 @@
-#!/bin/bash
-export BEMOJI_PICKER_CMD="rofi -dmenu -p '󰞅 Emoji' -theme ~/.config/rofi//launchers/type-1/style.rasi"
-bemoji -c
+#!/usr/bin/env bash
+
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
+set -euo pipefail
+
+target=$(hyprctl activewindow -j | jq -r '.address // empty')
+export BEMOJI_PICKER_CMD="rofi -dmenu -i -no-custom -no-auto-select -p Emoji -theme $HOME/.config/rofi/menus/emoji.rasi"
+emoji=$(bemoji -e -n) || exit 0
+[[ -n "$emoji" ]] || exit 0
+printf '%s' "$emoji" | bash "$HOME/.config/rofi/scripts/type-emoji.sh" "$target"

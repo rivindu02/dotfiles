@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Respect wl-copy --sensitive, including temporary emoji paste selections.
+[[ "${CLIPBOARD_STATE:-}" == sensitive ]] && exit 0
+
 # Silent copy flag check
 SILENT_FLAG="${XDG_RUNTIME_DIR:-/tmp}/cliphist-silent"
 if [ -f "$SILENT_FLAG" ]; then
