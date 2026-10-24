@@ -90,7 +90,6 @@ man-db
 maven
 mpv
 nano
-neovide
 neovim
 network-manager-applet
 nodejs
@@ -102,6 +101,7 @@ nvm
 nwg-look
 obs-studio
 obsidian
+opencode
 openssh
 pacman-contrib
 pamixer
