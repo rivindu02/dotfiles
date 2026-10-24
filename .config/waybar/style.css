@@ -161,6 +161,27 @@ window#waybar {
   padding: 0 8px;
 }
 
+#custom-usb {
+  color: #a9b665;
+  padding: 0 8px;
+  border-radius: 6px;
+  margin: 4px 2px;
+}
+
+#custom-usb:hover {
+  background: rgba(169, 182, 101, 0.12);
+}
+
+#custom-usb.busy,
+#custom-usb.ejecting {
+  color: #d8a657;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+#custom-usb.error {
+  color: #ea6962;
+}
+
 #tray > .passive {
   -gtk-icon-effect: dim;
 }

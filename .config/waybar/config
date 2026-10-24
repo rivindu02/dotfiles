@@ -18,6 +18,7 @@
     "battery",
     "network",
     "custom/tailscale",
+    "custom/usb",
     "tray"
     //"custom/power"
   ],
@@ -129,6 +130,13 @@
   },
   "tray": {
     "spacing": 8
+  },
+  "custom/usb": {
+    "exec": "python3 ~/.config/scripts/waybar-usb.py status",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "python3 ~/.config/scripts/waybar-usb.py eject",
+    "tooltip": true
   },
   "custom/tailscale": {
     "exec": "python3 ~/.config/scripts/tailscale-menu.py status",
