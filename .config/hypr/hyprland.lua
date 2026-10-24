@@ -47,7 +47,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("~/.config/scripts/gcal-notify.sh")
     -- Refresh once swaync is up; swaync-weather.timer handles the 30-min updates
     hl.exec_cmd("sleep 5 && systemctl --user start swaync-weather.service")
-    hl.exec_cmd("sleep 3 && hypridle")
+    -- Use one systemd-owned daemon; manual service restarts must replace it too.
+    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP && systemctl --user start hypridle.service")
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
     hl.exec_cmd("~/.config/scripts/battery-warn.sh")
     hl.exec_cmd("qs -c overview")
@@ -294,7 +295,7 @@ hl.gesture({
     fingers   = 3,
     direction = "down",
     action    = function()
-        hl.exec_cmd("pkill rofi || ~/.config/rofi/launchers/type-1/launcher.sh")
+        hl.exec_cmd("~/.config/rofi/launchers/type-1/launcher.sh")
     end,
 })
 
@@ -338,15 +339,15 @@ hl.bind(mainMod .. " + F",   hl.dsp.window.fullscreen({ mode = "maximized", acti
 hl.bind(secondMod .. " + F",   hl.dsp.window.fullscreen({ action = "toggle" }))
 hl.bind(mainMod .. " + P",     hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/presentation"))
 hl.bind(mainMod .. " + J",     hl.dsp.layout("togglesplit"))
-hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("~/.config/rofi/launchers/type-1/launcher.sh || pkill rofi"))
-hl.bind(secondMod .. " + Space", hl.dsp.exec_cmd("~/.config/rofi/launchers/type-1/launcher2.sh || pkill rofi"))
-hl.bind(mainMod .. " + Slash", hl.dsp.exec_cmd("rofi -show calc -modi calc -no-show-match -no-sort -theme ~/.config/rofi/launchers/type-1/style.rasi"))
+hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd("~/.config/rofi/launchers/type-1/launcher.sh"))
+hl.bind(secondMod .. " + Space", hl.dsp.exec_cmd("~/.config/rofi/launchers/type-1/launcher2.sh"))
+hl.bind(mainMod .. " + Slash", hl.dsp.exec_cmd("~/.config/rofi/scripts/calculator.sh"))
 hl.bind(mainMod .. " + M",     hl.dsp.exec_cmd(os.getenv("HOME") .. "/.local/bin/powermenu"))
-hl.bind(mainMod .. " + L",     hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mainMod .. " + L",     hl.dsp.exec_cmd("systemctl --user start hyprlock.service"))
 hl.bind(mainMod .. " + TAB", hl.dsp.exec_cmd("qs ipc -c overview call overview toggle"))
 
 -- Clipboard
-hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -display-columns 2 -theme ~/.config/rofi/launchers/type-1/style.rasi | cliphist decode | bash -c 'touch ${XDG_RUNTIME_DIR:-/tmp}/cliphist-silent && wl-copy'"))
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("~/.config/rofi/scripts/clipboard.sh"))
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("bash -c 'touch ${XDG_RUNTIME_DIR:-/tmp}/cliphist-silent && wl-paste -p --no-newline | wl-copy'"))
 
 -- Utilities
