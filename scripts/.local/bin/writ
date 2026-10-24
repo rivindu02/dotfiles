@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
 # --- Config ---
 NOTES_DIR="$HOME/Documents/Notes"
 VAULT_NAME="Notes"
@@ -14,8 +17,7 @@ options=$(find "$NOTES_DIR" -type f -name '*.md' \
 
 # Rofi Menu
 choice=$(echo "$options" | rofi \
-	-dmenu \
-	-i \
+	-dmenu -i \
 	-p "Writ" \
 	-theme "$ROFI_THEME")
 [ -z "$choice" ] && exit 0
@@ -24,7 +26,7 @@ NOTE_PATH="$NOTES_DIR/$choice.md"
 IS_NEW=0
 if [ ! -f "$NOTE_PATH" ]; then
 	confirm=$(echo -e "Yes\nNo" | rofi \
-		-dmenu \
+		-dmenu -i \
 		-p "New?" \
 		-mesg "Create a new writ '$choice'?" \
 		-theme "$ROFI_THEME")

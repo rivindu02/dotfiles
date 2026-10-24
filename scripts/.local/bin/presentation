@@ -1,18 +1,13 @@
 #!/bin/bash
+
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
 # Super+P changes only the live mirror relationship; hyprmoncfg owns the layout.
 set -euo pipefail
 
 runtime="${XDG_RUNTIME_DIR:-/tmp}/presentation-$UID"
 mkdir -p "$runtime"
 chmod 700 "$runtime"
-# Close only this menu when Super+P is pressed again.
-if [[ -f "$runtime/rofi.pid" ]]; then
-    read -r menu_pid < "$runtime/rofi.pid" || true
-    if [[ "${menu_pid:-}" =~ ^[0-9]+$ ]] && [[ "$(ps -p "$menu_pid" -o comm=)" == rofi ]]; then
-        kill "$menu_pid" 2>/dev/null || true
-        exit 0
-    fi
-fi
 exec 9>"$runtime/lock"
 flock -n 9 || exit 0
 
@@ -24,10 +19,9 @@ active=0
 if jq -e 'any(.[]; (.mirrorOf // "none") != "none" and (.mirrorOf // "") != "")' <<< "$monitors" >/dev/null; then
     active=1
 fi
-choice=$(printf 'Extend desktop\nMirror\n' | rofi -dmenu -p "Display" \
+choice=$(printf 'Extend desktop\nMirror\n' | rofi -dmenu -i -p "Display" \
     -pid "$runtime/rofi.pid" \
-    -theme "$HOME/.config/rofi/powermenu/type-1/style-1.rasi" \
-    -theme-str 'listview { lines: 2; } inputbar { enabled: false; } element normal.active { text-color: var(active); } element selected.active { background-color: var(selected); text-color: var(background); }' \
+    -theme "$HOME/.config/rofi/menus/presentation.rasi" \
     -no-custom -no-fixed-num-lines -no-auto-select -format i \
     -selected-row "$active" -a "$active" -kb-cancel 'Escape,Super+p') || exit 0
 [[ "$choice" == 0 || "$choice" == 1 ]] || exit 0

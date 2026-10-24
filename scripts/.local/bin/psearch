@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
+
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
 # --- Config ---
 ROFI_THEME="$HOME/.config/rofi/menus/psearch.rasi"
 
 query=$(rofi \
-    -dmenu \
+    -dmenu -i \
     -p "Search" \
     -theme "$ROFI_THEME")
 

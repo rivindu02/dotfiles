@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
 # ─────────────────────────────────────────────────────────────────────────────
 # brave-bookmarks.sh  —  Rofi bookmark launcher + manager for Brave
 # ─────────────────────────────────────────────────────────────────────────────
@@ -73,7 +76,7 @@ add_bookmark() {
 
     # Ask user to confirm / edit the name
     local bname
-    bname=$(rofi -dmenu \
+    bname=$(rofi -dmenu -i \
         -theme "$ROFI_THEME" \
         -p "  Name" \
         -filter "$suggested_name" \
@@ -142,7 +145,7 @@ main() {
     done < <(get_bookmarks)
 
     local chosen
-    chosen=$(printf '%s\n' "${labels[@]}" | rofi -dmenu \
+    chosen=$(printf '%s\n' "${labels[@]}" | rofi -dmenu -i \
         -theme "$ROFI_THEME" \
         -p "  Bookmarks" \
         -i)

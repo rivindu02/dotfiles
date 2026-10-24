@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
+
 # ── Setup ────────────────────────────────────────────────────
 # Define helper once at the top
 dot() { [ "$current" = "$1" ] && echo "●" || echo "○"; }
@@ -52,9 +55,9 @@ else
 fi
 
 # ── UI ───────────────────────────────────────────────────────
-chosen=$(echo -e "$options" | rofi -dmenu -p "Power" -no-custom -no-fixed-num-lines \
+chosen=$(echo -e "$options" | rofi -dmenu -i -p "Power" -no-custom -no-fixed-num-lines \
             -theme ~/.config/rofi/powermenu/type-1/style-1.rasi \
-            -theme-str "listview { lines: ${menu_lines}; } inputbar { enabled: false; }" \
+            -theme-str "listview { lines: ${menu_lines}; } entry { placeholder: \"Filter power options…\"; }" \
             -no-auto-select)
 
 [[ -z "$chosen" ]] && exit 0

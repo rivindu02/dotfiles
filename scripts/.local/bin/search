@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
 # --- Config ---
 ROFI_THEME="$HOME/.config/rofi/menus/search.rasi"
 
@@ -11,7 +14,7 @@ PLATFORMS=(
 
 # First rofi: pick platform OR type a search query (platforms pinned at top)
 result=$(printf '%s\n' "${PLATFORMS[@]}" | rofi \
-    -dmenu \
+    -dmenu -i \
     -p "Search" \
     -mesg "Pick a platform" \
     -theme "$ROFI_THEME")
@@ -44,10 +47,10 @@ esac
 
 # User picked a platform — second rofi for the query
 query=$(rofi \
-    -dmenu \
+    -dmenu -i \
     -p "Query" \
     -theme "$ROFI_THEME" \
-    -theme-str "window { border-color: ${border_color}; } mainbox { children: [ \"inputbar\", \"listview\" ]; }")
+    -theme-str "window { border-color: ${border_color}; } mainbox { children: [ \"inputbar\", \"message\" ]; }")
 [ -z "$query" ] && exit 0
 
 encoded=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$query")
