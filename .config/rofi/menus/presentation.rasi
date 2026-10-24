@@ -1,0 +1,6 @@
+@import "~/.config/rofi/shared/base.rasi"
+
+configuration { show-icons: false; }
+* { border-colour: #74C7EC; }
+entry { placeholder: "Filter display modes…"; }
+listview { lines: 2; }

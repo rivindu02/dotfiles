@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
+
 ## Author : Aditya Shakya (adi1090x)
 ## Github : @adi1090x
 #
@@ -28,7 +31,7 @@ no=''
 
 # Rofi CMD
 rofi_cmd() {
-	rofi -dmenu \
+	rofi -dmenu -i \
 		-p "Uptime: $uptime" \
 		-mesg "Uptime: $uptime" \
 		-theme ${dir}/${theme}.rasi
@@ -36,7 +39,7 @@ rofi_cmd() {
 
 # Confirmation CMD
 confirm_cmd() {
-	rofi -dmenu \
+	rofi -dmenu -i \
 		-p 'Confirmation' \
 		-mesg 'Are you Sure?' \
 		-theme ${dir}/shared/confirm.rasi

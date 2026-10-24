@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
+
 ## Author : Aditya Shakya (adi1090x)
 ## Github : @adi1090x
 #

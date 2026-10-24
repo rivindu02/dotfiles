@@ -13,7 +13,8 @@ configuration {
 	cycle: true;
 	filter: "";
 	scroll-method: 0;
-	normalize-match: true;
+	/* Normalization disables match highlighting. */
+	normalize-match: false;
 	show-icons: true;
 	icon-theme: "Papirus";
 /*	cache-dir: ;*/
@@ -21,7 +22,7 @@ configuration {
 /*	dpi: -1;*/
 
 	/*---------- Matching setting ----------*/
-	matching: "normal";
+	matching: "fuzzy";
 	tokenize: true;
 
 	/*---------- SSH settings ----------*/
@@ -68,7 +69,7 @@ configuration {
 
 	/*---------- History and Sorting ----------*/
 	disable-history: false;
-	sorting-method: "normal";
+	sorting-method: "fzf";
 	max-history-size: 25;
 
 	/*---------- Display setting ----------*/
@@ -84,7 +85,7 @@ configuration {
 	/*---------- Misc setting ----------*/
 	terminal: "rofi-sensible-terminal";
 	font: "Mono 12";
-	sort: false;
+	sort: true;
 	threads: 0;
 	click-to-exit: true;
 /*	ignored-prefixes: "";*/
@@ -179,3 +180,6 @@ configuration {
 	me-accept-custom: "Control+MouseDPrimary";
 */
 }
+
+/* Default for menus without an explicit theme. */
+@theme "~/.config/rofi/shared/base.rasi"

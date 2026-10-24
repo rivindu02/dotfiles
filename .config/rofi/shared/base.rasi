@@ -1,0 +1,113 @@
+/* Shared desktop styling. Menu themes should only override content and accents. */
+@import "~/.config/rofi/colors/gruvbox.rasi"
+
+* {
+    font: "Caskaydia Mono Nerd Font Propo 13";
+    background-color: transparent;
+    text-color: @foreground;
+    border-colour: @selected;
+    background-colour: rgba(24, 26, 28, 0.85);
+    foreground-colour: @foreground;
+    alternate-background: @background-alt;
+}
+
+window {
+    location: center;
+    anchor: center;
+    fullscreen: false;
+    width: 600px;
+    margin: 0px;
+    padding: 0px;
+    border: 1px solid;
+    border-radius: 10px;
+    border-color: @border-colour;
+    background-color: @background-colour;
+}
+
+mainbox {
+    children: [ "inputbar", "message", "listview" ];
+    padding: 24px;
+    spacing: 12px;
+}
+
+inputbar {
+    children: [ "prompt", "entry" ];
+    padding: 8px 12px;
+    spacing: 12px;
+    background-color: @background-alt;
+    border-radius: 8px;
+}
+
+prompt { text-color: @selected; }
+entry {
+    placeholder: "Search…";
+    placeholder-color: #928374;
+    cursor: text;
+}
+
+listview {
+    columns: 1;
+    lines: 8;
+    fixed-height: false;
+    dynamic: true;
+    scrollbar: true;
+    spacing: 4px;
+}
+
+element {
+    padding: 10px 12px;
+    spacing: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+element normal.normal, element alternate.normal {
+    background-color: transparent;
+    text-color: @foreground;
+}
+element normal.active, element alternate.active { text-color: @active; }
+element normal.urgent, element alternate.urgent { text-color: @urgent; }
+element selected.normal, element selected.active, element selected.urgent {
+    background-color: @selected;
+    text-color: @background;
+}
+element-icon { size: 24px; text-color: inherit; }
+element-text {
+    text-color: inherit;
+    vertical-align: 0.5;
+    highlight: bold #FB4934;
+}
+
+scrollbar {
+    handle-width: 3px;
+    handle-color: @selected;
+    background-color: @background-alt;
+    border-radius: 3px;
+}
+
+message { padding: 0px; }
+textbox {
+    padding: 8px 12px;
+    background-color: @background-alt;
+    text-color: #928374;
+    border-radius: 8px;
+    markup: true;
+}
+
+mode-switcher { spacing: 4px; }
+button {
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-color: @foreground;
+    cursor: pointer;
+}
+button selected {
+    background-color: @selected;
+    text-color: @background;
+}
+error-message {
+    padding: 24px;
+    background-color: @background-colour;
+    border: 1px solid;
+    border-color: @urgent;
+    border-radius: 10px;
+}

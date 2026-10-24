@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
+
 ## Author : Aditya Shakya (adi1090x)
 ## Github : @adi1090x
 #
@@ -30,7 +33,7 @@ no=''
 
 # Rofi CMD
 rofi_cmd() {
-	rofi -dmenu \
+	rofi -dmenu -i \
 		-p " $USER@$host" \
 		-mesg " Last Login: $lastlogin |  Uptime: $uptime" \
 		-theme ${dir}/${theme}.rasi
@@ -43,7 +46,7 @@ confirm_cmd() {
 		-theme-str 'listview {columns: 2; lines: 1;}' \
 		-theme-str 'element-text {horizontal-align: 0.5;}' \
 		-theme-str 'textbox {horizontal-align: 0.5;}' \
-		-dmenu \
+		-dmenu -i \
 		-p 'Confirmation' \
 		-mesg 'Are you Sure?' \
 		-theme ${dir}/${theme}.rasi

@@ -1,0 +1,4 @@
+@import "~/.config/rofi/shared/base.rasi"
+
+configuration { show-icons: false; }
+entry { placeholder: "Search clipboard history…"; }
