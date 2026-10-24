@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
 # --- Config ---
 ROFI_THEME="$HOME/.config/rofi/menus/remind.rasi"
 TIMES=(
@@ -10,9 +13,9 @@ TIMES=(
 )
 
 # First rofi: pick a preset OR type a custom duration (e.g. 45m, 2h)
-# Enter always returns what you typed; Ctrl+Enter picks highlighted preset
+# Enter selects a preset; Ctrl+Enter accepts a custom duration.
 result=$(printf '%s\n' "${TIMES[@]}" | rofi \
-    -dmenu \
+    -dmenu -i \
     -p "Remind in" \
     -theme "$ROFI_THEME")
 [ -z "$result" ] && exit 0
@@ -40,8 +43,9 @@ fi
 
 # Second rofi: the reminder text
 task=$(rofi \
-    -dmenu \
+    -dmenu -i \
     -p "Remind me to" \
+    -theme-str 'mainbox { children: [ "inputbar", "message" ]; } entry { placeholder: "Reminder text…"; }' \
     -theme "$ROFI_THEME")
 [ -z "$task" ] && exit 0
 

@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+source "$HOME/.config/rofi/scripts/toggle.sh"
+rofi_toggle || exit 0
 ROFI_THEME="$HOME/.config/rofi/launchers/type-1/style.rasi"
 
 shopt -s nullglob
@@ -17,7 +20,7 @@ for f in "${entries[@]}"; do
 done
 
 choice=$(printf '%s\n' "${labels[@]}" "── Cancel All ──" | rofi \
-    -dmenu \
+    -dmenu -i \
     -p "Cancel reminder" \
     -theme "$ROFI_THEME")
 [ -z "$choice" ] && exit 0

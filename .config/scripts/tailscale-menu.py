@@ -32,15 +32,18 @@ def tailscale_status():
 
 
 def label(title, detail="", icon=""):
-    title = html.escape("".join(c if c.isprintable() else " " for c in str(title)))
+    title = "".join(c if c.isprintable() else " " for c in str(title))
     detail = html.escape("".join(c if c.isprintable() else " " for c in str(detail)))
-    return f"{icon}  {title}   <span size='small' foreground='#928374'>{detail}</span>"
+    display = f"{icon}  {html.escape(title)}   <span size='small' foreground='#928374'>{detail}</span>"
+    # Filter the name, keeping descriptive text out of fuzzy matching (e.g.
+    # "ipad" otherwise matches the letters in "clipboard" on every device).
+    return f"{title}\0display\x1f{display}"
 
 
 def choose(rows, title, subtitle):
     first_action = next((i for i, (_, action) in enumerate(rows) if action is not None), 0)
     result = subprocess.run(
-        ["rofi", "-dmenu", "-no-custom", "-no-auto-select", "-no-sort",
+        ["rofi", "-dmenu", "-i", "-no-custom", "-no-auto-select",
          "-markup-rows", "-format", "i", "-selected-row", str(first_action), "-p", title, "-theme", THEME,
          "-mesg", html.escape(subtitle)],
         input="\n".join(row[0] for row in rows), text=True, capture_output=True,
@@ -147,6 +150,9 @@ def status():
 
 
 def menu():
+    toggle = Path.home() / ".config/rofi/scripts/toggle.sh"
+    if subprocess.run(["bash", str(toggle)], check=False).returncode != 0:
+        return
     data = tailscale_status()
     rows = build_rows(data)
     if not rows:
