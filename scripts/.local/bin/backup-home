@@ -87,16 +87,40 @@ case "${1:-}" in
                 echo "Last backup is ${age}h old, skipping (use --force)."; exit 0
             fi
         fi
-        if ! restic backup "${backup_args[@]}"; then
-            unit=backup-home; [[ $target == hdd ]] && unit=backup-hdd
+        unit=backup-home; [[ $target == hdd ]] && unit=backup-hdd
+        if [[ $target == hdd ]]; then
+            # Share a lock with Waybar so a backup cannot start during ejection.
+            exec {usb_lock}<>"${XDG_RUNTIME_DIR:-/run/user/$UID}/backup-usb.lock"
+            if ! flock -n "$usb_lock"; then
+                notify -u critical "󰁯 Backup not started" "USB backup or ejection is already in progress."
+                exit 1
+            fi
+            printf 'backup\n' >&"$usb_lock"
+        fi
+        if restic backup "${backup_args[@]}"; then
+            :
+        else
+            result=$?
             notify -u critical "󰁯 Backup failed" "Run: journalctl --user -u $unit -n 50"
-            exit 1
+            exit "$result"
         fi
         # Pruning rewrites data on Drive, so only do it weekly (Sundays)
+        cleanup_args=("${KEEP[@]}" --tag auto)
         if [[ "$(date +%u)" == 7 || "${2:-}" == "--prune" || $target == hdd ]]; then
-            restic forget "${KEEP[@]}" --tag auto --prune
+            cleanup_args+=(--prune)
+        fi
+        if restic forget "${cleanup_args[@]}"; then
+            :
         else
-            restic forget "${KEEP[@]}" --tag auto
+            result=$?
+            reason="Check logs: journalctl --user -u $unit -n 50"
+            if (( result == 11 )); then
+                unlock_command="backup-home restic unlock"
+                [[ $target == hdd ]] && unlock_command="backup-home hdd restic unlock"
+                reason="Repository locked. If no restic operation is running, remove stale locks with: $unlock_command"
+            fi
+            notify -u critical "󰁯 Backup saved, but cleanup failed" "$reason"
+            exit "$result"
         fi
         notify -u low "󰁯 Backup complete" "$(restic snapshots --latest 1 --compact 2>/dev/null | sed -n 3p)"
         ;;
