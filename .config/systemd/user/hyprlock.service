@@ -1,0 +1,12 @@
+[Unit]
+Description=Hyprland screen locker
+PartOf=graphical-session.target
+After=graphical-session.target
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/hyprlock --verbose
+# Keep lockscreen output and failures in the user journal.
+StandardOutput=journal
+StandardError=journal
