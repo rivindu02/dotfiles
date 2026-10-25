@@ -145,7 +145,7 @@ def status():
     peers = list((data.get("Peer") or {}).values())
     count = sum(bool(peer.get("Online")) for peer in peers)
     running = data.get("BackendState") == "Running"
-    tooltip = f"Tailscale · Super+U\n{count}/{len(peers)} devices online" if running else "Tailscale is unavailable · Super+U"
+    tooltip = f"Tailscale \n{count}/{len(peers)} devices online" if running else "Tailscale is unavailable "
     print(json.dumps({"text": "󰖂", "class": "connected" if running else "disconnected", "tooltip": tooltip}))
 
 
