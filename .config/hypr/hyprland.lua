@@ -80,6 +80,8 @@ hl.env("QT_QPA_PLATFORM", "wayland")
 hl.env("QT_QPA_PLATFORMTHEME", "gtk3")
 hl.env("QT_SCALE_FACTOR_ROUNDING_POLICY", "PassThrough")
 hl.env("GTK_THEME", "Gruvbox-Material-Dark")
+-- Keep compositor blur with current GTK; avoid holding old GTK packages.
+hl.env("GDK_WAYLAND_DISABLE", "ext_background_effect_manager_v1")
 hl.env("GDK_BACKEND", "wayland,x11")
 hl.env("NIXOS_OZONE_WL", "1")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
