@@ -7,4 +7,5 @@ Target = *
 
 [Action]
 When = PostTransaction
-Exec = /bin/sh -c '/usr/bin/pacman -Qqen > /home/rivindu02/dotfiles/pkglist.txt && /usr/bin/pacman -Qqm > /home/rivindu02/dotfiles/aurlist.txt'
+# Drop privileges before the shell opens files in the user-owned repository.
+Exec = /usr/bin/runuser -u rivindu02 -- /bin/sh -c '/usr/bin/pacman -Qqen > /home/rivindu02/dotfiles/pkglist.txt && /usr/bin/pacman -Qqm > /home/rivindu02/dotfiles/aurlist.txt'
