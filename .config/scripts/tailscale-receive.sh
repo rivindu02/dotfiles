@@ -3,7 +3,13 @@
 # Runs as a systemd user service, sends swaync notifications on receipt.
 
 DOWNLOAD_DIR="$HOME/tailscale"
-mkdir -p "$DOWNLOAD_DIR"
+if ! mkdir -p "$DOWNLOAD_DIR"; then
+    echo "tailscale-receive: cannot prepare the download directory; exiting." >&2
+    exit 1
+fi
+
+retry_delay=5
+max_retry_delay=60
 
 # "<mtime> <name>" per entry, one per line; the name keeps any spaces intact
 snapshot() {
@@ -14,7 +20,12 @@ while true; do
     before=$(snapshot)
 
     # Block until files arrive, then download them
-    if tailscale file get --wait --conflict=rename "$DOWNLOAD_DIR" 2>/dev/null; then
+    # Keep command errors visible in the service journal.
+    if tailscale file get --wait --conflict=rename "$DOWNLOAD_DIR"; then
+        if (( retry_delay > 5 )); then
+            echo "tailscale-receive: receive recovered; resetting retry delay." >&2
+        fi
+        retry_delay=5
         after=$(snapshot)
 
         # Newly added/modified entries; strip the leading "<mtime> " field
@@ -28,6 +39,15 @@ while true; do
         elif [[ $count -gt 1 ]]; then
             notify-send -a "Taildrop" -h "string:filepath:$DOWNLOAD_DIR" \
                 -A "default=Open folder" "󰒋 Taildrop" "Received $count files" >/dev/null 2>&1 &
+        fi
+    else
+        status=$?
+        printf 'tailscale-receive: receive failed (exit %d); retrying in %d seconds.\n' \
+            "$status" "$retry_delay" >&2
+        sleep "$retry_delay" || exit "$?"
+        retry_delay=$(( retry_delay * 2 ))
+        if (( retry_delay > max_retry_delay )); then
+            retry_delay=$max_retry_delay
         fi
     fi
 done
