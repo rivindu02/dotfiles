@@ -8,9 +8,11 @@ fail=0
 
 # 1) Sensitive paths must never be committed, regardless of content
 blocked_paths='(^|/)(\.ssh/config|id_[a-z0-9]+|[^/]*\.pem|[^/]*\.key|hosts\.yml|\.env(\..*)?|aider\.[a-z]+\.yml|\.openclaude-profile\.json)$|(^|/)gcalcli/|(^|/)\.secrets/'
+credential_paths='(^|/)(\.aws/(credentials|config)$|\.aws/(sso|cli|login)/cache/|\.config/rclone/rclone\.conf(\.old|\.bak)?$|\.config/restic/password$|\.local/share/keyrings/|\.claude/\.credentials\.json$|\.codex/auth\.json$|\.gemini/oauth_creds\.json$|\.npmrc$|\.netrc$)'
 while IFS= read -r -d '' path; do
-    case "$path" in *.pub) continue ;; esac
-    if [[ "$path" =~ $blocked_paths ]]; then
+    # Public SSH keys do not match these rules. Do not exempt every *.pub:
+    # a credential-store entry remains private regardless of its extension.
+    if [[ "$path" =~ $blocked_paths || "$path" =~ $credential_paths ]]; then
         echo "✖ pre-commit: sensitive file staged: $path" >&2
         fail=1
     fi

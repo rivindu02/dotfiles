@@ -3,6 +3,26 @@
 .config/gh/hosts.yml
 .config/gcalcli
 
+# Credential-bearing files, including copies inside individual Stow packages.
+# Keep ordinary app settings and sanitized *.example templates trackable.
+**/.aws/credentials
+**/.aws/config
+**/.aws/sso/cache/
+**/.aws/cli/cache/
+**/.aws/login/cache/
+**/.config/rclone/rclone.conf
+**/.config/rclone/rclone.conf.old
+**/.config/rclone/rclone.conf.bak
+**/.config/restic/password
+**/.config/gh/hosts.yml
+**/.config/gcalcli/
+**/.local/share/keyrings/
+**/.claude/.credentials.json
+**/.codex/auth.json
+**/.gemini/oauth_creds.json
+.npmrc
+.netrc
+
 # Nvim undo history
 .config/nvim/undo/**
 
