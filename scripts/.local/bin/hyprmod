@@ -1,0 +1,26 @@
+#!/usr/bin/python
+"""Launch HyprMod with native libadwaita styling, isolated from desktop CSS."""
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+
+config = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+with tempfile.TemporaryDirectory(prefix="hyprmod-native-") as directory:
+    isolated = Path(directory)
+    # Preserve access to existing settings (including dconf and Hyprland).
+    for entry in config.iterdir():
+        if entry.name != "gtk-4.0":
+            (isolated / entry.name).symlink_to(entry, target_is_directory=entry.is_dir())
+    gtk = isolated / "gtk-4.0"
+    gtk.mkdir()
+    (gtk / "settings.ini").write_text(
+        "[Settings]\ngtk-theme-name=Adwaita\n"
+        "gtk-application-prefer-dark-theme=1\n"
+        "gtk-font-name=Sans 11\ngtk-icon-theme-name=Papirus-Dark\n"
+    )
+    environment = dict(os.environ, XDG_CONFIG_HOME=directory)
+    environment.pop("GTK_THEME", None)
+    environment.pop("GTK_CSD", None)
+    sys.exit(subprocess.call(["/usr/bin/hyprmod", *sys.argv[1:]], env=environment))
