@@ -131,7 +131,7 @@ A reference for every tool on this machine (Arch Linux + Hyprland, ASUS Zenbook)
 | Script | Purpose |
 |---|---|
 | `battery-warn.sh` | Warnings at 30% / 15% (dims + warms screen) / 10% |
-| `cliphist-secure-store.sh` | Keeps passwords, tokens, keys and OTPs out of clipboard history |
+| `cliphist-secure-store.sh` | Filters common tokens/credential assignments; text and image capture honor sensitive hints and password-manager checks. Use `~/.config/scripts/cliphist-secure-store.sh pause` / `resume` for browser password extensions or sensitive screenshots; images are not OCR-scanned. |
 | `gcal-widget.sh` / `gcal-notify.sh` | Calendar events in swaync; reminders 30 and 10 min before events |
 | `swaync-weather.sh` | Weather (feels-like) for Home and University in swaync |
 | `remind.sh`, `remind-prompt.sh`, `remind-cancel.sh`, `reminder-loop.sh` | Reminder system (`SUPER+R`). CLI: `~/.config/scripts/remind.sh 45m "take a break"` |
