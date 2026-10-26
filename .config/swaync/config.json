@@ -1,5 +1,6 @@
 {
   "$schema": "/etc/xdg/swaync/configSchema.json",
+  "cssPriority": "user",
   "notification-inline-replies": true,
   "notification-2fa-action": true,
   "hide-on-clear": false,
@@ -51,39 +52,48 @@
     },
     "label#gcal-today-header": {
       "text": "",
-      "markup": false
+      "markup": false,
+      "max-lines": 30
     },
     "label#gcal-today-allday": {
       "text": "",
-      "markup": false
+      "markup": false,
+      "max-lines": 30
     },
     "label#gcal-today-timed": {
       "text": "",
-      "markup": false
+      "markup": false,
+      "max-lines": 30
     },
     "label#gcal-tomorrow-header": {
       "text": "",
-      "markup": false
+      "markup": false,
+      "max-lines": 30
     },
     "label#gcal-tomorrow-allday": {
       "text": "",
-      "markup": false
+      "markup": false,
+      "max-lines": 30
     },
     "label#gcal-tomorrow-timed": {
       "text": "",
-      "markup": false
+      "markup": false,
+      "max-lines": 30
     },
     "label#gcal-day3-header": {
       "text": "",
-      "markup": false
+      "markup": false,
+      "max-lines": 30
     },
     "label#gcal-day3-allday": {
       "text": "",
-      "markup": false
+      "markup": false,
+      "max-lines": 30
     },
     "label#gcal-day3-timed": {
       "text": "",
-      "markup": false
+      "markup": false,
+      "max-lines": 30
     },
     "label#weather": {
       "text": "",

@@ -140,19 +140,11 @@
 
 /* ═══════════════════════════════════════════════════════════════
    CALENDAR WIDGETS
-   nth-child order — matches config.json widgets list exactly.
-   Today HAS an allday row, Tomorrow/Day3 do NOT:
-   1  title
-   2  label#gcal-header
-   3  today-header    ─┐
-   4  today-allday      │ TODAY group    → blue   #7daea3
-   5  today-timed      ─┘
-   6  tomorrow-header  ─┐
-   7  tomorrow-timed    │ TOMORROW group → yellow #d8a657
-   8  day3-header      ─┐
-   9  day3-timed        │ DAY 3 group    → orange #e78a4e
-   10 mpris / 11 notifications / 12 dnd
+   Named classes keep day colours stable as empty rows are hidden.
    ═══════════════════════════════════════════════════════════════ */
+
+/* Global GTK themes can apply an opacity filter to labels. */
+.control-center .widget-label > label { filter: none; }
 
 /* ── "Upcoming Events" section header ─────────────────────────── */
 .gcal-header {
