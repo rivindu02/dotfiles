@@ -7,7 +7,8 @@
 #   🌦️  27°C  Colombo  ·  Feels 31°C  💧 78%  💨 12 km/h
 
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
-SWAYNC_CONFIG="$HOME/.config/swaync/config.json"
+SCRIPT_DIR=$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")")
+SWAYNC_CONFIG="${SWAYNC_CONFIG:-$HOME/.config/swaync/config.json}"
 
 # ── Fetch weather for Home and University ─────────────────────────
 WEATHER_HOME_JSON=$(curl -sf --proto '=https' --max-time 8 "https://wttr.in/Veyangoda?format=j1" 2>/dev/null)
@@ -70,31 +71,22 @@ fi
 [[ -z "$WEATHER_TEXT" ]] && WEATHER_TEXT="󰖑  Weather unavailable"
 
 # ── Patch swaync config ──────────────────────────────────────────
-python3 - "$SWAYNC_CONFIG" "$WEATHER_TEXT" <<'PYEOF'
-import json, sys
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$SCRIPT_DIR${PYTHONPATH:+:$PYTHONPATH}" python3 - "$SWAYNC_CONFIG" "$WEATHER_TEXT" <<'PYEOF' || exit 1
+import sys
+from swaync_config import edit_config
 
 config_path  = sys.argv[1]
 weather_text = sys.argv[2]
 
-with open(config_path) as f:
-    cfg = json.load(f)
+with edit_config(config_path) as cfg:
+    wc = cfg.setdefault("widget-config", {})
+    wc["label#weather"] = {"text": weather_text, "markup": False}
 
-# Ensure weather widget-config entry exists
-wc = cfg.setdefault("widget-config", {})
-wc["label#weather"] = {
-    "text":   weather_text,
-    "markup": False
-}
-
-# Inject "label#weather" right after "title" if not already present
-widgets = cfg.get("widgets", [])
-if "label#weather" not in widgets:
-    title_idx = widgets.index("title") if "title" in widgets else -1
-    widgets.insert(title_idx + 1, "label#weather")
-    cfg["widgets"] = widgets
-
-with open(config_path, "w") as f:
-    json.dump(cfg, f, indent=2, ensure_ascii=False)
+    widgets = cfg.get("widgets", [])
+    if "label#weather" not in widgets:
+        title_idx = widgets.index("title") if "title" in widgets else -1
+        widgets.insert(title_idx + 1, "label#weather")
+        cfg["widgets"] = widgets
 PYEOF
 
 # ── Reload swaync ────────────────────────────────────────────────

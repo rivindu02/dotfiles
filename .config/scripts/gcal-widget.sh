@@ -1,21 +1,24 @@
 #!/bin/bash
 # ~/.config/scripts/gcal-widget.sh
 # ── Config ───────────────────────────────────────────────────
-: "${HOME:=/home/$(id -un)}"
+set -euo pipefail
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
-GCAL_PERSONAL="gcalcli --config-folder $HOME/.config/gcalcli/gcalcli-personal"
-SWAYNC_CONFIG="$HOME/.config/swaync/config.json"
+SCRIPT_DIR=$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")")
+# This is an argument file, not a config directory. The agenda's explicit
+# wildcard includes every calendar, overriding the file's personal-only filter.
+GCAL_PERSONAL=(gcalcli "@$HOME/.config/gcalcli/gcalcli-personal")
+SWAYNC_CONFIG="${SWAYNC_CONFIG:-$HOME/.config/swaync/config.json}"
 TODAY=$(date '+%Y-%m-%d')
 TOMORROW=$(date -d '+1 day' '+%Y-%m-%d')
 DAY3=$(date -d '+2 days' '+%Y-%m-%d')
 END=$(date -d '+3 days' '+%Y-%m-%d')
 
 # ── Fetch events ─────────────────────────────────────────────
-RAW_EVENTS=$(
-  {
-    $GCAL_PERSONAL agenda --nocolor --nodeclined --tsv "$TODAY" "$END" 2>&1
-  } | grep -v '^start_date' | sort | uniq
-)
+if ! RAW_EVENTS=$("${GCAL_PERSONAL[@]}" --refresh agenda --calendar '.*' \
+    --nocolor --nodeclined --tsv "$TODAY" "$END"); then
+  echo "Calendar fetch failed; keeping the last displayed agenda." >&2
+  exit 1
+fi
 
 GCAL_STATE="${XDG_RUNTIME_DIR:-/tmp}"
 
@@ -27,12 +30,10 @@ tomorrow_timed=()
 day3_allday=()
 day3_timed=()
 
-while IFS=$'\t' read -r start_date start_time end_date end_time title; do
+while IFS=$'\037' read -r start_date start_time _end_date end_time title; do
+  [[ "$start_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || continue
 
-  if [[ "$start_time" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
-    title="$end_date"
-    time_display="All day"
-  elif [[ -z "$start_time" || "$start_time" == "00:00" ]] && \
+  if [[ -z "$start_time" || "$start_time" == "00:00" ]] && \
        [[ -z "$end_time"   || "$end_time"   == "00:00" ]]; then
     time_display="All day"
   else
@@ -57,7 +58,8 @@ while IFS=$'\t' read -r start_date start_time end_date end_time title; do
       [[ "$time_display" == "All day" ]] && day3_allday+=("$entry") || day3_timed+=("$entry") ;;
   esac
 
-done <<< "$RAW_EVENTS"
+# A non-whitespace separator preserves empty TSV fields for all-day events.
+done < <(printf '%s\n' "$RAW_EVENTS" | sort -u | tr '\t' '\037')
 
 # ── Helper ────────────────────────────────────────────────────
 join_or_none() {
@@ -82,18 +84,19 @@ DAY3_LABEL="$(date -d "$DAY3" '+%a %b %d')"
 
 # ── Patch swaync config ───────────────────────────────────────
 if command -v python3 &>/dev/null && [[ -f "$SWAYNC_CONFIG" ]]; then
-  python3 - "$SWAYNC_CONFIG" "$DAY3_LABEL" "$total" << 'PYEOF'
-import json, sys, os
+  PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$SCRIPT_DIR${PYTHONPATH:+:$PYTHONPATH}" python3 - "$SWAYNC_CONFIG" "$DAY3_LABEL" "$total" << 'PYEOF'
+import sys, os
+from swaync_config import edit_config
 
 config_path = sys.argv[1]
 day3_label  = sys.argv[2]
 total       = int(sys.argv[3])
-gcal_state  = os.environ.get("XDG_RUNTIME_DIR", "/tmp")
+gcal_state  = os.environ.get("XDG_RUNTIME_DIR") or "/tmp"
 
 def read(path):
     try:
         with open(path) as f: return f.read().strip()
-    except: return "None"
+    except FileNotFoundError: return ""
 
 today_allday    = read(f"{gcal_state}/gcal-today-allday.txt")
 today_timed     = read(f"{gcal_state}/gcal-today-timed.txt")
@@ -102,44 +105,33 @@ tomorrow_timed  = read(f"{gcal_state}/gcal-tomorrow-timed.txt")
 day3_allday     = read(f"{gcal_state}/gcal-day3-allday.txt")
 day3_timed      = read(f"{gcal_state}/gcal-day3-timed.txt")
 
-with open(config_path) as f:
-    cfg = json.load(f)
-
-wc = cfg.setdefault("widget-config", {})
-
-has_weather = "label#weather" in wc
-
-widgets = ["title"]
-if has_weather:
-    widgets.append("label#weather")
-widgets.append("label#gcal-header")
-
-if total == 0:
-    wc["label#gcal-header"]["text"] = "󰃭  No upcoming events"
-else:
-    wc["label#gcal-header"]["text"] = "󰃭  Upcoming Events"
+with edit_config(config_path) as cfg:
+    wc = cfg.setdefault("widget-config", {})
+    widgets = ["title"]
+    if wc.get("label#weather", {}).get("text", "").strip():
+        widgets.append("label#weather")
+    widgets.append("label#gcal-header")
+    wc.setdefault("label#gcal-header", {})["text"] = (
+        "󰃭  Upcoming Events" if total else "󰃭  No upcoming events"
+    )
 
     for day, header, allday, timed in [
         ("today",    " Today",         today_allday,    today_timed),
         ("tomorrow", " Tomorrow",      tomorrow_allday, tomorrow_timed),
         ("day3",     f" {day3_label}", day3_allday,     day3_timed),
     ]:
-        if not allday and not timed:
-            continue
-        widgets.append(f"label#gcal-{day}-header")
-        wc[f"label#gcal-{day}-header"]["text"] = header
-        if allday:
-            widgets.append(f"label#gcal-{day}-allday")
-            wc[f"label#gcal-{day}-allday"]["text"] = allday
-        if timed:
-            widgets.append(f"label#gcal-{day}-timed")
-            wc[f"label#gcal-{day}-timed"]["text"] = timed
+        # Clear hidden rows so stale tasks cannot reappear after a checkout.
+        for part, text in [("header", header if allday or timed else ""),
+                           ("allday", allday), ("timed", timed)]:
+            name = f"label#gcal-{day}-{part}"
+            row = wc.setdefault(name, {})
+            row["text"] = text
+            row["max-lines"] = 30
+            if text:
+                widgets.append(name)
 
-widgets += ["mpris", "notifications", "dnd"]
-cfg["widgets"] = widgets
-
-with open(config_path, "w") as f:
-    json.dump(cfg, f, indent=2, ensure_ascii=False)
+    widgets += ["mpris", "notifications", "dnd"]
+    cfg["widgets"] = widgets
 PYEOF
 
   swaync-client --reload-config

@@ -4,7 +4,8 @@
 NOTIFIED_FILE="${XDG_RUNTIME_DIR:-/tmp}/gcal-notified"
 touch "$NOTIFIED_FILE"
 
-GCAL_PERSONAL="gcalcli --config-folder $HOME/.config/gcalcli/gcalcli-personal"
+export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+GCAL_PERSONAL=(gcalcli "@$HOME/.config/gcalcli/gcalcli-personal")
 
 send_notification() {
   local title="$1"
@@ -22,7 +23,7 @@ fetch_events() {
   local from="$1"
   local to="$2"
 
-  $GCAL_PERSONAL agenda --nocolor --nodeclined --tsv "$from" "$to" 2>/dev/null
+  "${GCAL_PERSONAL[@]}" agenda --calendar '.*' --nocolor --nodeclined --tsv "$from" "$to"
 }
 
 check_events() {
@@ -32,9 +33,12 @@ check_events() {
   fetch_events \
     "$(date '+%Y-%m-%d %H:%M')" \
     "$(date -d '+12 hours' '+%Y-%m-%d %H:%M')" \
-  | while IFS=$'\t' read -r start_date start_time end_date end_time title; do
+  | tr '\t' '\037' \
+  | while IFS=$'\037' read -r start_date start_time _end_date _end_time title; do
 
     [[ -z "$title" ]] && continue
+    [[ "$start_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ &&
+       "$start_time" =~ ^[0-9]{2}:[0-9]{2}$ ]] || continue
 
     event_epoch=$(date -d "$start_date $start_time" +%s 2>/dev/null)
     [[ -z "$event_epoch" ]] && continue
@@ -70,7 +74,7 @@ check_events() {
 startup_summary() {
   local agenda
   agenda=$(
-    $GCAL_PERSONAL agenda --nocolor --nodeclined \
+    "${GCAL_PERSONAL[@]}" agenda --calendar '.*' --nocolor --nodeclined \
       "$(date '+%Y-%m-%d')" "$(date -d '+1 day' '+%Y-%m-%d')" 2>/dev/null
   )
 
