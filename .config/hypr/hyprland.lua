@@ -40,9 +40,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("waybar")
     hl.exec_cmd("systemctl --user start swaync")
     hl.exec_cmd("nm-applet --indicator")
-    hl.exec_cmd("mkdir -p ${XDG_RUNTIME_DIR:-/tmp}/cliphist-store")
-    hl.exec_cmd("wl-paste --type text --watch ~/.config/scripts/cliphist-secure-store.sh")
-    hl.exec_cmd("wl-paste --type image --watch cliphist store")
+    hl.exec_cmd("wl-paste --type text --watch ~/.config/scripts/cliphist-secure-store.sh text")
+    hl.exec_cmd("wl-paste --type image --watch ~/.config/scripts/cliphist-secure-store.sh image")
     hl.exec_cmd("blueman-applet")
     hl.exec_cmd("~/.config/scripts/gcal-notify.sh")
     -- Refresh once swaync is up; swaync-weather.timer handles the 30-min updates
@@ -348,7 +347,7 @@ hl.bind(mainMod .. " + TAB", hl.dsp.exec_cmd("qs ipc -c overview call overview t
 
 -- Clipboard
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("~/.config/rofi/scripts/clipboard.sh"))
-hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("bash -c 'touch ${XDG_RUNTIME_DIR:-/tmp}/cliphist-silent && wl-paste -p --no-newline | wl-copy'"))
+hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("bash -c 'wl-paste -p --no-newline | wl-copy --sensitive'"))
 
 -- Utilities
 hl.bind(mainMod .. " + N",          hl.dsp.exec_cmd("swaync-client -t -sw"))
