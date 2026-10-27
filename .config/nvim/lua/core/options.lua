@@ -30,16 +30,26 @@ opt.smartcase = true
 opt.undofile = true
 opt.undodir = vim.fn.stdpath("state") .. "/undo"
 
--- Never persist undo/swap copies of secret files
-vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
-	desc = "No undo/swap for secret files",
-	pattern = {
-		"*/.secrets/*", "*/.ssh/*", "*.pem", "*.key", "*/.env", "*/.env.*",
-		"*/gh/hosts.yml", "*/aider/*.yml", "*/gcalcli/*",
-	},
-	callback = function()
-		vim.opt_local.undofile = false
-		vim.opt_local.swapfile = false
+-- Never persist automatic undo/swap/backup copies of secret files.
+local secret_patterns = {
+	"*/.secrets/*", "*/.ssh/*", "*.pem", "*.key", "*/.env", "*/.env.*",
+	"*/gh/hosts.yml", "*/aider/*.yml", "*/gcalcli/*",
+	"*/.aws/credentials", "*/.aws/config",
+	"*/.aws/sso/cache/*", "*/.aws/cli/cache/*", "*/.aws/login/cache/*",
+	"*/.config/rclone/rclone.conf", "*/.config/rclone/rclone.conf.old",
+	"*/.config/rclone/rclone.conf.bak", "*/.config/restic/password",
+	"*/.local/share/keyrings/*", "*/.claude/.credentials.json",
+	"*/.codex/auth.json", "*/.gemini/oauth_creds.json",
+	"*/.npmrc", "*/.netrc", "*/.openclaude-profile.json",
+}
+-- backup/writebackup are global; backupskip targets only these paths.
+opt.backupskip:append(secret_patterns)
+vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile", "BufFilePost", "BufWritePre" }, {
+	desc = "No undo/swap for secret files, including renamed buffers",
+	pattern = secret_patterns,
+	callback = function(event)
+		vim.bo[event.buf].undofile = false
+		vim.bo[event.buf].swapfile = false
 	end,
 })
 
