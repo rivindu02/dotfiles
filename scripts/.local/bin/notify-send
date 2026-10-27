@@ -1,0 +1,101 @@
+#!/usr/bin/python3
+"""Keep notify-send message bodies to three short lines, then call libnotify."""
+
+import html
+from html.parser import HTMLParser
+import os
+import sys
+import textwrap
+
+
+MAX_LINES = 3
+LINE_WIDTH = 40
+SYSTEM_NOTIFY_SEND = "/usr/bin/notify-send"
+
+
+class MessageText(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts = []
+
+    def handle_data(self, data):
+        self.parts.append(data)
+
+    def handle_starttag(self, tag, attrs):
+        if tag in {"br", "p", "div"}:
+            self.parts.append("\n")
+        elif tag not in {"b", "i", "u", "a", "img", "span", "s", "small", "big", "tt"}:
+            self.parts.append(self.get_starttag_text())
+
+    def handle_endtag(self, tag):
+        if tag in {"p", "div"}:
+            self.parts.append("\n")
+        elif tag not in {"br", "b", "i", "u", "a", "img", "span", "s", "small", "big", "tt"}:
+            self.parts.append(f"</{tag}>")
+
+
+def shorten_body(body):
+    parser = MessageText()
+    parser.feed(body)
+    parser.close()
+    text = "".join(parser.parts).strip("\n")
+    lines = []
+    for paragraph in text.splitlines():
+        lines.extend(textwrap.wrap(
+            paragraph, width=LINE_WIDTH, break_on_hyphens=False
+        ) or [""])
+    if len(lines) <= MAX_LINES:
+        return body
+    preview = lines[:MAX_LINES]
+    preview[-1] = preview[-1][:LINE_WIDTH - 1].rstrip() + "…"
+    # Truncated markup could leave unclosed tags. Render the preview as safely
+    # escaped plain text; short messages keep their original formatting.
+    return html.escape("\n".join(preview), quote=False)
+
+
+def shorten_arguments(arguments):
+    """Find BODY while preserving option order, values, actions and hints."""
+    arguments = list(arguments)
+    value_options = {
+        "--urgency", "--expire-time", "--app-name", "--icon", "--app-icon",
+        "--category", "--hint", "--replace-id", "--action", "--id-fd",
+        "--selected-action-fd", "--activation-token-fd",
+    }
+    flag_options = {"--transient", "--print-id", "--wait"}
+    short_values = set("utainchrA")
+    short_flags = set("epw")
+    positional = []
+    index = 0
+    while index < len(arguments):
+        arg = arguments[index]
+        if arg == "--":
+            positional.extend(range(index + 1, len(arguments)))
+            break
+        if arg in {"--help", "--version", "-?", "-v"}:
+            return arguments
+        if arg.startswith("--"):
+            option, separator, _value = arg.partition("=")
+            if option in value_options:
+                if not separator:
+                    index += 1
+            elif option not in flag_options or separator:
+                return arguments  # Let libnotify handle unknown/invalid options.
+        elif arg.startswith("-") and arg != "-":
+            for offset, option in enumerate(arg[1:], start=1):
+                if option in short_values:
+                    if offset == len(arg) - 1:
+                        index += 1
+                    break
+                if option not in short_flags:
+                    return arguments
+        else:
+            positional.append(index)
+        index += 1
+    if len(positional) == 2:
+        body_index = positional[1]
+        arguments[body_index] = shorten_body(arguments[body_index])
+    return arguments
+
+
+if __name__ == "__main__":
+    os.execv(SYSTEM_NOTIFY_SEND, [SYSTEM_NOTIFY_SEND, *shorten_arguments(sys.argv[1:])])
