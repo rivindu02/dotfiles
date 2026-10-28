@@ -1,0 +1,15 @@
+[Desktop Entry]
+Version=1.0
+Name=Parabolic
+Comment=Download web video and audio
+Exec=/home/rivindu02/.local/bin/org.nickvision.tubeconverter %u
+Icon=org.nickvision.tubeconverter
+Terminal=false
+Type=Application
+Categories=AudioVideo;Network;
+Keywords=YouTube;Downloader;ytdlp;Nickvision;Tube;Converter;audio;video;media;download;
+MimeType=x-scheme-handler/parabolic;
+X-GNOME-UsesNotifications=true
+StartupNotify=true
+# Use Exec so D-Bus activation cannot bypass the native-style wrapper.
+DBusActivatable=false
