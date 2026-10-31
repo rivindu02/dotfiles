@@ -168,6 +168,12 @@ hl.config({
         vrr                      = 1,
     },
 
+    render = {
+        -- Hyprland 0.57: Chromium fullscreen can trigger HDR modesets and brief blackouts.
+        -- https://github.com/hyprwm/Hyprland/discussions/16757
+        cm_auto_hdr = 0,
+    },
+
     gestures = {
         workspace_swipe_touch   = true,
         workspace_swipe_forever = false,
