@@ -41,11 +41,15 @@ A reference for every tool on this machine (Arch Linux + Hyprland, ASUS Zenbook)
 
 `SUPER` is the Windows key. Defined in `.config/hypr/hyprland.lua`.
 
+In every Rofi menu, `Ctrl+J` moves down and `Ctrl+K` moves up. Arrow keys
+also work; `Enter` accepts the selection. In the app launcher, `Ctrl+H` switches
+to the previous tab and `Ctrl+L` to the next; `Ctrl+Tab` still works.
+
 ### Apps & launchers
 | Keys | Action |
 |---|---|
 | `SUPER + Q` | Terminal (Ghostty) |
-| `SUPER + B` | Browser (Brave) |
+| `SUPER + B` | Selected browser (`~/.config/browser/default`, currently qutebrowser) |
 | `SUPER + E` | File manager (yazi in Ghostty) |
 | `SUPER + O` | Obsidian |
 | `SUPER + T` | Todoist |
@@ -87,10 +91,10 @@ A reference for every tool on this machine (Arch Linux + Hyprland, ASUS Zenbook)
 | Keys | Action |
 |---|---|
 | `SUPER + N` | Notification center (swaync) |
-| `SUPER + S` | Search Google / ChatGPT / Claude / YouTube |
-| `SUPER + I` | Private (incognito) Brave search |
+| `SUPER + S` | Search DuckDuckGo / ChatGPT / Claude / YouTube |
+| `SUPER + I` | Private search in the selected browser |
 | `SUPER + W` | Open/create an Obsidian note ("writ") |
-| `SUPER + SHIFT + B` | Brave bookmarks launcher (type a URL to add one) |
+| `SUPER + SHIFT + B` | Selected browser's bookmarks (qutebrowser or Brave) |
 | `SUPER + R` | New reminder ("remind me in 10 min to…") |
 | `SUPER + CTRL + R` | Cancel reminders |
 | `SUPER + U` | Tailscale menu (send files/clipboard to your devices) |
@@ -122,7 +126,8 @@ A reference for every tool on this machine (Arch Linux + Hyprland, ASUS Zenbook)
 | `powermenu` | Lock / suspend / logout / reboot / shutdown (`SUPER+M`) | |
 | `screenshot` | Region screenshot to `~/Pictures/Screenshots` + clipboard | `SUPER+SHIFT+S` |
 | `search`, `psearch` | Web search launchers (`SUPER+S`, `SUPER+I`) | |
-| `bookmark` | Brave bookmark launcher/adder (`SUPER+SHIFT+B`) | Close Brave before adding, or Brave may overwrite the new entry |
+| `default-browser` | Shared browser launcher | Edit `~/.config/browser/default` to switch; `--print` shows the choice, `--private` opens a private window |
+| `bookmark` | Browser bookmarks (`SUPER+SHIFT+B`) | qutebrowser: native bookmarks page; Brave: Rofi launcher/adder (close Brave before adding) |
 | `writ` | Obsidian note picker/creator (`SUPER+W`) | Notes live in `~/Documents/Notes` |
 | `bemoji-rofi` | Emoji picker (`SUPER+.`) | |
 | `gcalcli` | Google Calendar CLI wrapper | `gcalcli --config-folder ~/.config/gcalcli/gcalcli-personal agenda` |
@@ -241,7 +246,7 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 
 | Tool | Use case | How to use |
 |---|---|---|
-| **yazi** | Terminal file manager with previews | `y` or `SUPER+E`. Keys: `h/j/k/l` move, `Enter` open, `Space` select, `y/x/p` copy/cut/paste, `d` trash, `a` new file (end with `/` for a folder), `r` rename, `/` search, `z` fzf jump. HTML and other web files open in Brave (`o` still offers nvim). Jumps: `g` then a key (`g.` dotfiles, `gD` Documents, `gt` trash bin (built-in; `O` on an item to restore or empty), `gT` /tmp, `gr` /, `gm` mounts, `gls`/`glb`/`glt` ~/.local share/bin/state, built-in `gh` `gc` `gd`); `gE` empties trash (confirm dialog). Plugins: bookmarks, mount (`M`: `m` mount, `u` unmount, `e` eject = unmount + power off, use before unplugging a drive) |
+| **yazi** | Terminal file manager with previews | `y` or `SUPER+E`. Keys: `h/j/k/l` move, `Enter` open, `Space` select, `y/x/p` copy/cut/paste, `d` trash, `a` new file (end with `/` for a folder), `r` rename, `/` search, `z` fzf jump. HTML and other web files open in the selected browser (`o` still offers nvim). Jumps: `g` then a key (`g.` dotfiles, `gD` Documents, `gt` trash bin (built-in; `O` on an item to restore or empty), `gT` /tmp, `gr` /, `gm` mounts, `gls`/`glb`/`glt` ~/.local share/bin/state, built-in `gh` `gc` `gd`); `gE` empties trash (confirm dialog). Plugins: bookmarks, mount (`M`: `m` mount, `u` unmount, `e` eject = unmount + power off, use before unplugging a drive) |
 | **thunar** | GUI file manager | `thunar`; right-click "Open terminal here" |
 | **system-config-printer** + **cups-pk-helper** | Native CUPS printer settings and print queues, as used by Omarchy; follows the GTK theme | `SUPER+Space` → "Print Settings", or `system-config-printer`; add printers, set the default, view jobs, and enable/disable queues |
 | **fd** | Fast `find` | `fd pdf ~/Documents`; `fd -e py`; `fd -H .env` (include hidden) |
@@ -447,7 +452,8 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 
 | Tool | Use case | How to use |
 |---|---|---|
-| **brave-bin** (AUR) | Main browser (default for links/PDFs) | `SUPER+B`; install sites as apps: menu → "Install page as app" |
+| **qutebrowser** | Main browser (links, HTML, PDFs, searches) | `SUPER+B`; browser choice lives in `~/.config/browser/default`; see `.config/qutebrowser/README.md` for bindings |
+| **brave-bin** (AUR) | Alternative browser and installed web apps | `brave`; qutebrowser's `,b` opens the current page in Brave |
 | **firefox** | Second browser | `firefox` |
 | **obsidian** | Markdown notes vault `~/Documents/Notes` | `SUPER+O`; quick note `SUPER+W` |
 | **onlyoffice-bin** (AUR) | Word / Excel / PowerPoint compatible office suite | `onlyoffice-desktopeditors file.docx` (or `desktopeditors`) |

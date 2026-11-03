@@ -43,6 +43,32 @@ git config filter.swaync-strip.smudge cat
 git config filter.swaync-strip.required true
 ```
 
+## Default browser
+
+Edit `~/.config/browser/default` (`.config/browser/default` in this repo) to
+choose the browser in one place. It currently contains `qutebrowser`; supported
+commands are `qutebrowser`, `brave` (also `brave-browser`,
+`brave-browser-stable`, `brave-browser-nightly`), `firefox`, and `chromium`.
+
+`default-browser` reads that file on every launch. Hyprland's `SUPER+B`, web
+searches, private searches, Yazi's web-file opener, and the default
+link/HTML/PDF associations all use it. Hyprland also sets
+`BROWSER` to this launcher for applications that consult the environment.
+After the initial Stow setup and Hyprland reload, changing the file takes
+effect on the next launch without restowing, reloading, or running
+`xdg-settings` again.
+
+`SUPER+SHIFT+B` opens qutebrowser's live bookmarks page. With Brave selected it
+uses the existing Rofi bookmark manager (close Brave before adding entries).
+This shortcut supports qutebrowser and Brave; bookmarks are not migrated when
+switching. Installed web apps (including WhatsApp), the Waybar calendar app
+window, and qutebrowser's `,b` shortcut always use Brave, independently of the
+default browser selection.
+
+Check the selection with `default-browser --print`, open a URL with
+`default-browser https://example.org`, or use
+`default-browser --private https://example.org` for a private window.
+
 ## System files (need sudo)
 
 ```bash

@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Read the selection for every launch, so changing it needs no session restart.
+set -euo pipefail
+
+config="${XDG_CONFIG_HOME:-$HOME/.config}/browser/default"
+if [[ ! -r "$config" ]]; then
+    printf 'default-browser: missing config: %s\n' "$config" >&2
+    exit 1
+fi
+browser=$(<"$config")
+
+case "$browser" in
+    qutebrowser|brave|brave-browser|brave-browser-stable|brave-browser-nightly|firefox|chromium) ;;
+    *) printf 'default-browser: unsupported browser in %s: %s\n' "$config" "$browser" >&2; exit 1 ;;
+esac
+
+private=false
+case "${1:-}" in
+    --print) printf '%s\n' "$browser"; exit 0 ;;
+    --private) private=true; shift ;;
+esac
+[[ "${1:-}" != -- ]] || shift
+
+if ! command -v "$browser" >/dev/null 2>&1; then
+    printf 'default-browser: executable not found: %s\n' "$browser" >&2
+    exit 1
+fi
+
+case "$browser" in
+    qutebrowser)
+        target=tab
+        "$private" && target="private-window"
+        # External URLs must never be interpreted as qutebrowser commands.
+        exec "$browser" --target "$target" --untrusted-args "$@"
+        ;;
+    brave*|chromium)
+        args=(--new-tab)
+        "$private" && args=(--incognito)
+        exec "$browser" "${args[@]}" -- "$@"
+        ;;
+    firefox)
+        args=(--new-tab)
+        "$private" && args=(--private-window)
+        exec "$browser" "${args[@]}" -- "$@"
+        ;;
+esac

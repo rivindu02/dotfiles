@@ -6,7 +6,7 @@ rofi_toggle || exit 0
 ROFI_THEME="$HOME/.config/rofi/menus/search.rasi"
 
 PLATFORMS=(
-    "󰊭  Google"
+    "󰊭  DuckDuckGo"
     "󱜙  ChatGPT"
     "󰭎  Claude"
     "󰗃  YouTube"
@@ -31,15 +31,15 @@ for p in "${PLATFORMS[@]}"; do
 done
 
 if [ -z "$matched_platform" ]; then
-    # User typed a query directly — search Brave (original behaviour)
+    # User typed a query directly — use the selected browser.
     encoded=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$result")
-    brave --new-tab "https://search.brave.com/search?q=$encoded" 2>/dev/null
+    "$HOME/.local/bin/default-browser" "https://duckduckgo.com/?q=$encoded"
     exit 0
 fi
 
 # Per-platform border color for the query prompt
 case "$matched_platform" in
-    *Google*)  border_color="#4285F4" ;;   # google blue
+    *DuckDuckGo*) border_color="#DE5833" ;; # duckduckgo orange
     *ChatGPT*) border_color="#10A37F" ;;   # openai green
     *Claude*)  border_color="#D79921" ;;   # yellow
     *YouTube*) border_color="#FB4934" ;;   # red
@@ -56,13 +56,13 @@ query=$(rofi \
 encoded=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$query")
 
 case "$matched_platform" in
-    *Google*)
-        brave --new-tab "https://search.brave.com/search?q=$encoded" 2>/dev/null ;;
+    *DuckDuckGo*)
+        "$HOME/.local/bin/default-browser" "https://duckduckgo.com/?q=$encoded" ;;
     *ChatGPT*)
-        brave --new-tab "https://chatgpt.com/?q=$encoded" 2>/dev/null ;;
+        "$HOME/.local/bin/default-browser" "https://chatgpt.com/?q=$encoded" ;;
     *Claude*)
-        brave --new-tab "https://claude.ai/new?q=$encoded" 2>/dev/null ;;
+        "$HOME/.local/bin/default-browser" "https://claude.ai/new?q=$encoded" ;;
     *YouTube*)
-        brave --new-tab "https://www.youtube.com/results?search_query=$encoded" 2>/dev/null ;;
+        "$HOME/.local/bin/default-browser" "https://www.youtube.com/results?search_query=$encoded" ;;
 esac
 

@@ -22,7 +22,7 @@ end
 
 local terminal    = "ghostty"
 local fileManager = "ghostty -e yazi"
-local browser     = "qutebrowser"
+local browser     = os.getenv("HOME") .. "/.local/bin/default-browser"
 
 
 -------------------
@@ -88,6 +88,7 @@ hl.env("MOZ_ENABLE_WAYLAND", "1")
 hl.env("GTK_CSD", "0")
 hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
+hl.env("BROWSER", browser)
 hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_SESSION_DESKTOP", "Hyprland")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "wayland")
@@ -457,7 +458,7 @@ hl.on("window.open", function(win)
 end)
 
 -- Starting workspaces. Only applied when the window opens, so it can be moved freely after.
-hl.window_rule({ name = "browser-on-1",  match = { initial_class = "^brave-browser$" },        workspace = "1" })
+hl.window_rule({ name = "browser-on-1",  match = { initial_class = "^(qutebrowser|org\\.qutebrowser\\.qutebrowser|brave-browser|firefox|chromium)$" }, workspace = "1" })
 hl.window_rule({ name = "spotify-on-10", match = { class = "^[Ss]potify$" },                 workspace = "10" }) -- SUPER+0
 hl.window_rule({ name = "obsidian-on-3", match = { initial_class = "^md\\.obsidian\\.Obsidian$" }, workspace = "3" })
 

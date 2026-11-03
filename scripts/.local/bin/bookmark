@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# qutebrowser manages its own live bookmark list and additions (:bookmark-add).
+browser_launcher="$HOME/.local/bin/default-browser"
+browser=$("$browser_launcher" --print) || exit 1
+case "$browser" in
+    qutebrowser) exec "$browser_launcher" qute://bookmarks/ ;;
+    brave*) ;;
+    *) notify-send "Bookmarks" "The bookmark launcher supports qutebrowser and Brave."; exit 1 ;;
+esac
+
 source "$HOME/.config/rofi/scripts/toggle.sh"
 rofi_toggle || exit 0
 # ─────────────────────────────────────────────────────────────────────────────
@@ -9,13 +18,6 @@ rofi_toggle || exit 0
 
 ROFI_THEME="$HOME/.config/rofi/launchers/type-1/style.rasi"
 BOOKMARKS_JSON="$HOME/.config/BraveSoftware/Brave-Browser/Default/Bookmarks"
-
-# ── Brave binary ──────────────────────────────────────────────────────────────
-BRAVE_BIN=""
-for b in brave brave-browser brave-browser-stable brave-browser-nightly; do
-    command -v "$b" &>/dev/null && { BRAVE_BIN="$b"; break; }
-done
-[[ -z "$BRAVE_BIN" ]] && { notify-send "brave-bookmarks" "Brave not found"; exit 1; }
 
 [[ ! -f "$BOOKMARKS_JSON" ]] && {
     notify-send "brave-bookmarks" "Bookmarks file not found:\n$BOOKMARKS_JSON"
@@ -119,7 +121,7 @@ with open(bm_file, "w", encoding="utf-8") as f:
 PYEOF
 
     notify-send "Bookmark saved" "$bname\n$url"
-    "$BRAVE_BIN" "$url" &
+    "$browser_launcher" "$url" &
 }
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -162,7 +164,7 @@ main() {
     done
 
     if [[ -n "$matched_url" ]]; then
-        "$BRAVE_BIN" "$matched_url" &
+        "$browser_launcher" "$matched_url" &
     else
         add_bookmark "$chosen"
     fi

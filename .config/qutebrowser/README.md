@@ -42,7 +42,7 @@ Press `o` for this tab or `O` for a new tab, then enter a shortcut and query:
 | `!g qtwebengine` | Google |
 | `!w Sri Lanka` | English Wikipedia |
 
-Unprefixed queries still use the existing default search engine (DuckDuckGo).
+Unprefixed queries use DuckDuckGo, explicitly set in `config.py`.
 Its other bang shortcuts also remain available.
 
 ## Optional tools and dependencies

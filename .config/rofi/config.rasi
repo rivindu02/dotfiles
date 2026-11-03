@@ -105,6 +105,17 @@ configuration {
     }
 
 	/*---------- Keybindings ----------*/
+	/* Shared navigation for launchers, dmenu prompts, and themed menus. */
+	kb-row-down: "Down,Control+n,Control+j";
+	kb-row-up: "Up,Control+p,Control+k";
+	kb-mode-previous: "Shift+Left,Control+ISO_Left_Tab,Control+h";
+	kb-mode-next: "Shift+Right,Control+Tab,Control+l";
+	/* Free Ctrl+J/K from their default accept/delete actions. */
+	kb-accept-entry: "Control+m,Return,KP_Enter";
+	kb-remove-to-eol: "";
+	/* Free Ctrl+H/L from their default backspace/completion actions. */
+	kb-remove-char-back: "BackSpace,Shift+BackSpace";
+	kb-mode-complete: "";
 /*
 	kb-primary-paste: "Control+V,Shift+Insert";
 	kb-secondary-paste: "Control+v,Insert";

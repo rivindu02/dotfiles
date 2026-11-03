@@ -23,6 +23,7 @@ c.session.default_name = "default"
 # the default, and its own !bang shortcuts still work for other services.
 search_engines = dict(c.url.searchengines)
 search_engines.update({
+    "DEFAULT": "https://duckduckgo.com/?q={}",
     "!yt": "https://www.youtube.com/results?search_query={}",
     "!gh": "https://github.com/search?q={}",
     "!aw": "https://wiki.archlinux.org/index.php?search={}",

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Default Web Browser
+Comment=Use the browser selected in ~/.config/browser/default
+Icon=web-browser
+Exec=sh -c "exec \\"\\$HOME/.local/bin/default-browser\\" -- \\"\\$@\\"" default-browser %U
+Terminal=false
+NoDisplay=true
+Categories=Network;WebBrowser;
+MimeType=text/html;application/xhtml+xml;application/x-extension-htm;application/x-extension-html;application/x-extension-shtml;application/x-extension-xhtml;application/x-extension-xht;application/x-mswinurl;application/pdf;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/chrome;x-scheme-handler/webcal;x-scheme-handler/about;x-scheme-handler/unknown;x-scheme-handler/mailto;
