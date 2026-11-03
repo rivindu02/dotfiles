@@ -1,0 +1,3 @@
+# Reader dependencies are installed locally; keep only the requirement tracked.
+/.reader-venv/
+__pycache__/

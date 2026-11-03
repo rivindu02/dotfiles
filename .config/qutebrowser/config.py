@@ -1,0 +1,299 @@
+# qutebrowser — Gruvbox Material Dark, matching Waybar, Ghostty, and Qt.
+#
+# NOTE: config.py is intended for advanced users who are comfortable with
+# manually migrating the config file on qutebrowser upgrades. You can also
+# configure qutebrowser using :set/:bind/:config-* commands.
+#
+# Documentation:
+#   qute://help/configuring.html
+#   qute://help/settings.html
+# Reload this file with :config-source. Use :help <setting> for option details.
+
+# This is here so settings configured via the GUI and :set/:bind are still
+# loaded. Do not edit autoconfig.yml by hand: qutebrowser overwrites that file.
+# Theme settings below take precedence over autoconfig.yml at startup/reload.
+config.load_autoconfig(True)
+
+# Continue the last browsing session on startup. A fixed autosave target keeps
+# named tab collections from becoming the session overwritten when quitting.
+c.auto_save.session = True
+c.session.default_name = "default"
+
+# Direct search shortcuts: o !yt query, O !gh query, etc. DuckDuckGo remains
+# the default, and its own !bang shortcuts still work for other services.
+search_engines = dict(c.url.searchengines)
+search_engines.update({
+    "!yt": "https://www.youtube.com/results?search_query={}",
+    "!gh": "https://github.com/search?q={}",
+    "!aw": "https://wiki.archlinux.org/index.php?search={}",
+    "!apkg": "https://archlinux.org/packages/?q={}",
+    "!g": "https://www.google.com/search?q={}",
+    "!w": "https://en.wikipedia.org/w/index.php?search={}",
+})
+c.url.searchengines = search_engines
+
+# Shared desktop palette (sainnhe/gruvbox-material, medium dark background).
+palette = {
+    "bg0": "#282828",
+    "bg1": "#32302f",
+    "bg2": "#3c3836",
+    "bg3": "#504945",
+    "fg": "#d4be98",
+    "grey": "#928374",
+    "red": "#ea6962",
+    "green": "#a9b665",
+    "yellow": "#d8a657",
+    "blue": "#7daea3",
+    "purple": "#d3869b",
+    "aqua": "#89b482",
+    "orange": "#e78a4e",
+}
+
+# Default font families used for browser UI. An empty list would use Qt's
+# system default. Webpage fonts are configured separately with fonts.web.*.
+c.fonts.default_family = ["CaskaydiaMono Nerd Font Propo", "monospace"]
+c.fonts.default_size = "11pt"
+c.fonts.prompts = "default_size default_family"
+c.fonts.contextmenu = "default_size default_family"
+c.fonts.tooltip = "default_size default_family"
+
+# Padding is measured in pixels. Keep tabs and the status bar comfortably
+# readable alongside the desktop's 14px Waybar without hiding keyboard hints.
+c.tabs.padding = {"top": 6, "bottom": 6, "left": 10, "right": 10}
+c.statusbar.padding = {"top": 4, "bottom": 4, "left": 8, "right": 8}
+
+# Completion menu (:open, :tab-select, commands, bookmarks, and history).
+c.colors.completion.fg = palette["fg"]
+c.colors.completion.odd.bg = palette["bg0"]
+c.colors.completion.even.bg = palette["bg1"]
+c.colors.completion.category.fg = palette["aqua"]
+c.colors.completion.category.bg = palette["bg2"]
+c.colors.completion.category.border.top = palette["bg3"]
+c.colors.completion.category.border.bottom = palette["bg3"]
+c.colors.completion.item.selected.fg = palette["bg0"]
+c.colors.completion.item.selected.bg = palette["blue"]
+c.colors.completion.item.selected.border.top = palette["blue"]
+c.colors.completion.item.selected.border.bottom = palette["blue"]
+c.colors.completion.item.selected.match.fg = palette["bg0"]
+c.colors.completion.match.fg = palette["yellow"]
+c.colors.completion.scrollbar.fg = palette["bg3"]
+c.colors.completion.scrollbar.bg = palette["bg1"]
+
+# Tooltips and context menus; disabled items retain a muted foreground.
+c.colors.tooltip.bg = palette["bg2"]
+c.colors.tooltip.fg = palette["fg"]
+c.colors.contextmenu.menu.bg = palette["bg1"]
+c.colors.contextmenu.menu.fg = palette["fg"]
+c.colors.contextmenu.selected.bg = palette["blue"]
+c.colors.contextmenu.selected.fg = palette["bg0"]
+c.colors.contextmenu.disabled.bg = palette["bg1"]
+c.colors.contextmenu.disabled.fg = palette["grey"]
+
+# Downloads use a blue-to-green progress gradient and red for errors.
+# "rgb" interpolates colors in RGB space, rather than around the HSV wheel.
+c.colors.downloads.bar.bg = palette["bg0"]
+c.colors.downloads.start.fg = palette["bg0"]
+c.colors.downloads.start.bg = palette["blue"]
+c.colors.downloads.stop.fg = palette["bg0"]
+c.colors.downloads.stop.bg = palette["green"]
+c.colors.downloads.system.fg = "rgb"
+c.colors.downloads.system.bg = "rgb"
+c.colors.downloads.error.fg = palette["bg0"]
+c.colors.downloads.error.bg = palette["red"]
+
+# Link hints (f/F) and key-chain hints. Dark text on yellow keeps link labels
+# legible over both light and dark webpages; typed hint letters use red.
+c.colors.hints.bg = palette["yellow"]
+c.colors.hints.fg = palette["bg0"]
+c.colors.hints.match.fg = "#7c2d28"
+c.hints.border = "1px solid " + palette["bg0"]
+c.colors.keyhint.bg = palette["bg1"]
+c.colors.keyhint.fg = palette["fg"]
+c.colors.keyhint.suffix.fg = palette["yellow"]
+
+# Messages keep their severity colors; informational messages use the normal
+# surface so routine notifications do not look like warnings.
+c.colors.messages.error.bg = palette["red"]
+c.colors.messages.error.fg = palette["bg0"]
+c.colors.messages.error.border = palette["red"]
+c.colors.messages.warning.bg = palette["yellow"]
+c.colors.messages.warning.fg = palette["bg0"]
+c.colors.messages.warning.border = palette["yellow"]
+c.colors.messages.info.bg = palette["bg1"]
+c.colors.messages.info.fg = palette["fg"]
+c.colors.messages.info.border = palette["bg3"]
+
+# Permission, authentication, and filename prompts.
+c.colors.prompts.bg = palette["bg1"]
+c.colors.prompts.fg = palette["fg"]
+c.colors.prompts.border = "1px solid " + palette["blue"]
+c.colors.prompts.selected.bg = palette["blue"]
+c.colors.prompts.selected.fg = palette["bg0"]
+
+# Status-bar colors identify the current keyboard mode at a glance:
+# green = insert, blue = passthrough, purple = caret, orange = selection.
+# Private browsing has a distinct purple foreground, including command mode.
+c.colors.statusbar.normal.bg = palette["bg0"]
+c.colors.statusbar.normal.fg = palette["fg"]
+c.colors.statusbar.insert.bg = palette["green"]
+c.colors.statusbar.insert.fg = palette["bg0"]
+c.colors.statusbar.passthrough.bg = palette["blue"]
+c.colors.statusbar.passthrough.fg = palette["bg0"]
+c.colors.statusbar.caret.bg = palette["purple"]
+c.colors.statusbar.caret.fg = palette["bg0"]
+c.colors.statusbar.caret.selection.bg = palette["orange"]
+c.colors.statusbar.caret.selection.fg = palette["bg0"]
+c.colors.statusbar.private.bg = palette["bg1"]
+c.colors.statusbar.private.fg = palette["purple"]
+c.colors.statusbar.command.bg = palette["bg1"]
+c.colors.statusbar.command.fg = palette["fg"]
+c.colors.statusbar.command.private.bg = palette["bg1"]
+c.colors.statusbar.command.private.fg = palette["purple"]
+c.colors.statusbar.progress.bg = palette["blue"]
+c.colors.statusbar.url.fg = palette["fg"]
+c.colors.statusbar.url.error.fg = palette["red"]
+c.colors.statusbar.url.hover.fg = palette["aqua"]
+c.colors.statusbar.url.success.http.fg = palette["fg"]
+c.colors.statusbar.url.success.https.fg = palette["green"]
+c.colors.statusbar.url.warn.fg = palette["yellow"]
+
+# Tabs: selected tabs use tmux's active-window yellow. Pinned tabs are aqua,
+# while their selected state stays consistent with ordinary selected tabs.
+c.colors.tabs.bar.bg = palette["bg0"]
+c.colors.tabs.odd.bg = palette["bg0"]
+c.colors.tabs.odd.fg = palette["fg"]
+c.colors.tabs.even.bg = palette["bg1"]
+c.colors.tabs.even.fg = palette["fg"]
+c.colors.tabs.selected.odd.bg = palette["yellow"]
+c.colors.tabs.selected.odd.fg = palette["bg0"]
+c.colors.tabs.selected.even.bg = palette["yellow"]
+c.colors.tabs.selected.even.fg = palette["bg0"]
+c.colors.tabs.pinned.odd.bg = palette["bg2"]
+c.colors.tabs.pinned.odd.fg = palette["aqua"]
+c.colors.tabs.pinned.even.bg = palette["bg1"]
+c.colors.tabs.pinned.even.fg = palette["aqua"]
+c.colors.tabs.pinned.selected.odd.bg = palette["yellow"]
+c.colors.tabs.pinned.selected.odd.fg = palette["bg0"]
+c.colors.tabs.pinned.selected.even.bg = palette["yellow"]
+c.colors.tabs.pinned.selected.even.fg = palette["bg0"]
+c.colors.tabs.indicator.start = palette["blue"]
+c.colors.tabs.indicator.stop = palette["green"]
+c.colors.tabs.indicator.error = palette["red"]
+c.colors.tabs.indicator.system = "rgb"
+
+# Advertise a dark color-scheme preference to websites which support it.
+# This does not recolor arbitrary pages: darkmode.enabled forces that, and
+# can break website colors or images. Forced dark mode is off by default.
+c.colors.webpage.preferred_color_scheme = "dark"
+
+# Press comma, then d in normal mode to toggle forced webpage dark mode.
+# Reload the current page so the changed rendering is visible immediately.
+config.bind(",d", "config-cycle colors.webpage.darkmode.enabled ;; reload")
+
+# Display PDFs in the browser using PDF.js (Arch package: pdfjs).
+# The viewer still offers a download button. Local .html files render with
+# :open ~/path/file.html; relative CSS, images, and JavaScript use defaults.
+c.content.pdfjs = True
+# PDF.js 6 requires a hash for qutebrowser's generated viewer startup script.
+from pathlib import Path
+import shlex
+
+config.source(str(Path(__file__).resolve().with_name("pdf_viewer.py")))
+
+# Optional browser tools. Comma-prefixed keys preserve the normal bindings.
+# Reader mode uses the local Python environment (or python-readability-lxml).
+# Translation opens Google Translate only when requested; English is the
+# default target language.
+# Pass a language to :translate / :translate-selection, e.g. :translate si.
+browser_tools_dir = Path(__file__).resolve().parent
+browser_tools_python = browser_tools_dir / ".reader-venv" / "bin" / "python"
+browser_tools = "spawn --userscript "
+if browser_tools_python.is_file():
+    browser_tools += shlex.quote(str(browser_tools_python)) + " "
+browser_tools += shlex.quote(str(browser_tools_dir / "userscripts" / "browser-tools"))
+config.bind(",D", browser_tools + " downloads")
+config.bind(",r", browser_tools + " reader")
+config.bind(",t", browser_tools + " translate")
+for mode in ("normal", "caret"):
+    config.bind(",T", browser_tools + " translate --selection", mode=mode)
+config.bind(",m", "spawn --detach mpv -- {url}")
+config.bind(",M", "hint links spawn --detach mpv -- {hint-url}")
+config.bind(",b", "spawn --detach brave -- {url}")
+
+# Preserve the built-in aliases (including :wq) and any saved user aliases.
+browser_aliases = dict(c.aliases)
+browser_aliases.update({
+    "downloads": browser_tools + " downloads",
+    "reader": browser_tools + " reader",
+    "translate": browser_tools + " translate",
+    "translate-selection": browser_tools + " translate --selection",
+})
+c.aliases = browser_aliases
+
+# Search imported bookmarks with b; B opens the selection in a new tab.
+# qutebrowser's defaults use these keys for quickmarks, a separate collection.
+# The -s flag adds the space needed to complete the first bookmark argument.
+config.bind("b", "cmd-set-text -s :bookmark-load")
+config.bind("B", "cmd-set-text -s :bookmark-load -t")
+
+# Bitwarden: first run bw login in a terminal. Ctrl+Shift+L finds the login
+# fields and fills username + password; Ctrl+Alt+L fills only the password
+# for two-step login pages. These shortcuts work in normal and insert modes.
+# The unlock prompt is masked, and the session key expires after five minutes.
+# The local fill helper uses a private temporary handoff, which is deleted
+# after reading. Passwords are never sent to a username field or the clipboard.
+config.source(str(Path(__file__).resolve().with_name("bitwarden_fill.py")))
+bitwarden_script = Path(__file__).resolve().parent / "userscripts" / "bitwarden"
+bitwarden_fill = "spawn --userscript " + shlex.quote(str(bitwarden_script))
+for mode in ("normal", "insert"):
+    config.bind("<Ctrl-Shift-l>", bitwarden_fill, mode=mode)
+    config.bind("<Ctrl-Alt-l>", bitwarden_fill + " --password-only", mode=mode)
+
+# Tab collections, similar to OneTab:
+#   Ctrl+S       saves this window's tabs, then leaves one blank tab.
+#   Ctrl+Shift+S opens session completion; choose a collection and press Enter.
+# Collections have unique timestamped names and are kept after restoration.
+# qutebrowser restores sessions in a new window. URLs, titles, and tab state
+# are saved without back/forward history; private windows are excluded.
+# Session files live in qutebrowser's data directory, outside these dotfiles.
+from qutebrowser.api import cmdutils
+from qutebrowser.misc import objects
+
+# :config-source executes this file again; replace our command on reload.
+objects.commands.pop("tabs-shelve", None)
+
+
+@cmdutils.register(name="tabs-shelve")
+@cmdutils.argument("win_id", value=cmdutils.Value.win_id)
+def tabs_shelve(win_id: int):
+    """Save the current window's tabs before closing them."""
+    from datetime import datetime
+
+    from qutebrowser.misc import sessions
+    from qutebrowser.qt.core import QUrl
+    from qutebrowser.utils import objreg
+
+    browser = objreg.get("tabbed-browser", scope="window", window=win_id)
+    if browser.is_private:
+        raise cmdutils.CommandError("Private tabs are not saved to collections.")
+
+    tabs = list(browser.widgets())
+    if not tabs:
+        return
+
+    name = datetime.now().strftime("tabs-%Y-%m-%d-%H%M%S-%f")
+    # Unlike a ;; command chain, a failed save stops this function before any
+    # tabs are opened or closed. The native session writer saves atomically.
+    sessions.session_save(
+        name, only_active_window=True, no_history=True, win_id=win_id
+    )
+    browser.tabopen(QUrl("about:blank"), background=False)
+    for index, tab in enumerate(tabs):
+        browser.close_tab(tab, new_undo=(index == 0))
+
+
+# Normal mode only, so Ctrl+S in a text field remains available to the page.
+config.bind("<Ctrl-s>", "tabs-shelve")
+# Keep the cursor on the session-name prefix. The -s flag appends a space,
+# moving to a nonexistent second argument and disabling session completion.
+config.bind("<Ctrl-Shift-s>", "cmd-set-text :session-load --temp tabs-")

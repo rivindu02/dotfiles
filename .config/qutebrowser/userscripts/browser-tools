@@ -1,0 +1,205 @@
+#!/usr/bin/env python3
+"""On-demand downloads, article reading, and translation for qutebrowser.
+
+Inspired by qutebrowser's open_download/readability userscripts and
+AckslD/Qute-Translate. Paths and translated text are encoded rather than
+interpolated into shell commands. No page is sent to a translation service
+until the user invokes the translation action.
+"""
+
+import argparse
+from datetime import datetime
+from html import escape
+import os
+from pathlib import Path
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+from urllib.parse import urlencode, urlsplit
+
+
+class ToolError(Exception):
+    """An error suitable for display in the browser."""
+
+
+def emit(*parts):
+    """Write one quoted command; user-supplied newlines cannot inject commands."""
+    command = shlex.join(str(part).replace("\r", " ").replace("\n", " ") for part in parts)
+    fifo = os.environ.get("QUTE_FIFO")
+    if not fifo:
+        raise ToolError("Run this tool from qutebrowser.")
+    with open(fifo, "w", encoding="utf-8") as stream:
+        stream.write(command + "\n")
+
+
+def downloads(directory=None):
+    """Choose a download by index so spaces/control characters keep their paths."""
+    root = Path(directory or os.environ.get("QUTE_DOWNLOAD_DIR") or Path.home() / "Downloads").expanduser().resolve()
+    if not root.is_dir():
+        raise ToolError("The downloads directory does not exist.")
+    if not shutil.which("rofi") or not shutil.which("xdg-open"):
+        raise ToolError("The downloads picker needs rofi and xdg-open.")
+
+    entries = []
+    for path in root.iterdir():
+        try:
+            if path.is_file():
+                entries.append((path.stat().st_mtime, path))
+        except OSError:
+            continue  # A file may disappear or become inaccessible while listing.
+    entries.sort(key=lambda entry: (-entry[0], entry[1].name.casefold()))
+    if not entries:
+        raise ToolError("There are no files in the downloads directory.")
+
+    rows = []
+    for modified, path in entries:
+        name = path.name.replace("\n", "\\n").replace("\r", "\\r").replace("\t", " ").replace("\x1f", " ")
+        rows.append(datetime.fromtimestamp(modified).strftime("%Y-%m-%d %H:%M") + "  " + name)
+    command = ["rofi", "-dmenu", "-i", "-no-custom", "-format", "i", "-p", "Downloads"]
+    theme = Path.home() / ".config/rofi/menus/clipboard.rasi"
+    if theme.is_file():
+        command += ["-theme", str(theme), "-theme-str", 'entry { placeholder: "Search downloaded files…"; }']
+    chosen = subprocess.run(command, input="\n".join(rows) + "\n", capture_output=True, text=True)
+    if chosen.returncode in (1, 130):
+        return  # Esc is cancellation, not a userscript failure.
+    if chosen.returncode:
+        raise ToolError("The downloads picker could not start.")
+    index = chosen.stdout.strip()
+    if not index:
+        return
+    if not index.isdecimal() or int(index) >= len(entries):
+        raise ToolError("The downloads picker returned an invalid selection.")
+    path = entries[int(index)][1]
+    if not path.is_file():
+        raise ToolError("The selected download no longer exists.")
+    subprocess.Popen(
+        ["xdg-open", str(path)], stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
+    )
+
+
+def translate(target="en", selection=False):
+    """Open Google Translate on demand, preserving URL/text as one argument."""
+    if not re.fullmatch(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*", target):
+        raise ToolError("Use a language code such as en, si, ta, or zh-CN.")
+    query = {"sl": "auto", "tl": target}
+    if selection:
+        text = os.environ.get("QUTE_SELECTED_TEXT", "").strip()
+        if not text:
+            raise ToolError("Select some text first, then use ,T.")
+        if len(text) > 5000:
+            raise ToolError("Select at most 5000 characters for translation.")
+        query.update(text=text, op="translate")
+        url = "https://translate.google.com/?" + urlencode(query)
+    else:
+        page = os.environ.get("QUTE_URL", "")
+        parsed = urlsplit(page)
+        if parsed.scheme not in ("http", "https") or not parsed.hostname:
+            raise ToolError("Page translation needs a public HTTP(S) page; select text to translate local content.")
+        query["u"] = page
+        url = "https://translate.google.com/translate?" + urlencode(query)
+    emit("open", "-t", url)
+
+
+def reader_document(source, url, fallback_title="Article"):
+    """Extract the loaded article locally, then clean its active HTML content."""
+    try:
+        from lxml import html
+        from lxml_html_clean import Cleaner
+        from readability import Document
+    except ImportError:
+        raise ToolError("Reader dependencies are missing; see .config/qutebrowser/README.md for setup.") from None
+
+    document = Document(source, url=url)
+    article = html.fragment_fromstring(document.summary(html_partial=True), create_parent="article")
+    article.make_links_absolute(url, resolve_base_href=False)
+    article = Cleaner(
+        scripts=True, javascript=True, comments=True, style=True,
+        links=True, meta=True, embedded=True, frames=True, forms=True,
+        safe_attrs_only=True,
+    ).clean_html(article)
+    if len(" ".join(article.itertext()).strip()) < 40:
+        raise ToolError("No readable article was found on this page.")
+    title = escape(document.short_title() or fallback_title)
+    content = html.tostring(article, encoding="unicode", method="html")
+    # A restrictive CSP also blocks scripts, frames, forms and remote styles
+    # if unexpected active markup survives extraction/sanitization.
+    return f'''<!doctype html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src https: http: data: file:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>{title} — Reader</title>
+<style>
+:root {{ color-scheme: light dark; }}
+body {{ max-width: 72ch; margin: 3rem auto; padding: 0 1.25rem;
+  font: 18px/1.7 "CaskaydiaMono Nerd Font Propo", monospace;
+  background: #f9f5d7; color: #3c3836; overflow-wrap: anywhere; }}
+a {{ color: #427b58; }}
+h1, h2, h3 {{ line-height: 1.3; }}
+header {{ border-bottom: 1px solid #928374; margin-bottom: 2rem; padding-bottom: 1rem; }}
+img {{ max-width: 100%; height: auto; }}
+pre {{ overflow-x: auto; padding: 1rem; background: #ebdbb2; }}
+table {{ display: block; overflow-x: auto; border-collapse: collapse; }}
+td, th {{ border: 1px solid #928374; padding: .4rem; }}
+@media (prefers-color-scheme: dark) {{
+  body {{ background: #282828; color: #d4be98; }}
+  a {{ color: #7daea3; }} pre {{ background: #32302f; }}
+}}
+</style></head><body><header><h1>{title}</h1>
+<a href="{escape(url, quote=True)}">Open original page</a></header>{content}</body></html>'''
+
+
+def reader():
+    source_path = os.environ.get("QUTE_HTML")
+    if not source_path:
+        raise ToolError("Reader mode needs the current page's HTML.")
+    source = Path(source_path).read_text(encoding="utf-8")
+    url = os.environ.get("QUTE_URL", "")
+    if urlsplit(url).scheme not in ("http", "https", "file"):
+        raise ToolError("Reader mode needs an HTML article or local HTML file.")
+    content = reader_document(source, url, os.environ.get("QUTE_TITLE", "Article"))
+    # Runtime-only, owner-readable files also work in private windows without
+    # retaining article copies in the persistent browser data directory.
+    runtime = Path(os.environ["QUTE_FIFO"]).parent
+    descriptor, filename = tempfile.mkstemp(prefix="reader-", suffix=".html", dir=runtime)
+    path = Path(filename)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream.write(content)
+        emit("open", "-t", path.as_uri())
+    except Exception:
+        path.unlink(missing_ok=True)
+        raise
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    actions = parser.add_subparsers(dest="action", required=True)
+    downloads_parser = actions.add_parser("downloads")
+    downloads_parser.add_argument("--directory")
+    actions.add_parser("reader")
+    translate_parser = actions.add_parser("translate")
+    translate_parser.add_argument("target", nargs="?", default="en")
+    translate_parser.add_argument("--selection", action="store_true")
+    args = parser.parse_args()
+    try:
+        if args.action == "downloads":
+            downloads(args.directory)
+        elif args.action == "reader":
+            reader()
+        else:
+            translate(args.target, args.selection)
+    except (ToolError, OSError, ValueError) as error:
+        if os.environ.get("QUTE_FIFO"):
+            emit("message-error", "Browser tools: " + str(error))
+        else:
+            print("Browser tools: " + str(error), file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

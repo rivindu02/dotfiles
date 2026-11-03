@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+"""Run the local Bitwarden integration with the desktop's Rofi."""
+
+import importlib.util
+import json
+import os
+from pathlib import Path
+import shlex
+import shutil
+import subprocess
+import sys
+
+
+def fail(message):
+    # Report setup problems in the browser without printing CLI output, which
+    # can contain account information. Never include vault contents in errors.
+    fifo = os.environ.get("QUTE_FIFO")
+    if fifo:
+        with open(fifo, "w", encoding="utf-8") as stream:
+            stream.write("message-error " + shlex.quote("Bitwarden: " + message) + "\n")
+    else:
+        print("Bitwarden: " + message, file=sys.stderr)
+    return 1
+
+
+def main():
+    # The existing CLI is installed via npm. Desktop launches need the same
+    # PATH as terminal launches, even when the shell's startup files aren't run.
+    os.environ["PATH"] = str(Path.home() / ".npm-global/bin") + os.pathsep + os.environ.get("PATH", "")
+    if not shutil.which("bw"):
+        return fail("The bw CLI is missing.")
+    if importlib.util.find_spec("tldextract") is None:
+        return fail("Install python-tldextract, then retry.")
+
+    try:
+        status = subprocess.run(
+            ["bw", "status"], capture_output=True, text=True, timeout=30
+        )
+        if status.returncode:
+            return fail("Could not check the vault. Run bw status in a terminal.")
+        if json.loads(status.stdout).get("status") == "unauthenticated":
+            return fail("Run bw login once in a terminal, then retry.")
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        return fail("Could not check the vault. Run bw status in a terminal.")
+
+    # Local copy of the packaged script with support for absent login.totp.
+    script = Path(__file__).resolve().with_name("qute-bitwarden")
+    if not script.is_file():
+        return fail("The local qute-bitwarden userscript is missing.")
+
+    # Reuse the existing Gruvbox picker theme. Both the choice menu and the
+    # masked unlock prompt keep credentials out of clipboard history.
+    theme = str(Path.home() / ".config/rofi/menus/clipboard.rasi")
+    picker = shlex.join([
+        "rofi", "-dmenu", "-i", "-no-custom", "-p", "Bitwarden", "-theme", theme,
+        "-theme-str", 'entry { placeholder: "Choose a login…"; }',
+    ])
+    unlock = shlex.join([
+        "rofi", "-dmenu", "-p", "Unlock Bitwarden", "-password", "-lines", "0",
+        "-theme", theme,
+        "-theme-str", 'entry { placeholder: "Master password"; }',
+    ])
+    # The upstream script uses keyctl to cache the session key for five minutes.
+    # Our local copy targets actual form fields using the browser fill helper.
+    # Account login itself stays an interactive terminal step.
+    os.execv(sys.executable, [
+        sys.executable, str(script), "--auto-lock", "300",
+        "--dmenu-invocation", picker, "--password-prompt-invocation", unlock,
+        *sys.argv[1:],
+    ])
+
+
+if __name__ == "__main__":
+    sys.exit(main())

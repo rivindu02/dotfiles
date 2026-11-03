@@ -22,7 +22,7 @@ end
 
 local terminal    = "ghostty"
 local fileManager = "ghostty -e yazi"
-local browser     = "brave"
+local browser     = "qutebrowser"
 
 
 -------------------
@@ -388,6 +388,7 @@ end
 
 -- Scratchpad: the first special workspace shown in the Super+Tab overview.
 hl.bind(mainMod .. " + CTRL + S", hl.dsp.workspace.toggle_special("1"))
+hl.bind(secondMod .. " + TAB", hl.dsp.window.move({ workspace = "special:1", follow = false }))
 
 -- Mouse workspace scroll
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
