@@ -58,6 +58,9 @@ AUDIT.md
 
 # Thumbnails / cache
 .cache/
+__pycache__/
+*.pyc
+*.log
 
 # Local mpv configuration snapshots
 .config/mpv/backups/
