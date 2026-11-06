@@ -271,7 +271,7 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 
 | Tool | Use case | How to use |
 |---|---|---|
-| **neovim** | Main terminal editor (Lua config, lazy.nvim) | `nv file`; config `~/.config/nvim`; plugins `:Lazy` (update: `:Lazy update`); LSP servers `:Mason`; health `:checkhealth` |
+| **neovim** | Main terminal editor (Lua config, lazy.nvim) | `nv file`; config `~/.config/nvim`; plugins `:Lazy` (update: `:Lazy update`); LSP servers `:Mason`; health `:checkhealth`; [ROS 2/Python workflow and debugger keys](.config/nvim/README.md) |
 | **neovide** | GUI front-end for neovim (smooth animations) | `neovide file` |
 | **tree-sitter-cli** | Builds syntax parsers for nvim | Used automatically by nvim-treesitter |
 | **zed** | Fast GUI editor with collaboration | `zeditor .` |
