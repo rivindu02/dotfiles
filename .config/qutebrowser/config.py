@@ -272,6 +272,8 @@ for mode in ("normal", "caret"):
     config.bind(",T", browser_tools + " translate --selection", mode=mode)
 config.bind(",m", "spawn --detach mpv -- {url}")
 config.bind(",M", "hint links spawn --detach mpv -- {hint-url}")
+config.bind(",v", "spawn --verbose yt-dlp --no-playlist -P /home/rivindu02/Downloads -- {url}")
+config.bind(",V", "hint links spawn --verbose yt-dlp --no-playlist -P /home/rivindu02/Downloads -- {hint-url}")
 # Report early launch errors and request a visible window, including when
 # Brave already has background/app windows. The userscript detaches safely.
 config.bind(",b", browser_tools + " brave")
