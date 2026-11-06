@@ -144,3 +144,36 @@ Restore: `backup-home restic restore latest --target ~/restore --include ~/Docum
 ## Secrets
 
 Secrets never go into git. API keys live in gnome-keyring: add them with `apikey set <name>`, list them with `apikey list`. The AI wrappers in `.zshrc` fetch a key only when a tool runs, so the keyring unlock prompt appears at most once per boot. `.githooks/pre-commit` blocks commits that contain tokens or sensitive paths.
+
+Credential-path guards cover these locations at the repository root and inside
+individual Stow packages:
+
+- AWS `credentials`, `config`, and SSO/CLI/login credential caches under `.aws/`.
+- `.config/rclone/rclone.conf` (also `.old`/`.bak`) and `.config/restic/password`.
+- GitHub CLI `hosts.yml`, the calendar auth directory, and `.local/share/keyrings/`.
+- `.claude/.credentials.json`, `.codex/auth.json`, `.gemini/oauth_creds.json`,
+  `.npmrc`, and `.netrc`.
+
+Git ignores these paths; the enabled pre-commit hook also blocks them after
+`git add --force`. AWS `config` and `.npmrc` are treated as potentially private;
+use sanitized `.example` templates when documenting them. Ordinary settings
+such as `gh/config.yml`, `backup/excludes.txt`, Claude settings, Codex config,
+and Gemini settings remain trackable. A private-store entry ending in `.pub`
+is still blocked; public SSH keys outside those stores pass the hook.
+
+Nvim disables automatic persistent undo and swap for protected paths, including
+new files and renamed buffers. Its targeted `backupskip` entries also suppress
+backup/writebackup copies without changing ordinary buffers. Restart Nvim to
+load the updated options. Existing undo, swap, backup, and history data is not
+removed. These are path-based safeguards; renamed copies and nonstandard
+credential locations need explicit rules, and local hooks can be bypassed.
+
+Run the synthetic credential checks with Python 3, Git, Bash, and Nvim:
+
+```bash
+python3 .githooks/tests/test_credential_paths.py
+```
+
+The tests use temporary Git repositories and plugin-free headless Nvim, with
+isolated editor state. They do not read real credentials. Without Nvim, editor
+tests are reported as skipped; a complete validation requires them to pass.
