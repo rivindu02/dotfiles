@@ -198,6 +198,7 @@ c.colors.statusbar.url.warn.fg = palette["yellow"]
 
 # Tabs: selected tabs use tmux's active-window yellow. Pinned tabs are aqua,
 # while their selected state stays consistent with ordinary selected tabs.
+# private_tabs.py overrides the selected tab to red in private windows only.
 c.colors.tabs.bar.bg = palette["bg0"]
 c.colors.tabs.odd.bg = palette["bg0"]
 c.colors.tabs.odd.fg = palette["fg"]
@@ -238,6 +239,7 @@ from pathlib import Path
 import shlex
 
 config.source(str(Path(__file__).resolve().with_name("pdf_viewer.py")))
+config.source(str(Path(__file__).resolve().with_name("private_tabs.py")))
 
 # Optional browser tools. Comma-prefixed keys preserve the normal bindings.
 # Reader mode uses the local Python environment (or python-readability-lxml).
