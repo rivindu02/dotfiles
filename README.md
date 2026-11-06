@@ -43,6 +43,18 @@ git config filter.swaync-strip.smudge cat
 git config filter.swaync-strip.required true
 ```
 
+The calendar/weather clean filter requires Python 3 and the Git settings above
+in each clone. Invalid JSON or unsupported widget structures block staging with
+a redacted error; the working file is left intact. Fix the JSON and stage it
+again rather than disabling the required filter. This protects generated widget
+text, not arbitrary secrets elsewhere in the file or existing Git history.
+
+Run its isolated checks (synthetic data only; no desktop reload needed):
+
+```bash
+python3 .githooks/tests/test_swaync_strip.py
+```
+
 ## Default browser
 
 Edit `~/.config/browser/default` (`.config/browser/default` in this repo) to
