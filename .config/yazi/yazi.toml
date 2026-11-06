@@ -5,14 +5,17 @@ edit = [
 browser = [
   { run = '"$HOME/.local/bin/default-browser" -- %s', orphan = true, desc = "Default browser", for = "unix" },
 ]
+brave = [
+  { run = 'brave --new-tab -- %s', orphan = true, desc = "Brave", for = "unix" },
+]
 
 [open]
-# Web files open in the selected browser; `o` still offers nvim.
+# Web files open in the selected browser; Shift+O offers an app picker.
 prepend_rules = [
-  { mime = "text/html", use = [ "browser", "edit", "reveal" ] },
-  { mime = "application/xhtml+xml", use = [ "browser", "edit", "reveal" ] },
-  { url = "*.{html,htm,xhtml,mhtml,mht,shtml}", use = [ "browser", "edit", "reveal" ] },
-  { url = "*.{url,webloc,desktop.url}", use = [ "browser", "edit" ] },
+  { mime = "text/html", use = [ "browser", "brave", "edit", "reveal" ] },
+  { mime = "application/xhtml+xml", use = [ "browser", "brave", "edit", "reveal" ] },
+  { url = "*.{html,htm,xhtml,mhtml,mht,shtml}", use = [ "browser", "brave", "edit", "reveal" ] },
+  { url = "*.{url,webloc,desktop.url}", use = [ "browser", "brave", "edit" ] },
 ]
 
 [mgr]
