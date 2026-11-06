@@ -307,28 +307,28 @@ for mode in ("normal", "insert"):
     config.bind("<Ctrl-Shift-l>", bitwarden_fill, mode=mode)
     config.bind("<Ctrl-Alt-l>", bitwarden_fill + " --password-only", mode=mode)
 
-# Tab collections, similar to OneTab:
-#   Ctrl+S       saves this window's tabs, then leaves one blank tab.
+# Tab collections:
+#   Ctrl+S       suggests an editable name; Enter saves and leaves tabs open.
 #   Ctrl+Shift+S opens session completion; choose a collection and press Enter.
-# Collections have unique timestamped names and are kept after restoration.
-# qutebrowser restores sessions in a new window. URLs, titles, and tab state
-# are saved without back/forward history; private windows are excluded.
+# Suggested names contain a timestamp; collections are kept after restoration.
+# qutebrowser restores sessions in a new window. URLs, titles, and tab history
+# are saved together; private windows are excluded. Keep history enabled:
+# qutebrowser's no-history saver can omit the current-page marker.
 # Session files live in qutebrowser's data directory, outside these dotfiles.
 from qutebrowser.api import cmdutils
 from qutebrowser.misc import objects
 
 # :config-source executes this file again; replace our command on reload.
 objects.commands.pop("tabs-shelve", None)
+objects.commands.pop("tabs-save", None)
 
 
-@cmdutils.register(name="tabs-shelve")
+@cmdutils.register(name="tabs-save")
 @cmdutils.argument("win_id", value=cmdutils.Value.win_id)
-def tabs_shelve(win_id: int):
-    """Save the current window's tabs before closing them."""
+def tabs_save(win_id: int):
+    """Suggest an editable collection name before saving the current tabs."""
     from datetime import datetime
 
-    from qutebrowser.misc import sessions
-    from qutebrowser.qt.core import QUrl
     from qutebrowser.utils import objreg
 
     browser = objreg.get("tabbed-browser", scope="window", window=win_id)
@@ -340,18 +340,13 @@ def tabs_shelve(win_id: int):
         return
 
     name = datetime.now().strftime("tabs-%Y-%m-%d-%H%M%S-%f")
-    # Unlike a ;; command chain, a failed save stops this function before any
-    # tabs are opened or closed. The native session writer saves atomically.
-    sessions.session_save(
-        name, only_active_window=True, no_history=True, win_id=win_id
+    command = objreg.get("status-command", scope="window", window=win_id)
+    command.cmd_set_text(
+        ":session-save --only-active-window " + name
     )
-    browser.tabopen(QUrl("about:blank"), background=False)
-    for index, tab in enumerate(tabs):
-        browser.close_tab(tab, new_undo=(index == 0))
 
 
 # Normal mode only, so Ctrl+S in a text field remains available to the page.
-config.bind("<Ctrl-s>", "tabs-shelve")
-# Keep the cursor on the session-name prefix. The -s flag appends a space,
-# moving to a nonexistent second argument and disabling session completion.
-config.bind("<Ctrl-Shift-s>", "cmd-set-text :session-load --temp tabs-")
+config.bind("<Ctrl-s>", "tabs-save")
+# Include custom collection names as well as timestamped names in completion.
+config.bind("<Ctrl-Shift-s>", "cmd-set-text -s :session-load --temp")
