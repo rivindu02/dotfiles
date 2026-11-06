@@ -9,10 +9,10 @@ if [[ ! "$DURATION" =~ ^[0-9]+[hms]?$ ]]; then
 fi
 
 case "$DURATION" in
-  *h) TOTAL=$(( ${DURATION%h} * 3600 )) ;;
-  *m) TOTAL=$(( ${DURATION%m} * 60 )) ;;
-  *s) TOTAL=$(( ${DURATION%s} )) ;;
-  *)  TOTAL=$DURATION ;;
+  *h) TOTAL=$(( 10#${DURATION%h} * 3600 )) ;;
+  *m) TOTAL=$(( 10#${DURATION%m} * 60 )) ;;
+  *s) TOTAL=$(( 10#${DURATION%s} )) ;;
+  *)  TOTAL=$(( 10#$DURATION )) ;;
 esac
 
 TAG="reminder-$$"
