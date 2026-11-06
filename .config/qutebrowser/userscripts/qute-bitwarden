@@ -102,9 +102,14 @@ def ask_password(password_prompt_invocation):
         text=True,
         stdout=subprocess.PIPE,
     )
-    if process.returncode > 0:
-        raise Exception('Could not unlock vault')
+    # Rofi/dmenu return 1 when dismissed (for example with Escape).
+    if process.returncode == 1:
+        sys.exit(ExitCodes.SUCCESS)
+    if process.returncode != 0:
+        raise RuntimeError('Could not open the vault password prompt')
     master_pass = process.stdout.strip()
+    if not master_pass:
+        sys.exit(ExitCodes.SUCCESS)
     return subprocess.check_output(
         ['bw', 'unlock', '--raw', '--passwordenv', 'BW_MASTERPASS'],
         env={**os.environ, 'BW_MASTERPASS': master_pass},
@@ -193,6 +198,10 @@ def dmenu(items, invocation, encoding):
     command = shlex.split(invocation)
     process = subprocess.run(command, input='\n'.join(
         items).encode(encoding), stdout=subprocess.PIPE)
+    if process.returncode == 1:
+        return ''
+    if process.returncode != 0:
+        raise RuntimeError('Could not open the login picker')
     return process.stdout.decode(encoding).strip()
 
 
