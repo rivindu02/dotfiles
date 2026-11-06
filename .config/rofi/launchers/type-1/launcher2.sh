@@ -21,4 +21,4 @@ theme='style-8'
 rofi \
     -show combi \
     -run-command "ghostty -e {cmd}" \
-    -theme ${dir}/${theme}.rasi
+    -theme "${dir}/${theme}.rasi"
