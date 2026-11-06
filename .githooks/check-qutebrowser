@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""Run qutebrowser checks in separate processes to isolate Qt/config globals."""
+
+from pathlib import Path
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parent.parent
+reader_python = ROOT / ".config/qutebrowser/.reader-venv/bin/python"
+python = str(reader_python) if reader_python.is_file() else sys.executable
+tests = [
+    "test_qutebrowser_webapps.py",
+    "test_qutebrowser_command_enter.py",
+    "test_qutebrowser_private_tabs.py",
+    "test_qutebrowser_tools.py",
+    "test_bitwarden_cancel.py",
+    "test_bitwarden_security.py",
+    "test_bitwarden_fill.py",
+    "test_youtube_adskip.py",
+    "test_qutebrowser_dark.py",
+    "test_qutebrowser_pdf.py",
+]
+failures = []
+for test in tests:
+    print(f"Checking {test}", flush=True)
+    try:
+        result = subprocess.run([python, str(ROOT / ".githooks/tests" / test)], timeout=90)
+        if result.returncode:
+            failures.append(test)
+    except subprocess.TimeoutExpired:
+        failures.append(test + " (timed out)")
+if failures:
+    print("Failed: " + ", ".join(failures), file=sys.stderr)
+    sys.exit(1)
+print("All qutebrowser checks passed.")
