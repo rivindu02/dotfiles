@@ -339,6 +339,8 @@ hl.bind(mainMod .. " + Q", function()
     hl.exec_cmd(terminal)
 end)
 hl.bind(mainMod .. " + B",     hl.dsp.exec_cmd(browser))
+hl.bind(secondMod .. " + B",     hl.dsp.exec_cmd("brave"))
+
 hl.bind(mainMod .. " + C",     hl.dsp.window.close())
 hl.bind(mainMod .. " + E",     hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + O",     hl.dsp.exec_cmd("obsidian"))
