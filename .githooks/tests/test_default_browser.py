@@ -38,6 +38,9 @@ class BrowserTests(unittest.TestCase):
             PATH=f"{self.bin}:/usr/bin:/bin",
             BROWSER_LOG=str(self.log),
         )
+        # Keep desktop launches isolated when Exec uses an absolute user path.
+        self.desktop = self.home / "default-browser.desktop"
+        self.desktop.write_text(DESKTOP.read_text().replace(str(Path.home()), str(self.home)))
         for browser in ("qutebrowser", "brave", "firefox", "chromium"):
             stub = self.bin / browser
             stub.write_text(
@@ -127,14 +130,14 @@ class BrowserTests(unittest.TestCase):
                 self.assertEqual(self.launched(), ["qutebrowser", "--target", target, "--untrusted-args", url])
 
     @unittest.skipUnless(shutil.which("gio"), "GIO is required for desktop integration")
-    def test_desktop_entry_expands_home_and_preserves_urls(self):
+    def test_desktop_entry_preserves_urls_without_local_bin_on_path(self):
         # GUI launchers need not have ~/.local/bin on PATH.
         (self.home / "fake-bin").mkdir()
         (self.home / "fake-bin/qutebrowser").symlink_to(self.bin / "qutebrowser")
         self.env["PATH"] = f"{self.home}/fake-bin:/usr/bin:/bin"
         urls = ['https://example.org/?q="a%20b"&x=$HOME;echo%20bad',
                 "file:///tmp/a%20file.html"]
-        result = self.run_command("gio", "launch", str(DESKTOP), *urls)
+        result = self.run_command("gio", "launch", str(self.desktop), *urls)
         self.assertEqual(result.returncode, 0, result.stderr)
         deadline = time.monotonic() + 3
         while not self.log.exists() and time.monotonic() < deadline:
@@ -148,7 +151,7 @@ class BrowserTests(unittest.TestCase):
     def test_default_associations_resolve_to_shared_desktop_entry(self):
         applications = self.home / ".local/share/applications"
         applications.mkdir(parents=True)
-        (applications / DESKTOP.name).symlink_to(DESKTOP)
+        (applications / DESKTOP.name).symlink_to(self.desktop)
         shutil.copyfile(ROOT / "system_prefs/.config/mimeapps.list",
                         self.home / ".config/mimeapps.list")
         desktop = configparser.ConfigParser(interpolation=None)
@@ -159,6 +162,25 @@ class BrowserTests(unittest.TestCase):
             result = self.run_command("xdg-mime", "query", "default", mime)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(result.stdout.strip(), DESKTOP.name)
+
+    @unittest.skipUnless(shutil.which("xdg-open"), "xdg-open is required")
+    def test_xdg_open_launches_from_a_gui_path_without_local_bin(self):
+        applications = self.home / ".local/share/applications"
+        applications.mkdir(parents=True)
+        (applications / DESKTOP.name).symlink_to(self.desktop)
+        shutil.copyfile(ROOT / "system_prefs/.config/mimeapps.list",
+                        self.home / ".config/mimeapps.list")
+        (self.home / "fake-bin").mkdir()
+        (self.home / "fake-bin/qutebrowser").symlink_to(self.bin / "qutebrowser")
+        self.env["PATH"] = f"{self.home}/fake-bin:/usr/bin:/bin"
+        self.env["DISPLAY"] = ":test"
+        self.env.pop("BROWSER", None)
+        url = 'https://example.org/?q="a%20b"&x=$HOME;echo%20bad'
+        result = self.run_command("xdg-open", url)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        # xdg-open can report success even when Exec failed to start a browser.
+        self.assertTrue(self.log.exists(), result.stderr)
+        self.assertEqual(self.launched(), ["qutebrowser", "--target", "tab", "--untrusted-args", url])
 
 
 if __name__ == "__main__":
