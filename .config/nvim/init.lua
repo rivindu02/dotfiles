@@ -21,6 +21,7 @@ vim.g.maplocalleader = "\\"
 -- 2. CORE MODULES
 require("core.options")
 require("core.keymaps")
+require("core.robotics").setup()
 
 -- 3. PLUGINS
 require("lazy").setup("plugins", {
