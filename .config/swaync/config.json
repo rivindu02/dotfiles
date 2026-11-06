@@ -108,6 +108,11 @@
     "remind-silent": {
       "state": "muted",
       "app-name": "^remind-silent$"
+    },
+    "google-calendar-preview": {
+      "state": "ignored",
+      "summary": "^Calendar notification$",
+      "body": "This is how you will be notified\\.\\s*$"
     }
   }
 }
