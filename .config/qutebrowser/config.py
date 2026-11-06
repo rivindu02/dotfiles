@@ -234,7 +234,7 @@ config.bind(",d", "config-cycle colors.webpage.darkmode.enabled ;; reload")
 # The viewer still offers a download button. Local .html files render with
 # :open ~/path/file.html; relative CSS, images, and JavaScript use defaults.
 c.content.pdfjs = True
-# PDF.js 6 requires a hash for qutebrowser's generated viewer startup script.
+# PDF.js 6 needs a startup-script CSP hash and WeakMap/math compatibility shims.
 from pathlib import Path
 import shlex
 

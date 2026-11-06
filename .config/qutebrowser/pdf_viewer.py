@@ -1,10 +1,58 @@
-"""Allow qutebrowser's generated startup script in PDF.js 6's viewer CSP."""
+"""Keep PDF.js 6 compatible with qutebrowser's viewer and QtWebEngine."""
 
 import base64
 import hashlib
+from pathlib import Path
 import re
 
 from qutebrowser.browser import pdfjs
+
+
+# qutebrowser 3.7 supplies Map upsert methods, but PDF.js 6.5 also uses
+# WeakMap upsert methods and Math.sumPrecise, missing in QtWebEngine 6.11.
+# Extend the shared polyfills so both the viewer and PDF worker receive them.
+_original_polyfills = getattr(
+    pdfjs._get_polyfills, "_qute_original", pdfjs._get_polyfills
+)
+
+
+def get_polyfills():
+    math_polyfill = Path(__file__).resolve().with_name("pdf-math-polyfill.js").read_text(encoding="ascii")
+    return _original_polyfills() + math_polyfill + """
+;(function() {
+    if (typeof WeakMap.prototype.getOrInsert === "undefined") {
+        Object.defineProperty(WeakMap.prototype, "getOrInsert", {
+            configurable: true,
+            writable: true,
+            value: function(key, defaultValue) {
+                if (!this.has(key)) {
+                    this.set(key, defaultValue);
+                }
+                return this.get(key);
+            }
+        });
+    }
+    if (typeof WeakMap.prototype.getOrInsertComputed === "undefined") {
+        Object.defineProperty(WeakMap.prototype, "getOrInsertComputed", {
+            configurable: true,
+            writable: true,
+            value: function(key, callbackFunction) {
+                if (typeof callbackFunction !== "function") {
+                    throw new TypeError("Expected a callback function");
+                }
+                if (!this.has(key)) {
+                    this.set(key, callbackFunction(key));
+                }
+                return this.get(key);
+            }
+        });
+    }
+})();
+"""
+
+
+get_polyfills._qute_original = _original_polyfills
+pdfjs._get_polyfills = get_polyfills
 
 
 # PDF.js 6 restricts inline JavaScript, including qutebrowser's own viewer

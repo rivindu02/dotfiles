@@ -107,6 +107,7 @@ pacman-contrib
 pamixer
 papirus-icon-theme
 pavucontrol
+pdfjs
 piper
 pipewire
 pipewire-alsa
