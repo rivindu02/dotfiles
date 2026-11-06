@@ -18,7 +18,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from urllib.parse import urlencode, urlsplit
+from urllib.parse import parse_qs, urlencode, urlsplit
 
 
 class ToolError(Exception):
@@ -113,6 +113,38 @@ def translate(target="en", selection=False):
     emit("open", "-t", url)
 
 
+def open_brave():
+    """Request a visible window and report immediate startup failures."""
+    binary = shutil.which("brave")
+    if not binary:
+        raise ToolError("Brave executable was not found in PATH.")
+    url = os.environ.get("QUTE_URL", "")
+    parsed = urlsplit(url)
+    if parsed.scheme == "qute" and parsed.netloc == "pdfjs":
+        # Internal qute:// URLs cannot be opened by another browser.
+        url = parse_qs(parsed.query).get("source", [""])[0]
+        parsed = urlsplit(url)
+    if parsed.scheme not in ("http", "https", "file") or (
+            parsed.scheme in ("http", "https") and not parsed.hostname):
+        raise ToolError("This internal page cannot be opened in Brave. Open its original URL first.")
+    with tempfile.TemporaryFile() as errors:
+        process = subprocess.Popen(
+            [binary, "--new-window", "--", url],
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=errors,
+            start_new_session=True,
+        )
+        try:
+            code = process.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            # A cold browser stays running. The detached process survives
+            # this userscript and qutebrowser quitting.
+            return
+        if code:
+            errors.seek(0)
+            detail = errors.read(4000).decode("utf-8", errors="replace").strip()
+            raise ToolError(f"Brave exited with status {code}: {detail or 'no error output'}")
+
+
 def reader_document(source, url, fallback_title="Article"):
     """Extract the loaded article locally, then clean its active HTML content."""
     try:
@@ -200,6 +232,7 @@ def main():
     downloads_parser = actions.add_parser("downloads")
     downloads_parser.add_argument("--directory")
     actions.add_parser("reader")
+    actions.add_parser("brave")
     translate_parser = actions.add_parser("translate")
     translate_parser.add_argument("target", nargs="?", default="en")
     translate_parser.add_argument("--selection", action="store_true")
@@ -209,6 +242,8 @@ def main():
             downloads(args.directory)
         elif args.action == "reader":
             reader()
+        elif args.action == "brave":
+            open_brave()
         else:
             translate(args.target, args.selection)
     except (ToolError, OSError, ValueError) as error:
