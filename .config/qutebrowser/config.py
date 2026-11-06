@@ -32,16 +32,23 @@ c.session.default_name = "default"
 # Direct search shortcuts: o !yt query, O !gh query, etc. DuckDuckGo remains
 # the default, and its own !bang shortcuts still work for other services.
 search_engines = dict(c.url.searchengines)
+# Clear removed shortcuts on reload as well as on a fresh start.
+search_engines.pop("!w", None)
+search_engines.pop("!gemini", None)
 search_engines.update({
     "DEFAULT": "https://duckduckgo.com/?q={}",
     "!yt": "https://www.youtube.com/results?search_query={}",
     "!gh": "https://github.com/search?q={}",
     "!aw": "https://wiki.archlinux.org/index.php?search={}",
     "!apkg": "https://archlinux.org/packages/?q={}",
-    "!g": "https://www.google.com/search?q={}",
-    "!w": "https://en.wikipedia.org/w/index.php?search={}",
+    "!goog": "https://www.google.com/search?q={}",
+    "!gpt": "https://chatgpt.com/?q={}",
+    "!chatgpt": "https://chatgpt.com/?q={}",
+    "!claude": "https://claude.ai/new?q={}",
 })
 c.url.searchengines = search_engines
+# A shortcut alone opens the engine's homepage instead of searching DuckDuckGo.
+c.url.open_base_url = True
 
 # Shared desktop palette (sainnhe/gruvbox-material, medium dark background).
 palette = {
