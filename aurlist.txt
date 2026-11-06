@@ -19,7 +19,6 @@ gruvbox-material-gtk-theme-git
 hyprmod
 hyprmoncfg
 localsend-bin
-masterpdfeditor-free
 ocr4linux-git
 oh-my-zsh-git
 onlyoffice-bin

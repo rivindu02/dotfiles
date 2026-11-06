@@ -2,7 +2,7 @@
 image/png=swayimg.desktop;
 video/mp4=mpv.desktop;
 application/vnd.ms-publisher=code.desktop;
-application/pdf=masterpdfeditor4.desktop;onlyoffice-desktopeditors.desktop;brave-browser.desktop;
+application/pdf=onlyoffice-desktopeditors.desktop;brave-browser.desktop;
 image/jpeg=swayimg.desktop;
 video/x-matroska=mpv.desktop;
 text/markdown=nvim.desktop;
