@@ -90,7 +90,7 @@ sudo systemctl enable --now camera-toggle
 
 # Hardening + privacy (sysctl, no core dumps, LLMNR off, DNS-over-TLS, MAC randomization,
 # uinput group, reflector): see the script for details
-sudo bash system/apply-round4.sh
+sudo bash system/apply-security-hardening.sh
 
 # SDDM theme
 sudo install -Dm644 system/sddm/theme.conf /usr/share/sddm/themes/sugar-candy/theme.conf

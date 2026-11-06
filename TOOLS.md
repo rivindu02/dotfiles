@@ -144,10 +144,13 @@ to the previous tab and `Ctrl+L` to the next; `Ctrl+Tab` still works.
 | `toggle-idle.sh`, `toggle-nightlight.sh` | Stay-awake and night-light toggles |
 | `lid.sh` | Lid-switch handler. Stay-awake **on**: closing the lid locks (hyprlock) and turns the laptop screen off, and everything keeps running. Stay-awake **off**: the laptop suspends, even with an external monitor connected (logind ignores the lid when docked, so the script suspends instead). Opening the lid turns the screen back on to the lock screen. Ignores libinput's fake "lid open" events by checking `/proc/acpi/button/lid`. Log: `$XDG_RUNTIME_DIR/lid.log` |
 | `get-wallpaper.sh`, `set-wallpaper.sh` | Current Waypaper wallpaper; syncs it to the lock screen |
-| `asus-sleep.sh` | Keyboard backlight / asusd handling around suspend |
 
 ### Root-level setup scripts (`system/`)
-`apply-system-fixes.sh`, `apply-round2.sh`, `apply-round3.sh`, `apply-round4.sh` are idempotent scripts, safe to re-run. They set up the firewall, TRIM, oomd, sysctl hardening, DNS-over-TLS, MAC randomization, reflector, etc. Run each with `sudo bash system/<script>`.
+Use the installation commands in `README.md` for the firewall and systemd
+configuration. `apply-security-hardening.sh` installs the hardening/privacy
+settings. `apply-hdd-no-uas.sh`, `apply-home-subvols.sh`, and
+`apply-luks-header-backup.sh` handle the storage setup; read each script before
+running it with sudo. The suspend hook is `system/systemd/asus-sleep.sh`.
 
 ---
 
