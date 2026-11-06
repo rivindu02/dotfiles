@@ -12,6 +12,8 @@ LICENSE
 \.githooks
 \.luarc\.json
 \.aider.*
+# Keep GitHub authentication local even if hosts.yml is accidentally copied in.
+^/\.config/gh/hosts\.yml$
 
 # Stow packages, stowed on their own (stow zsh git ssh scripts system_prefs)
 ^/git$
