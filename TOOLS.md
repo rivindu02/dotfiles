@@ -263,7 +263,6 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 | **ntfsprogs** | NTFS (Windows disk) tools | `sudo ntfsfix /dev/sdX1` (fix "dirty" NTFS) |
 | **inotify-tools** | React to file changes in scripts | `inotifywait -m -e close_write dir/` |
 | **debtap** (AUR) | Convert `.deb` packages to Arch packages (last resort) | `sudo debtap -u` once, then `debtap pkg.deb` |
-| **appimagelauncher** (AUR) | Integrates AppImages into the menu | Double-click an `.AppImage`; your AppImages live in `~/Applications` |
 | **localsend-bin** (AUR) | AirDrop-style file sharing on the same Wi-Fi (phone ↔ laptop) | Open LocalSend on both devices (firewall port 53317 is open) |
 
 ---
@@ -551,7 +550,6 @@ List installed fonts: `fc-list : family | sort -u`.
 | `hyprpolkitagent` | Admin password prompts |
 | `podman.socket` | Podman API (used by `docker`, lazydocker) |
 | `tailscale-receive` | Auto-accept Taildrop files |
-| `appimagelauncherd` | AppImage integration |
 | `waybar`, `voxtype` | Enabled, but they don't auto-start via systemd (Waybar starts from Hyprland; voxtype from its Waybar button) |
 | Timers: `gcal-widget` (every minute), `swaync-weather` (30 min), `backup-home` (once enabled) | Calendar, weather, backups |
 

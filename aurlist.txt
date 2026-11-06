@@ -2,7 +2,6 @@ antigravity-ide
 apparmor.d
 apparmor.d-base
 apparmor.d-tools
-appimagelauncher
 arduino-ide-bin
 aws-session-manager-plugin
 bemoji
