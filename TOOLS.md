@@ -131,6 +131,7 @@ to the previous tab and `Ctrl+L` to the next; `Ctrl+Tab` still works.
 | `writ` | Obsidian note picker/creator (`SUPER+W`) | Notes live in `~/Documents/Notes` |
 | `bemoji-rofi` | Emoji picker (`SUPER+.`) | |
 | `gcalcli` | Google Calendar CLI wrapper | `gcalcli --config-folder ~/.config/gcalcli/gcalcli-personal agenda` |
+| `notify-send` | Limits long message bodies to three lines of about 40 characters, then calls `/usr/bin/notify-send`; the notification-center copy is shortened too | `notify-send "Title" "Message"`; use `/usr/bin/notify-send` directly for full text |
 
 ### Helper scripts (`.config/scripts`, called by Hyprland/Waybar/systemd)
 | Script | Purpose |
