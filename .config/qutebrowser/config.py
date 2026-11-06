@@ -14,6 +14,16 @@
 # Theme settings below take precedence over autoconfig.yml at startup/reload.
 config.load_autoconfig(True)
 
+# Restrict WebRTC to the public interface and keep local HTML from reading
+# other local files. Avoid speculative DNS requests and unsolicited playback.
+c.content.webrtc_ip_handling_policy = "default-public-interface-only"
+c.content.local_content_can_access_file_urls = False
+c.content.dns_prefetch = False
+c.content.autoplay = False
+# Reject invalid background connections without offering a bypass prompt.
+# Direct page visits still ask; accepting explicitly loads them insecurely.
+c.content.tls.certificate_errors = "ask-block-thirdparty"
+
 # Continue the last browsing session on startup. A fixed autosave target keeps
 # named tab collections from becoming the session overwritten when quitting.
 c.auto_save.session = True
