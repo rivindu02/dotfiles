@@ -125,6 +125,27 @@ c.colors.hints.bg = palette["yellow"]
 c.colors.hints.fg = palette["bg0"]
 c.colors.hints.match.fg = "#7c2d28"
 c.hints.border = "1px solid " + palette["bg0"]
+# gi and ;t share the input hint group. Include custom search/text widgets
+# which expose an ARIA role instead of a standard input/textarea element.
+input_selectors = dict(c.hints.selectors)
+input_selectors["inputs"] = list(dict.fromkeys([
+    *input_selectors["inputs"],
+    'input[type=""]',
+    '[role~="searchbox" i]',
+    '[role~="textbox" i]',
+    '[role~="combobox" i][aria-autocomplete]',
+]))
+c.hints.selectors = input_selectors
+# GitHub's header search is a dialog launcher styled as an input. Hint it
+# while collapsed; once open, the regular input selectors handle the field.
+github_input_selectors = dict(input_selectors)
+github_input_selectors["inputs"] = [
+    *input_selectors["inputs"],
+    'button[aria-label^="Search or jump to"][aria-expanded="false"]',
+    'button[data-target="qbsearch-input.inputButton"]',
+]
+config.set("hints.selectors", github_input_selectors, "https://github.com/*")
+config.bind("gi", "hint inputs --first")
 c.colors.keyhint.bg = palette["bg1"]
 c.colors.keyhint.fg = palette["fg"]
 c.colors.keyhint.suffix.fg = palette["yellow"]
