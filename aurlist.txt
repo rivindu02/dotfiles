@@ -36,7 +36,6 @@ python-imageio-ffmpeg
 python-screeninfo
 qdirstat
 quickshell-overview-git
-recordly
 rofi-power-menu
 rustdesk
 spotify

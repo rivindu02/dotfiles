@@ -178,7 +178,6 @@ xdg-utils
 xorg-server
 yazi
 ydotool
-zed
 zip
 zoxide
 zram-generator
