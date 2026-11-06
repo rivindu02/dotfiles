@@ -22,22 +22,13 @@ vim.g.maplocalleader = "\\"
 require("core.options")
 require("core.keymaps")
 require("core.robotics").setup()
+vim.cmd("filetype plugin indent on")
+vim.cmd("syntax enable")
 
 -- 3. PLUGINS
-require("lazy").setup("plugins", {
+local lazy_options = {
 	rocks = {
         enabled = false,
     },
-})
-
-
-
-
-
-
-
-
-
-
-
-
+}
+require("lazy").setup("plugins", lazy_options)
