@@ -318,6 +318,13 @@ for mode in ("normal", "insert"):
 from qutebrowser.api import cmdutils
 from qutebrowser.misc import objects
 
+config.source(str(Path(__file__).resolve().with_name("command_enter.py")))
+config.bind("<Return>", "command-enter-next", mode="command")
+# Explicit bindings take priority over Ctrl+J's default mapping to Enter and
+# Ctrl+K's default line-editing action while the command/completion bar is open.
+config.bind("<Ctrl-j>", "completion-item-focus next", mode="command")
+config.bind("<Ctrl-k>", "completion-item-focus prev", mode="command")
+
 # :config-source executes this file again; replace our command on reload.
 objects.commands.pop("tabs-shelve", None)
 objects.commands.pop("tabs-save", None)
