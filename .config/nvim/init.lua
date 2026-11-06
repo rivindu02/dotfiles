@@ -31,4 +31,12 @@ local lazy_options = {
         enabled = false,
     },
 }
+if vim.env.DEVBOX_NVIM_ISOLATED == "1" then
+    local lockfile = vim.fn.stdpath("data") .. "/lazy-lock.json"
+    if vim.fn.filereadable(lockfile) == 0 then
+        vim.fn.mkdir(vim.fn.stdpath("data"), "p")
+        vim.fn.writefile(vim.fn.readfile(vim.fn.stdpath("config") .. "/lazy-lock.json"), lockfile)
+    end
+    lazy_options.lockfile = lockfile
+end
 require("lazy").setup("plugins", lazy_options)
