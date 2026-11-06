@@ -11,8 +11,8 @@ dir="$HOME/.config/rofi/powermenu/type-2"
 theme='style-1'
 
 # CMDs
-uptime="`uptime -p | sed -e 's/up //g'`"
-host=`hostname`
+uptime="$(uptime -p)"
+uptime="${uptime#up }"
 
 # Options
 shutdown='⏻'
@@ -29,7 +29,7 @@ rofi_cmd() {
         -display-columns 1 -display-column-separator '\t' \
         -p '⏻' \
         -mesg "Uptime: $uptime" \
-        -theme ${dir}/${theme}.rasi \
+        -theme "${dir}/${theme}.rasi" \
         -no-auto-select
 }
 
@@ -49,7 +49,7 @@ confirm_cmd() {
         -p 'Confirmation' \
         -mesg "${1:-Are you Sure?}"$'\nY / N' \
         -no-auto-select \
-        -theme ${dir}/${theme}.rasi
+        -theme "${dir}/${theme}.rasi"
 }
 
 # Ask for confirmation. While stay-awake is on, say so: Yes turns it off first.
