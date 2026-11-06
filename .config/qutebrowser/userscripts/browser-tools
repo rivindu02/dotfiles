@@ -26,8 +26,17 @@ class ToolError(Exception):
 
 
 def emit(*parts):
-    """Write one quoted command; user-supplied newlines cannot inject commands."""
-    command = shlex.join(str(part).replace("\r", " ").replace("\n", " ") for part in parts)
+    """Write one browser command; user-supplied newlines cannot inject commands."""
+    if parts and parts[0] == "open":
+        # :open has maxsplit=0: shell-style quotes become part of its URL.
+        # Our callers supply a percent-encoded, whitespace-free URL, and this
+        # command is sent directly to qutebrowser, never through a shell.
+        url = str(parts[-1])
+        if any(char.isspace() for char in url) or ";;" in url or "\x00" in url:
+            raise ToolError("The generated browser URL is not safely encoded.")
+        command = " ".join(str(part) for part in parts)
+    else:
+        command = shlex.join(str(part).replace("\r", " ").replace("\n", " ") for part in parts)
     fifo = os.environ.get("QUTE_FIFO")
     if not fifo:
         raise ToolError("Run this tool from qutebrowser.")
