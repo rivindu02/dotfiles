@@ -10,10 +10,17 @@ return {
             local builtin = require('telescope.builtin')
             local telescope = require('telescope')
             local open_with_trouble = require("trouble.sources.telescope").open
+            local ignored_dirs = { "target", ".git", "node_modules", "__pycache__", ".venv", "venv", "build", "install", "log" }
+            local ignored_patterns = {}
+            for _, dir in ipairs(ignored_dirs) do
+                -- Match whole path components, preserving names such as catalog/.
+                local pattern = vim.pesc(dir)
+                vim.list_extend(ignored_patterns, { "^" .. pattern .. "/", "/" .. pattern .. "/" })
+            end
 
             telescope.setup({
                 defaults = {
-                    file_ignore_patterns = { "target/", ".git/", "node_modules/", "%.class" },
+                    file_ignore_patterns = ignored_patterns,
                     layout_strategy = 'horizontal',
                     layout_config = {
                         horizontal = {
@@ -38,8 +45,12 @@ return {
 
             vim.keymap.set('n', '<leader>ff', function() builtin.find_files({ hidden = true }) end, { desc = "Find files" })
             vim.keymap.set('n', '<leader>fg', function() builtin.live_grep({
-				additional_args = function(options)
-					return { "--hidden", "--no-ignore" }
+				additional_args = function()
+                    local args = { "--hidden", "--no-ignore" }
+                    for _, dir in ipairs(ignored_dirs) do
+                        args[#args + 1] = "--glob=!**/" .. dir .. "/**"
+                    end
+                    return args
 				end
 			})end, { desc = "Live Grep" })
             vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = "Find buffers" })
@@ -61,7 +72,7 @@ return {
         config = function()
             require('project_nvim').setup({
                 detection_methods = { "pattern", "lsp" },
-                patterns = { ".git", "pom.xml", "build.gradle", "package.json" },
+                patterns = { "colcon.meta", ".colcon", "src", ".git", "pyproject.toml", "setup.py", "CMakeLists.txt", "package.json" },
             })
         end
     },

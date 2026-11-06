@@ -18,7 +18,7 @@ return {
                 },
                 filters = {
                     dotfiles = false,
-                    custom = { "^.git$", "target", "__pycache__" },
+                    custom = { "^\\.git$", "^target$", "^__pycache__$", "^build$", "^install$", "^log$", "^\\.venv$", "^venv$" },
                 },
             })
 			vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>")
