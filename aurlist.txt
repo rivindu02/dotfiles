@@ -40,7 +40,6 @@ recordly
 rofi-power-menu
 rustdesk
 spotify
-todoist-appimage
 v4l2loopback-dc-dkms
 visual-studio-code-bin
 vm-curator
