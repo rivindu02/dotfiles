@@ -256,6 +256,7 @@ def main(arguments):
     # the registered domain name and finally: the IPv4 address if that's what
     # the URL represents
     candidates = []
+    seen_ids = set()
     for target in filter(
         None,
         [
@@ -281,7 +282,10 @@ def main(arguments):
         if not target_candidates:
             continue
 
-        candidates = candidates + target_candidates
+        for candidate in target_candidates:
+            if candidate['id'] not in seen_ids:
+                candidates.append(candidate)
+                seen_ids.add(candidate['id'])
         if not arguments.merge_candidates:
             break
     else:
@@ -293,17 +297,19 @@ def main(arguments):
     if len(candidates) == 1:
         selection = candidates.pop()
     else:
-        choices = ['{:s} | {:s}'.format(c['name'], c['login']['username']) for c in candidates]
+        # Unique row numbers preserve generic dmenu support without parsing
+        # names/usernames as delimiters. Control characters must not add rows
+        # or rofi metadata. Null usernames are valid password-only logins.
+        def label(value):
+            return ''.join(char if char.isprintable() else ' ' for char in (value or ''))
+
+        choices = ['{}: {} | {}'.format(i + 1, label(c['name']), label(c['login'].get('username')))
+                   for i, c in enumerate(candidates)]
         choice = dmenu(choices, arguments.dmenu_invocation, arguments.io_encoding)
         if not choice:
             return ExitCodes.SUCCESS
-        choice_tokens = choice.split('|')
-        choice_name = choice_tokens[0].strip()
-        choice_username = choice_tokens[1].strip()
-        selection = next((c for (i, c) in enumerate(candidates)
-                          if c['name'] == choice_name
-                          and c['login']['username'] == choice_username),
-                         None)
+        selection = next((c for row, c in zip(choices, candidates)
+                          if row.strip() == choice), None)
 
     # Nothing was selected, simply return
     if not selection:
