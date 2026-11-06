@@ -1,117 +1,84 @@
--- Debugger
 return {
     {
         "mfussenegger/nvim-dap",
-		keys = { '<F5>', '<F10>', '<F11>', '<leader>db', '<leader>dc' },
+        keys = {
+            { "<F5>", function() require("dap").continue() end, desc = "Debug: continue" },
+            { "<F10>", function() require("dap").step_over() end, desc = "Debug: step over" },
+            { "<F11>", function() require("dap").step_into() end, desc = "Debug: step into" },
+            { "<F12>", function() require("dap").step_out() end, desc = "Debug: step out" },
+            { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle breakpoint" },
+            { "<leader>dt", function() require("dap").toggle_breakpoint() end, desc = "Toggle breakpoint" },
+            { "<leader>dB", function()
+                require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+            end, desc = "Conditional breakpoint" },
+            { "<leader>dc", function() require("dap").continue() end, desc = "Debug: continue" },
+            { "<leader>dn", function() require("dap").step_over() end, desc = "Debug: step over" },
+            { "<leader>di", function() require("dap").step_into() end, desc = "Debug: step into" },
+            { "<leader>do", function() require("dap").step_out() end, desc = "Debug: step out" },
+            { "<leader>dq", function() require("dap").terminate() end, desc = "Debug: terminate" },
+            { "<leader>dr", function() require("dap").restart() end, desc = "Debug: restart" },
+            { "<leader>du", function() require("dapui").toggle() end, desc = "Debug UI" },
+            { "<leader>de", function() require("dapui").eval() end, mode = { "n", "v" }, desc = "Debug: evaluate" },
+        },
         dependencies = {
             "rcarriga/nvim-dap-ui",
-            "nvim-neotest/nvim-nio",         -- required by dap-ui
+            "nvim-neotest/nvim-nio",
             "theHamsta/nvim-dap-virtual-text",
-            -- Language adapters
             "mfussenegger/nvim-dap-python",
-            "microsoft/vscode-java-debug",
         },
         config = function()
             local dap = require("dap")
             local dapui = require("dapui")
-
-            -- -----------------------
-            -- DAP UI AUTO OPEN/CLOSE
-            -- -----------------------
-            dap.listeners.before.attach.dapui_config = function()
-                dapui.open()
-            end
-            dap.listeners.before.launch.dapui_config = function()
-                dapui.open()
-            end
-            dap.listeners.before.event_terminated.dapui_config = function()
-                dapui.close()
-            end
-            dap.listeners.before.event_exited.dapui_config = function()
-                dapui.close()
-            end
+            local project = require("core.project")
 
             dapui.setup()
+            require("nvim-dap-virtual-text").setup({ commented = true })
+            dap.listeners.before.attach.dapui_config = function() dapui.open() end
+            dap.listeners.before.launch.dapui_config = function() dapui.open() end
+            dap.listeners.before.event_terminated.dapui_config = function() dapui.close() end
+            dap.listeners.before.event_exited.dapui_config = function() dapui.close() end
 
-            -- -----------------------
-            -- VIRTUAL TEXT
-            -- -----------------------
-            require("nvim-dap-virtual-text").setup({
-                commented = true,   -- show virtual text alongside comment
+            -- Keep the adapter's environment separate from the program's environment.
+            -- Mason exposes a stable executable, independent of its package layout.
+            require("dap-python").setup("debugpy-adapter", {
+                pythonPath = function() return project.python() end,
+            })
+            table.insert(dap.configurations.python, {
+                name = "Python module (including ROS 2 nodes)",
+                type = "python",
+                request = "launch",
+                module = function() return vim.fn.input("Module (e.g. my_package.my_node): ") end,
+                pythonPath = function() return project.python() end,
+                cwd = function() return project.root() end,
+                console = "integratedTerminal",
             })
 
-            -- -----------------------
-            -- PYTHON
-            -- -----------------------
-            require("dap-python").setup(
-                vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python"
-            )
-
-            -- -----------------------
-            -- C / C++ (codelldb via mason)
-            -- -----------------------
-            local codelldb_path = vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/adapter/codelldb"
             dap.adapters.codelldb = {
                 type = "server",
                 port = "${port}",
-                executable = {
-                    command = codelldb_path,
-                    args = { "--port", "${port}" },
-                },
+                executable = { command = "codelldb", args = { "--port", "${port}" } },
             }
             dap.configurations.cpp = {
                 {
-                    name = "Launch file",
+                    name = "Launch C/C++ executable",
                     type = "codelldb",
                     request = "launch",
                     program = function()
-                        return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+                        return vim.fn.input("Executable (ROS: install/<pkg>/lib/<pkg>/<node>): ", project.root() .. "/", "file")
                     end,
-                    cwd = "${workspaceFolder}",
+                    cwd = function() return project.root() end,
                     stopOnEntry = false,
+                },
+                {
+                    name = "Attach to C/C++ process",
+                    type = "codelldb",
+                    request = "attach",
+                    pid = require("dap.utils").pick_process,
+                    cwd = function() return project.root() end,
                 },
             }
             dap.configurations.c = dap.configurations.cpp
-
-            -- -----------------------
-            -- JAVA (jdtls handles this via nvim-jdtls)
-            -- jdtls automatically registers its own DAP adapter
-            -- when jdtls attaches, so no manual config needed here.
-            -- Trigger with: require('jdtls.dap').setup_dap_main_class_configs()
-            -- -----------------------
-            vim.api.nvim_create_autocmd("FileType", {
-                pattern = "java",
-                callback = function()
-                    local jdtls_ok, jdtls_dap = pcall(require, "jdtls.dap")
-                    if jdtls_ok then
-                        jdtls_dap.setup_dap_main_class_configs()
-                    end
-                end,
-            })
-
-            -- -----------------------
-            -- KEYMAPS
-            -- -----------------------
-            local map = vim.keymap.set
-
-            -- Breakpoints
-            map("n", "<leader>dt", dap.toggle_breakpoint, { desc = "Toggle Breakpoint" })
-            map("n", "<leader>dB", function()
-                dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
-            end, { desc = "Conditional Breakpoint" })
-
-            -- Control flow
-            map("n", "<leader>dc", dap.continue,          { desc = "Continue" })
-            map("n", "<leader>dn", dap.step_over,         { desc = "Step Over" })
-            map("n", "<leader>di", dap.step_into,         { desc = "Step Into" })
-            map("n", "<leader>do", dap.step_out,          { desc = "Step Out" })
-            map("n", "<leader>dq", dap.terminate,         { desc = "Terminate" })
-            map("n", "<leader>dr", dap.restart,           { desc = "Restart" })
-
-            -- UI
-            map("n", "<leader>du", dapui.toggle,          { desc = "Toggle DAP UI" })
-            map("n", "<leader>de", dapui.eval,            { desc = "Eval Expression" })
-            map("v", "<leader>de", dapui.eval,            { desc = "Eval Selection" })
+            -- STM32 requires a board-specific GDB/OpenOCD configuration; see README.md.
         end,
-    }
+    },
 }
