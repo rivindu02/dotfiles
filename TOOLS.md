@@ -608,6 +608,14 @@ podman system prune        # unused container images
 - Same Wi-Fi: **LocalSend** on both devices.
 - Anywhere: `SUPER+U` → pick a device → "Send File" (Tailscale), or `tailscale file cp file.pdf iphone:`.
 - Received Taildrop files land in `~/tailscale`.
+- The receiver retries failures after 5, 10, 20, 40, then at most 60 seconds;
+  a successful receive resets the delay. Errors and recovery messages are in
+  `journalctl --user -u tailscale-receive.service`.
+- Sent `Clipboard-*.txt` / `Clipboard-*.png` copies stay in `~/tailscale` so
+  notification clicks can open them. Review and delete those copies manually
+  when no longer needed; the receiver does not automatically delete files.
+- Receiver checks use fake commands and do not access real Taildrop files:
+  `python3 -B .githooks/tests/test_taildrop_receiver.py`.
 
 ### Connect an external monitor / present
 - `SUPER+P`: toggle the Extend desktop / Mirror menu. Reads the current hyprmoncfg-generated layout without rewriting profiles; changes last until a monitor configuration reload. Lid behavior is unchanged.
