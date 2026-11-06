@@ -235,6 +235,14 @@ config.bind(
     "window.__quteGruvboxDark.toggle() : 'Gruvbox dark mode is not loaded.'",
 )
 
+# YouTube's optional Greasemonkey ad skipper can be disabled for the current
+# tab without removing its file. A page reload enables it again.
+config.bind(
+    ",a",
+    "jseval --world main window.__quteYoutubeAdSkip ? "
+    "window.__quteYoutubeAdSkip.toggle() : 'Ad skipping is not loaded in this tab.'",
+)
+
 # Display PDFs in the browser using PDF.js (Arch package: pdfjs).
 # The viewer still offers a download button. Local .html files render with
 # :open ~/path/file.html; relative CSS, images, and JavaScript use defaults.
