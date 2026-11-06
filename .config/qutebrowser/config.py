@@ -221,14 +221,19 @@ c.colors.tabs.indicator.stop = palette["green"]
 c.colors.tabs.indicator.error = palette["red"]
 c.colors.tabs.indicator.system = "rgb"
 
-# Advertise a dark color-scheme preference to websites which support it.
-# This does not recolor arbitrary pages: darkmode.enabled forces that, and
-# can break website colors or images. Forced dark mode is off by default.
-c.colors.webpage.preferred_color_scheme = "dark"
+# Leave websites at browser defaults. Gruvbox is opt-in via ,d only
+# (greasemonkey/gruvbox-dark.user.js); keep Chromium's inversion disabled.
+c.colors.webpage.preferred_color_scheme = "auto"
+c.colors.webpage.darkmode.enabled = False
+c.colors.webpage.bg = "white"
 
-# Press comma, then d in normal mode to toggle forced webpage dark mode.
-# Reload the current page so the changed rendering is visible immediately.
-config.bind(",d", "config-cycle colors.webpage.darkmode.enabled ;; reload")
+# Press comma, then d to toggle Gruvbox rendering for this site. The script
+# remembers the choice in site storage; reload to update embedded frames too.
+config.bind(
+    ",d",
+    "jseval --world main window.__quteGruvboxDark ? "
+    "window.__quteGruvboxDark.toggle() : 'Gruvbox dark mode is not loaded.'",
+)
 
 # Display PDFs in the browser using PDF.js (Arch package: pdfjs).
 # The viewer still offers a download button. Local .html files render with
