@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Web Apps
+Exec=/home/rivindu02/.local/bin/qute-webapp %U
+Icon=org.qutebrowser.qutebrowser
+Terminal=false
+NoDisplay=true
+StartupWMClass=org.qutebrowser.webapps

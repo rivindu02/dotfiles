@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+"""Open web apps without tab bars or the normal browser's restored session."""
+import os
+from pathlib import Path
+import sys
+
+
+def main():
+    if len(sys.argv) < 2:
+        raise SystemExit("Usage: qute-webapp URL [URL ...]")
+    config = Path(__file__).resolve().parents[3] / ".config/qutebrowser/webapp.py"
+    if not config.is_file():
+        config_root = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
+        config = config_root / "qutebrowser/webapp.py"
+    if not config.is_file():
+        raise SystemExit("qute-webapp: qutebrowser/webapp.py is not installed")
+    data = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share")
+    profile = data / "qutebrowser-webapps"
+    scripts = profile / "config/greasemonkey"
+    scripts.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    # Reuse the webpage theme/ad helpers without copying their code or state.
+    if not scripts.exists() and not scripts.is_symlink():
+        scripts.symlink_to(config.parent / "greasemonkey", target_is_directory=True)
+    os.execvp("qutebrowser", [
+        "qutebrowser", "--basedir", str(profile), "--config-py", str(config),
+        "--desktop-file-name", "org.qutebrowser.webapps",
+        "--override-restore", "--target", "window", "--untrusted-args", *sys.argv[1:],
+    ])
+
+
+if __name__ == "__main__":
+    main()

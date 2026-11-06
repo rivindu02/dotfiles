@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Name=Tailscale
+Exec=/home/rivindu02/.local/bin/qute-webapp "https://login.tailscale.com/admin/"
+Icon=/home/rivindu02/.local/share/icons/hicolor/512x512/apps/brave-canhbdpcpahgedmgcddpooddiddajcib-Default.png
+StartupWMClass=org.qutebrowser.webapps

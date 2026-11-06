@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Name=Google Maps
+Exec=/home/rivindu02/.local/bin/qute-webapp "https://maps.google.com/"
+Icon=/home/rivindu02/.local/share/icons/hicolor/512x512/apps/brave-mnhkaebcjjhencmpkapnbdaogjamfbcj-Default.png
+StartupWMClass=org.qutebrowser.webapps

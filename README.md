@@ -61,9 +61,20 @@ effect on the next launch without restowing, reloading, or running
 `SUPER+SHIFT+B` opens qutebrowser's live bookmarks page. With Brave selected it
 uses the existing Rofi bookmark manager (close Brave before adding entries).
 This shortcut supports qutebrowser and Brave; bookmarks are not migrated when
-switching. Installed web apps (including WhatsApp), the Waybar calendar app
-window, and qutebrowser's `,b` shortcut always use Brave, independently of the
-default browser selection.
+switching. Installed web apps (WhatsApp, YouTube, NotebookLM, Google Calendar,
+Maps, Photos, and Tailscale) and the Waybar calendar shortcut open qutebrowser
+app windows without tab/status bars, independently of the default browser
+selection. `qute-webapp` uses a separate persistent profile shared by the web
+apps at `~/.local/share/qutebrowser-webapps` (or `$XDG_DATA_HOME/qutebrowser-webapps`).
+App windows use the separate `org.qutebrowser.webapps` Wayland class, so the
+normal browser's workspace-1 rule does not match them; they open on the current
+workspace. After changing the app launcher's class, close all app windows and
+relaunch so the existing app process picks up the new identity.
+App links requesting new tabs open new windows, and app launches do not restore
+the normal browser session. Sign in once in this app profile; normal browser
+cookies are separate. Their desktop entries
+retain the existing IDs and icons; sign in again using qutebrowser when needed.
+Qutebrowser's `,b` shortcut opens the current page in Brave.
 
 Check the selection with `default-browser --print`, open a URL with
 `default-browser https://example.org`, or use

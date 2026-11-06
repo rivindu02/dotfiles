@@ -63,7 +63,7 @@
         "today": "<span color='#75f1fa'><b>{}</b></span>"
       }
     },
-    "on-click": "brave --app=https://calendar.google.com"
+    "on-click": "/home/rivindu02/.local/bin/qute-webapp https://calendar.google.com/"
   },
   "memory": {
     "format": "󰍛 {}%",

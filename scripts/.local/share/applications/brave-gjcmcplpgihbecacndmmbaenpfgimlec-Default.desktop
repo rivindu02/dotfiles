@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Name=NotebookLM
+Exec=/home/rivindu02/.local/bin/qute-webapp "https://notebooklm.google.com/"
+Icon=brave-gjcmcplpgihbecacndmmbaenpfgimlec-Default
+StartupWMClass=org.qutebrowser.webapps

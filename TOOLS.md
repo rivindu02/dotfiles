@@ -455,7 +455,7 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 | Tool | Use case | How to use |
 |---|---|---|
 | **qutebrowser** | Main browser (links, HTML, PDFs, searches) | `SUPER+B`; browser choice lives in `~/.config/browser/default`; see `.config/qutebrowser/README.md` for bindings |
-| **brave-bin** (AUR) | Alternative browser and installed web apps | `brave`; qutebrowser's `,b` opens the current page in Brave |
+| **brave-bin** (AUR) | Alternative browser | `brave`; qutebrowser's `,b` opens the current page in Brave |
 | **firefox** | Second browser | `firefox` |
 | **obsidian** | Markdown notes vault `~/Documents/Notes` | `SUPER+O`; quick note `SUPER+W` |
 | **onlyoffice-bin** (AUR) | Word / Excel / PowerPoint compatible office suite | `onlyoffice-desktopeditors file.docx` (or `desktopeditors`) |

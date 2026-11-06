@@ -1,0 +1,21 @@
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Name=YouTube
+Exec=/home/rivindu02/.local/bin/qute-webapp "https://www.youtube.com/"
+Icon=brave-agimnkijcaahngcdmfeangaknmldooml-Default
+StartupWMClass=org.qutebrowser.webapps
+Actions=Search;Shorts;Subscriptions
+
+[Desktop Action Search]
+Name=Search
+Exec=/home/rivindu02/.local/bin/qute-webapp "https://www.youtube.com/results?feature=app_shortcuts"
+
+[Desktop Action Shorts]
+Name=Shorts
+Exec=/home/rivindu02/.local/bin/qute-webapp "https://www.youtube.com/shorts?feature=app_shortcuts"
+
+[Desktop Action Subscriptions]
+Name=Subscriptions
+Exec=/home/rivindu02/.local/bin/qute-webapp "https://www.youtube.com/feed/subscriptions?feature=app_shortcuts"

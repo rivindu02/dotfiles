@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Name=Google Calendar
+Exec=/home/rivindu02/.local/bin/qute-webapp "https://calendar.google.com/"
+Icon=brave-kjbdgfilnfhdoflbpgamdcdgpehopbep-Default
+StartupWMClass=org.qutebrowser.webapps
