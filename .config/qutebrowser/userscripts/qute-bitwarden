@@ -133,7 +133,8 @@ def get_session_key(auto_lock, password_prompt_invocation):
             if not session:
                 raise Exception('Could not unlock vault')
             key_id = subprocess.check_output(
-                ['keyctl', 'add', 'user', 'bw_session', session, '@u'],
+                ['keyctl', 'padd', 'user', 'bw_session', '@u'],
+                input=session,
                 text=True,
             ).strip()
 
@@ -148,7 +149,8 @@ def get_session_key(auto_lock, password_prompt_invocation):
 def pass_(domain, encoding, auto_lock, password_prompt_invocation):
     session_key = get_session_key(auto_lock, password_prompt_invocation)
     process = subprocess.run(
-        ['bw', 'list', 'items', '--nointeraction', '--session', session_key, '--url', domain],
+        ['bw', 'list', 'items', '--nointeraction', '--url', domain],
+        env={**os.environ, 'BW_SESSION': session_key},
         capture_output=True,
     )
 
@@ -172,7 +174,8 @@ def pass_(domain, encoding, auto_lock, password_prompt_invocation):
 def get_totp_code(selection_id, domain_name, encoding, auto_lock, password_prompt_invocation):
     session_key = get_session_key(auto_lock, password_prompt_invocation)
     process = subprocess.run(
-        ['bw', 'get', 'totp', '--nointeraction', '--session', session_key, selection_id],
+        ['bw', 'get', 'totp', '--nointeraction', selection_id],
+        env={**os.environ, 'BW_SESSION': session_key},
         capture_output=True,
     )
 
