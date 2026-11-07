@@ -68,6 +68,7 @@ class PlatformWindowTests(unittest.TestCase):
                 ("chatgpt", "ChatGPT", "#10A37F", "duckduckgo"),
                 ("claude", "Claude", "#D79921", "duckduckgo"),
                 ("youtube", "YouTube", "#FB4934", "youtube"),
+                ("private", "DuckDuckGo", "#B16286", "duckduckgo"),
             ):
                 with self.subTest(platform=key):
                     run = subprocess.run(["bash", str(SCRIPTS / "query-suggestions.sh"), key],
@@ -78,7 +79,10 @@ class PlatformWindowTests(unittest.TestCase):
                     self.assertIn("search-suggestions", result["args"])
                     style = result["args"][result["args"].index("-theme-str") + 1]
                     self.assertIn(color, style)
-                    self.assertIn(label, style)
+                    self.assertIn("Private search" if key == "private" else label, style)
+                    if key == "private":
+                        theme = result["args"][result["args"].index("-theme") + 1]
+                        self.assertTrue(theme.endswith("/psearch.rasi"))
 
 
 HARNESS = r'''

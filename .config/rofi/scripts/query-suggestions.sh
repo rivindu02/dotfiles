@@ -12,6 +12,11 @@ case "$platform" in
     chatgpt) label=ChatGPT; border_color='#10A37F'; verb=Ask ;;
     claude) label=Claude; border_color='#D79921'; verb=Ask ;;
     youtube) label=YouTube; border_color='#FB4934'; verb=Search; provider=youtube ;;
+    private)
+        label=DuckDuckGo; border_color='#B16286'; verb=Search
+        prompt=Search; placeholder='Private search…'
+        theme="$HOME/.config/rofi/menus/psearch.rasi"
+        ;;
     *) printf 'Unknown search platform: %s\n' "$platform" >&2; exit 2 ;;
 esac
 export ROFI_SEARCH_PLATFORM="$label"

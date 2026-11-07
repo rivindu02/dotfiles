@@ -2,13 +2,7 @@
 
 source "$HOME/.config/rofi/scripts/toggle.sh"
 rofi_toggle || exit 0
-# --- Config ---
-ROFI_THEME="$HOME/.config/rofi/menus/psearch.rasi"
-
-query=$(rofi \
-    -dmenu -i \
-    -p "Search" \
-    -theme "$ROFI_THEME")
+query=$(bash "$HOME/.config/rofi/scripts/query-suggestions.sh" private) || exit 0
 
 [ -z "$query" ] && exit 0
 

@@ -2,6 +2,5 @@
 
 configuration { show-icons: false; }
 * { border-colour: #B16286; }
-mainbox { children: [ "inputbar", "message" ]; }
-listview { enabled: false; lines: 0; }
+listview { lines: 6; }
 entry { placeholder: "Private search…"; }

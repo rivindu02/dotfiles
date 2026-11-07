@@ -118,6 +118,10 @@ class BrowserTests(unittest.TestCase):
         toggle = self.home / ".config/rofi/scripts/toggle.sh"
         toggle.parent.mkdir(parents=True)
         toggle.write_text("rofi_toggle() { return 0; }\n")
+        # Exercise the shared suggestion launcher with fake Rofi; no GUI or requests.
+        for filename in ("query-suggestions.sh", "search-suggestions.c", "search-suggestions.py"):
+            (toggle.parent / filename).symlink_to(ROOT / ".config/rofi/scripts" / filename)
+        self.env["XDG_CACHE_HOME"] = str(self.home / "cache")
         rofi = self.bin / "rofi"
         rofi.write_text('#!/bin/sh\nprintf "%s\\n" "$SEARCH_QUERY"\n')
         rofi.chmod(0o755)

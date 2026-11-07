@@ -141,8 +141,11 @@ YouTube uses Google's YouTube autocomplete endpoint. DuckDuckGo,
 ChatGPT, and Claude use DuckDuckGo's public autocomplete endpoint; the AI windows
 offer search phrase suggestions, not AI-generated prompts. Query prefixes are sent
 to the displayed suggestion provider; suggestions are not saved locally. Selected
-text opens on the chosen platform in the selected browser. Private search keeps
-its plain query prompt. Offline or failed requests still allow submitting text.
+text opens on the chosen platform in the selected browser. Private search
+(`SUPER+I`) uses the same compact suggestion window with its purple accent and
+opens results in a private browser window. Its typed prefixes are also sent to
+DuckDuckGo for suggestions; suggestions are not saved locally.
+Offline or failed requests still allow submitting text.
 The native Rofi mode builds automatically in `~/.cache/rofi-search` using `cc`,
 `pkg-config`, Rofi headers, and GLib/GIO; if those build dependencies are missing,
 the launcher falls back to a plain query prompt. Sources and helper live in
