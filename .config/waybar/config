@@ -108,6 +108,8 @@
     "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
   },
   "network": {
+    // Track the physical link so VPN routing changes don't hide bandwidth.
+    "interface": "wlo1",
     "interval": 2,
     "format-wifi": "󰇚 {bandwidthDownBits}",
     "format-ethernet": "󰇚 {bandwidthDownBits}",
