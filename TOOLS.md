@@ -133,6 +133,21 @@ to the previous tab and `Ctrl+L` to the next; `Ctrl+Tab` still works.
 | `gcalcli` | Google Calendar CLI wrapper | `gcalcli --config-folder ~/.config/gcalcli/gcalcli-personal agenda` |
 | `notify-send` | Limits long message bodies to three lines of about 40 characters, then calls `/usr/bin/notify-send`; the notification-center copy is shortened too | `notify-send "Title" "Message"`; use `/usr/bin/notify-send` directly for full text |
 
+In `SUPER+S`, choosing any platform opens a query window with live suggestions
+after a 300 ms typing pause (at least two characters). Use `↑`/`↓` and `Enter`
+to choose, or `Ctrl+Enter` to submit the exact text. The window starts with only
+the query field, grows when suggestions arrive, and shrinks when cleared.
+YouTube uses Google's YouTube autocomplete endpoint. DuckDuckGo,
+ChatGPT, and Claude use DuckDuckGo's public autocomplete endpoint; the AI windows
+offer search phrase suggestions, not AI-generated prompts. Query prefixes are sent
+to the displayed suggestion provider; suggestions are not saved locally. Selected
+text opens on the chosen platform in the selected browser. Private search keeps
+its plain query prompt. Offline or failed requests still allow submitting text.
+The native Rofi mode builds automatically in `~/.cache/rofi-search` using `cc`,
+`pkg-config`, Rofi headers, and GLib/GIO; if those build dependencies are missing,
+the launcher falls back to a plain query prompt. Sources and helper live in
+`.config/rofi/scripts/search-suggestions.*`.
+
 ### Helper scripts (`.config/scripts`, called by Hyprland/Waybar/systemd)
 | Script | Purpose |
 |---|---|

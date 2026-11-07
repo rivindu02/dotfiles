@@ -37,20 +37,16 @@ if [ -z "$matched_platform" ]; then
     exit 0
 fi
 
-# Per-platform border color for the query prompt
+# Select the suggestion window and preserve the platform's accent color.
 case "$matched_platform" in
-    *DuckDuckGo*) border_color="#DE5833" ;; # duckduckgo orange
-    *ChatGPT*) border_color="#10A37F" ;;   # openai green
-    *Claude*)  border_color="#D79921" ;;   # yellow
-    *YouTube*) border_color="#FB4934" ;;   # red
+    *DuckDuckGo*) platform=duckduckgo ;;
+    *ChatGPT*) platform=chatgpt ;;
+    *Claude*) platform=claude ;;
+    *YouTube*) platform=youtube ;;
 esac
 
 # User picked a platform — second rofi for the query
-query=$(rofi \
-    -dmenu -i \
-    -p "Query" \
-    -theme "$ROFI_THEME" \
-    -theme-str "window { border-color: ${border_color}; } mainbox { children: [ \"inputbar\", \"message\" ]; }")
+query=$(bash "$HOME/.config/rofi/scripts/query-suggestions.sh" "$platform") || exit 0
 [ -z "$query" ] && exit 0
 
 encoded=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$query")
