@@ -445,7 +445,6 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 | **ocr4linux-git** (AUR) | Copy text out of any part of the screen | `SUPER+SHIFT+T` |
 | **obs-studio** | Screen recording / streaming | `obs`; add source "Screen Capture (PipeWire)" |
 | **imagemagick** | Image conversion/editing from the CLI | `magick in.png out.jpg`; resize `magick in.jpg -resize 50% out.jpg`; PDF → images `magick -density 150 doc.pdf page-%02d.png` |
-| **masterpdfeditor-free** (AUR) | Edit PDFs (text, pages, forms, signing) | `masterpdfeditor4` / from rofi |
 | **intel-media-driver**, **libva-intel-driver**, **vulkan-intel** | GPU video decoding + Vulkan (mpv, Brave, OBS use them) | Check `vainfo` (libva-utils) |
 | **plymouth** + **plymouth-theme-archlinux** (AUR) | Boot splash | Nothing to run |
 

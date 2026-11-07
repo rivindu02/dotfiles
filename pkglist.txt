@@ -117,6 +117,7 @@ plymouth
 podman
 power-profiles-daemon
 procs
+proton-vpn-gtk-app
 python-adblock
 python-build
 python-dbus
