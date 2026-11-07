@@ -78,6 +78,8 @@ Maps, Photos, and Tailscale) and the Waybar calendar shortcut open qutebrowser
 app windows without tab/status bars, independently of the default browser
 selection. `qute-webapp` uses a separate persistent profile shared by the web
 apps at `~/.local/share/qutebrowser-webapps` (or `$XDG_DATA_HOME/qutebrowser-webapps`).
+The launcher keeps that profile and its `download/` directory private (mode 700)
+and starts the browser with a restrictive file-creation mask.
 App windows use the separate `org.qutebrowser.webapps` Wayland class, so the
 normal browser's workspace-1 rule does not match them; they open on the current
 workspace. After changing the app launcher's class, close all app windows and

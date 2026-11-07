@@ -14,8 +14,13 @@ def main():
         config = config_root / "qutebrowser/webapp.py"
     if not config.is_file():
         raise SystemExit("qute-webapp: qutebrowser/webapp.py is not installed")
+    # The browser inherits this for newly created profile/download files.
+    os.umask(0o077)
     data = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share")
     profile = data / "qutebrowser-webapps"
+    for directory in (profile, profile / "download"):
+        directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+        directory.chmod(0o700)  # Repair profiles created by older launchers.
     scripts = profile / "config/greasemonkey"
     scripts.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     # Reuse the webpage theme/ad helpers without copying their code or state.

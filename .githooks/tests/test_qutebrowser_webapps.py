@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import runpy
 import shlex
+import stat
 import subprocess
 import tempfile
 from types import SimpleNamespace
@@ -31,8 +32,15 @@ class WebAppTests(unittest.TestCase):
             env = dict(os.environ, PATH=f"{scratch}:/usr/bin:/bin",
                        XDG_DATA_HOME=str(scratch / "data"), APP_LOG=str(log))
             urls = ["https://web.whatsapp.com/", ":quit", "--temp-basedir"]
-            for _ in range(2):
-                subprocess.run([str(LAUNCHER), *urls], env=env, check=True)
+            profile = scratch / "data/qutebrowser-webapps"
+            for existing in (False, True):
+                if existing:
+                    profile.chmod(0o755)
+                    (profile / "download").chmod(0o755)
+                subprocess.run([str(LAUNCHER), *urls], env=env, check=True, umask=0o022)
+                for directory in (profile, profile / "download"):
+                    self.assertEqual(stat.S_IMODE(directory.stat().st_mode), 0o700)
+                self.assertEqual(stat.S_IMODE(log.stat().st_mode), 0o600)
                 args = json.loads(log.read_text())
                 self.assertEqual(args, [
                     "--basedir", str(scratch / "data/qutebrowser-webapps"),

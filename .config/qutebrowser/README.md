@@ -174,6 +174,21 @@ recreate `.reader-venv` using the setup instructions above if reader imports fai
 
 `config.py` limits WebRTC to the default public interface, disables local
 HTML access to other file URLs, speculative DNS lookups, and autoplay.
+This also blocks relative stylesheets, images, and external JavaScript in local
+HTML pages. For a trusted file that needs those assets, open it and use its
+actual file URL in a temporary exception, then reload:
+
+```text
+:set -t -u file:///absolute/path/page.html content.local_content_can_access_file_urls true
+:reload
+```
+
+The exception applies to that file URL until the browser closes, and lets the
+page read other local files too. Restore the restriction when finished with
+`:set -t -u file:///absolute/path/page.html content.local_content_can_access_file_urls false`,
+then reload. Closing just the tab does not clear the exception.
+Reader mode's inline styles still work; local image files in articles are blocked.
+
 Restart the browser to apply the WebRTC setting. Canvas reading and third-party
 cookies retain their defaults for site compatibility; consider site-specific
 restrictions if needed. Review persistent clipboard, notification, and protocol

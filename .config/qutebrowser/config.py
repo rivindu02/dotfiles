@@ -14,8 +14,9 @@
 # Theme settings below take precedence over autoconfig.yml at startup/reload.
 config.load_autoconfig(True)
 
-# Restrict WebRTC to the public interface and keep local HTML from reading
-# other local files. Avoid speculative DNS requests and unsolicited playback.
+# Restrict WebRTC to the public interface. Local HTML cannot load other local
+# files, including relative CSS, images, or scripts (see README for exceptions).
+# Avoid speculative DNS requests and unsolicited playback.
 c.content.webrtc_ip_handling_policy = "default-public-interface-only"
 c.content.local_content_can_access_file_urls = False
 c.content.dns_prefetch = False
@@ -244,8 +245,8 @@ config.bind(
 )
 
 # Display PDFs in the browser using PDF.js (Arch package: pdfjs).
-# The viewer still offers a download button. Local .html files render with
-# :open ~/path/file.html; relative CSS, images, and JavaScript use defaults.
+# The viewer still offers a download button. :open ~/path/file.html shows local
+# HTML, but relative assets are blocked by the file-access policy above.
 c.content.pdfjs = True
 # PDF.js 6 needs a startup-script CSP hash and WeakMap/math compatibility shims.
 from pathlib import Path
