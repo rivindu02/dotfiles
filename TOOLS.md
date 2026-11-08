@@ -436,6 +436,11 @@ A new Ghostty window auto-attaches to the tmux session `main` (IDE terminals suc
 | **smartmontools** | Disk health | See §13 |
 | **droidcam** + **v4l2loopback-dc-dkms** (AUR) | Use your phone as a webcam | Start DroidCam on the phone, then `droidcam` (GUI) or `droidcam-cli <phone-ip> 4747` on the laptop |
 
+Run `sudo bash system/apply-webcam-default.sh` to reserve `/dev/video10` for
+Droidcam and keep physical webcams first in browser camera lists. Close camera
+sites before applying; if Droidcam is busy, the change takes effect after reboot.
+Select `USB2.0 FHD UVC WebCam` for the laptop camera, or `Droidcam` for the phone.
+
 ---
 
 ## 16. Audio & Bluetooth

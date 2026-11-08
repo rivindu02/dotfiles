@@ -113,6 +113,9 @@ sudo install -Dm755 system/systemd/asus-sleep.sh /usr/lib/systemd/system-sleep/a
 sudo install -Dm644 system/systemd/camera-toggle.service -t /etc/systemd/system/
 sudo systemctl enable --now camera-toggle
 
+# Keep Droidcam available without making it the default browser camera.
+sudo bash system/apply-webcam-default.sh
+
 # Hardening + privacy (sysctl, no core dumps, LLMNR off, DNS-over-TLS, MAC randomization,
 # uinput group, reflector): see the script for details
 sudo bash system/apply-security-hardening.sh
