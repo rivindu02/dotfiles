@@ -78,6 +78,8 @@ pressing Enter may be required; these website URL parameters can change.
   supplies missing WeakMap methods and `Math.sumPrecise` for QtWebEngine 6.11.
   The math helper preserves exact summation and only installs if the browser
   lacks that API. Keep `pdf-math-polyfill.js` alongside `pdf_viewer.py`.
+  The internal `qute://pdfjs/*` pages have a local-resource exception so the
+  viewer can load its CSS, modules, and worker. Ordinary local HTML stays blocked.
   After changing this helper, run `:config-source` and reload the PDF tab.
 - **Webpage dark mode:** Off by default. Websites use their own appearance,
   browser-default color preference and page background. Press `,d` to opt a site
@@ -165,7 +167,9 @@ and synthetic pages; they do not access your browsing profile or vault.
 
 The PDF checks verify required browser APIs, the viewer startup CSP hash,
 worker polyfills, precise summation, config reloads, and painting a real PDF
-with the installed PDF.js. Chromium's process sandbox must be able to start.
+with the installed PDF.js. They also load the full internal viewer through the
+Qutebrowser URL handler, checking its stylesheet, modules, and PDF page while
+ordinary local HTML remains restricted. Chromium's process sandbox must be able to start.
 These checks catch known failure paths; website changes and future upstream
 API changes can still require maintenance. After a Python major upgrade,
 recreate `.reader-venv` using the setup instructions above if reader imports fail.

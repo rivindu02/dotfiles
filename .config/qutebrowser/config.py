@@ -19,6 +19,9 @@ config.load_autoconfig(True)
 # Avoid speculative DNS requests and unsolicited playback.
 c.content.webrtc_ip_handling_policy = "default-public-interface-only"
 c.content.local_content_can_access_file_urls = False
+# PDF.js is also a local document. Let this internal viewer load its own
+# stylesheet, modules, and worker without granting that access to local HTML.
+config.set("content.local_content_can_access_file_urls", True, "qute://pdfjs/*")
 c.content.dns_prefetch = False
 c.content.autoplay = False
 # Reject invalid background connections without offering a bypass prompt.

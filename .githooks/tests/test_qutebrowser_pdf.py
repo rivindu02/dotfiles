@@ -12,6 +12,7 @@ import runpy
 import tempfile
 import struct
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 HELPER = ROOT / ".config/qutebrowser/pdf_viewer.py"
@@ -27,16 +28,25 @@ os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = "--disable-gpu"
 
 from PyQt6.QtCore import QEventLoop, QTimer, QUrl
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile
+from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile, QWebEngineSettings
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from qutebrowser.browser import pdfjs
+from qutebrowser.browser import pdfjs, qutescheme
+from qutebrowser.browser.webengine import webenginequtescheme
+from qutebrowser.config import config, configcache, configdata, configfiles
 from qutebrowser.utils import standarddir
 
+webenginequtescheme.init()
 APP = QApplication(["qute-pdf-check"])
 APP.setApplicationName("qute-pdf-check")
 for location in standarddir._Location:
     standarddir._locations[location] = SCRATCH.name
 runpy.run_path(str(HELPER))
+configdata.init()
+config.instance = config.Config(yaml_config=configfiles.YamlConfig())
+config.val = config.ConfigContainer(config.instance)
+config.key_instance = config.KeyConfig(config.instance)
+config.cache = configcache.ConfigCache()
+configfiles.read_config_py(ROOT / ".config/qutebrowser/config.py", raising=True, warn_autoconfig=True)
 
 
 def sample_pdf():
@@ -59,14 +69,26 @@ def sample_pdf():
     return data + f"trailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF".encode()
 
 
+class ConsolePage(QWebEnginePage):
+    def javaScriptConsoleMessage(self, level, message, line, source):
+        self.messages.append(message)
+
+
 class PDFTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.profile = QWebEngineProfile(APP)
-        cls.page = QWebEnginePage(cls.profile)
+        cls.handler = webenginequtescheme.QuteSchemeHandler(cls.profile)
+        cls.handler.install(cls.profile)
+        cls.page = ConsolePage(cls.profile)
+        cls.page.messages = []
         cls.view = QWebEngineView()
         cls.view.setPage(cls.page)
         cls.view.show()
+
+    def setUp(self):
+        self.page.messages.clear()
+        self.page.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, True)
 
     @classmethod
     def tearDownClass(cls):
@@ -90,7 +112,7 @@ class PDFTests(unittest.TestCase):
         if not result:
             loop.exec()
         timer.stop()
-        self.assertTrue(result, "Offscreen browser operation timed out")
+        self.assertTrue(result, "Offscreen browser operation timed out: " + repr(self.page.messages))
         return result[0]
 
     def js(self, source):
@@ -117,6 +139,41 @@ class PDFTests(unittest.TestCase):
         self.assertIn("'sha256-" + digest + "'", html)
         self.assertIn("'wasm-unsafe-eval'", html)
         self.assertNotIn("'unsafe-inline'", html)
+
+    def test_full_internal_viewer_loads_styles_modules_and_pdf(self):
+        url = pdfjs.get_main_url("sample.pdf", QUrl("https://example.test/sample.pdf"))
+        setting = "content.local_content_can_access_file_urls"
+        self.assertFalse(config.instance.get(setting, url=QUrl("file:///tmp/untrusted.html")))
+        self.page.settings().setAttribute(
+            QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls,
+            config.instance.get(setting, url=url),
+        )
+        pdf = Path(SCRATCH.name) / "sample.pdf"
+        pdf.write_bytes(sample_pdf())
+        with patch.object(qutescheme, "_pdf_path", return_value=str(pdf)):
+            def load(done):
+                def loaded(ok):
+                    self.page.loadFinished.disconnect(loaded)
+                    done(ok)
+                self.page.loadFinished.connect(loaded)
+                self.page.load(url)
+            self.assertTrue(self.wait_for(load))
+            # A bare, unstyled HTML viewer can report a successful page load.
+            self.assertTrue(self.js("Array.from(document.styleSheets).some(s => s.href && s.href.endsWith('/viewer.css') && s.cssRules.length > 0)"),
+                            "Internal PDF viewer stylesheet was blocked")
+
+            def poll(done):
+                def received(result):
+                    if result:
+                        done(result)
+                    else:
+                        QTimer.singleShot(50, lambda: self.page.runJavaScript(
+                            "Boolean(window.PDFViewerApplication?.pdfDocument)", received))
+                self.page.runJavaScript(
+                    "Boolean(window.PDFViewerApplication?.pdfDocument)", received)
+            self.assertTrue(self.wait_for(poll))
+            self.assertEqual(self.js("window.PDFViewerApplication.pdfDocument.numPages"), 1)
+            self.assertEqual(self.js("typeof window.PDFViewerApplicationOptions.set"), "function")
 
     def test_render_and_required_apis(self):
         # Use the installed distribution and qutebrowser's patched worker,
